@@ -153,6 +153,7 @@ int main(int ac, char **av, char **envp)
     
     (void)ac;
     (void)av;
+    env.env_var = NULL;
     shell_loop(&env, envp);
     return (0);
 }

@@ -63,6 +63,19 @@ void	free_env(t_env *env)
 	free(env->env_var);
 }
 
+/* count the nbr of env_var */
+int count_env(t_env *env)
+{
+	int i;
+
+	i = 0;
+	if (!env || !env->env_var)
+		return (0);
+	while (env->env_var[i])
+		i++;
+	return (i);
+}
+
 /* create a new entry of a key-value pair in env array
     - malloc for the new entry
     - copy the key, "=", new value, "\0" to the env array
@@ -78,12 +91,28 @@ char	*create_env_entry(char *key, char *value)
 	value_len = ft_strlen(value);
 	new_entry = (char *)malloc(key_len + value_len + 2);
 	if (!new_entry)
-		perror("malloc");
+		return (NULL);
 	ft_memcpy(new_entry, key, key_len);
 	new_entry[key_len] = '=';
 	ft_memcpy(new_entry + key_len + 1, value, value_len);
 	new_entry[key_len + value_len + 1] = '\0';
 	return (new_entry);
+}
+
+/* add new_entry to the end of the existing env array
+	- count the # of items in the existing env array
+	- relloac for count + 2: new entry + null terminator
+*/
+void add_env(char *key, char *value, t_env *env)
+{
+	int count;
+	char **new_env;
+
+	count = count_env(env);
+	new_env = Realloc(env->env_var, (count + 2) * sizeof(char *));
+	env->env_var = new_env;
+	env->env_var[count] = create_env_entry(key, value);
+	env->env_var[count + 1] = NULL;
 }
 
 /* update the env var after calling ft_cd
@@ -100,6 +129,7 @@ void	update_env(char *key, char *value, t_env *env)
 
 	key_len = ft_strlen(key);
 	new_entry = create_env_entry(key, value);
+	// if found, update the old entry with new entry
 	i = 0;
 	while (env->env_var[i])
 	{
@@ -107,9 +137,10 @@ void	update_env(char *key, char *value, t_env *env)
 		{
 			free(env->env_var[i]);
 			env->env_var[i] = new_entry;
+			return ;
 		}
-        env->env_var[i] = new_entry;
-        env->env_var[i + 1] = NULL;
 		i++;
 	}
+	// if not found, add the new entry at the end
+	add_env(key, value, env);
 }

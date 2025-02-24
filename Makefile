@@ -11,16 +11,16 @@ SRC_DIR = src
 EXEC_DIR = $(SRC_DIR)/execution
 BUILTIN_DIR = $(SRC_DIR)/builtin
 MAIN_DIR = $(SRC_DIR)/main
-SRC = $(MAIN_DIR)/shell_loop.c \
-		$(MAIN_DIR)/shell_loop_utils.c \
-		$(BUILTIN_DIR)/builtin_utils.c \
+SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
 		$(BUILTIN_DIR)/ft_cd.c \
 		$(BUILTIN_DIR)/ft_echo.c \
 		$(BUILTIN_DIR)/ft_env.c \
 		$(BUILTIN_DIR)/ft_exit.c \
 		$(BUILTIN_DIR)/ft_export.c \
-		$(BUILTIN_DIR)/ft_unset.c
+		$(BUILTIN_DIR)/ft_unset.c \
+		$(MAIN_DIR)/shell_loop.c \
+		$(MAIN_DIR)/shell_loop_utils.c 
 
 OBJ = $(SRC:.c=.o)
 

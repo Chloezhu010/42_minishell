@@ -29,6 +29,7 @@ void	ft_cd(char **args, t_env *env, char **envp)
 {
 	char *dir;
 	char cwd[1024];
+
     // init env
 	if (!env->env_var)
 		init_env(env, envp);
@@ -43,16 +44,16 @@ void	ft_cd(char **args, t_env *env, char **envp)
 		dir = args[1];
     // store current dir for updating OLDPWD
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
-		perror("getcwd");
+		return ;
     // change dir
 	if (chdir(dir) != 0)
-		perror("cd");
+		return ;
     // update the OLDPWD, PWD env var
 	update_env("OLDPWD", cwd, env);
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 		update_env("PWD", cwd, env);
 }
-/*
+
 // // === test create_env_entry ===
 // int main()
 // {
@@ -62,25 +63,25 @@ void	ft_cd(char **args, t_env *env, char **envp)
 //     printf("%s\n", new_entry);
 // }
 
-// === test cd ===
-int main(int ac, char **av, char **envp)
-{    
-    t_env env;
-    env.env_var = NULL;
+// // === test cd ===
+// int main(int ac, char **av, char **envp)
+// {    
+//     t_env env;
+//     env.env_var = NULL;
     
-    (void)ac;
-    ft_cd(av, &env, envp);
+//     (void)ac;
+//     ft_cd(av, &env, envp);
 
-    // char cwd[1024];
-    // if (getcwd(cwd, sizeof(cwd)) != NULL)
-    //     printf("current dir: %s\n\n", cwd);
-    // else
-    //     perror("cd");
-    // === check env status ===
-    printf("=== print out env to check ===\n");
-    print_env(&env);
+//     // char cwd[1024];
+//     // if (getcwd(cwd, sizeof(cwd)) != NULL)
+//     //     printf("current dir: %s\n\n", cwd);
+//     // else
+//     //     perror("cd");
+//     // === check env status ===
+//     printf("=== print out env to check ===\n");
+//     print_env(&env);
 
-    // free up memory
-    free_env(&env);
-    return (0);
-}*/
+//     // free up memory
+//     free_env(&env);
+//     return (0);
+// }
