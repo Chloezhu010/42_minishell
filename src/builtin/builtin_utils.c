@@ -91,7 +91,7 @@ char	*create_env_entry(char *key, char *value)
 	value_len = ft_strlen(value);
 	new_entry = (char *)malloc(key_len + value_len + 2);
 	if (!new_entry)
-		return (NULL);
+		perror("malloc");
 	ft_memcpy(new_entry, key, key_len);
 	new_entry[key_len] = '=';
 	ft_memcpy(new_entry + key_len + 1, value, value_len);

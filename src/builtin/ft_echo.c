@@ -20,13 +20,12 @@
 	- normal case: print out the args
     - print out the newline in the end
 */
-void	ft_echo(char **args, t_env *env, char **envp)
+void	ft_echo(char **args, t_env *env)
 {
 	int	i;
 	int	new_line;
 
 	(void)env;
-	(void)envp;
 	i = 1;
 	new_line = 1;
 	while (args[i] && args[i][0] == '-')

@@ -1,5 +1,6 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -16,6 +17,7 @@
 # include "../src/libft/libft.h"
 # include "../incl/execution.h"
 # include "../incl/builtin.h"
+# include "../incl/loop.h"
 
 # define DEL "\n\t \v\f\r"
 # define CHILD_PROCESS 0

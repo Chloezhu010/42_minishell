@@ -18,14 +18,15 @@
     env implementation
     - wrap the init, print, free functions
 */
-void	ft_env(char **args, t_env *env, char **envp)
+void	ft_env(char **args, t_env *env)
 {
 	(void)args;
-    if (!envp || !env)
-		return ;
-	init_env(env, envp);
-	print_env(env);
-	free_env(env);
+    if (!env)
+    {
+		printf("env not initialized\n");
+        return ;
+	}
+    print_env(env);
 }
 /*
 // === test env ===

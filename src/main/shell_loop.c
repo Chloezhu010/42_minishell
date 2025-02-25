@@ -1,4 +1,4 @@
-#include "../incl/minishell.h"
+#include "../../incl/minishell.h"
 
 /* global variables */
 int status = 0;
@@ -21,23 +21,13 @@ t_builtin g_builtin[] =
 char *read_line(void)
 {
     char *buf;
-    size_t bufsize;
     char cwd[1024];
 
     buf = NULL;
     if (!getcwd(cwd, sizeof(cwd)))
         perror("getcwd");
-    printf("%s $>", cwd);
-
-    if (getline(&buf, &bufsize, stdin) == -1)
-    {
-        free(buf);
-        buf = NULL;
-        if (feof(stdin)) // when enter ctl+D
-            return (NULL);
-        else
-            printf("getline failed");
-    }
+    printf("%s ", cwd);
+	buf = readline("$>");
     return (buf);
 }
 
@@ -85,23 +75,26 @@ void launch_execution(char **args)
     - if it's build in function, call it
     - if not, launch external programs
 */
-void execute_shell(char **args, t_env *env, char **envp)
+void execute_shell(char **args, t_env *env)
 {
     int i;
 
     // input control
     if (!args[0])
         return ;
-    // init env var
-    if (!env->env_var)
-        init_env(env, envp);
+    // check env initialization
+    if (!env)
+    {
+        printf("env not initialized\n");
+        return ;
+    }
     // if builtin functions
     i = 0;
     while (g_builtin[i].builtin_name)
     {
         if (strcmp(args[0], g_builtin[i].builtin_name) == 0) // TODO replace strcmp
         {
-            g_builtin[i].func(args, env, envp);
+            g_builtin[i].func(args, env);
             return ;
         }
         i++;
@@ -110,10 +103,13 @@ void execute_shell(char **args, t_env *env, char **envp)
     launch_execution(args);
 }
 
-void shell_loop(t_env *env, char **envp)
+void shell_loop(t_env *env)
 {
     char *line;
     char **args;
+	t_token *tokens;
+	t_cmd	*cmds;
+
 
     while (1)
     {
@@ -123,13 +119,27 @@ void shell_loop(t_env *env, char **envp)
         if (line == NULL)
         {
             printf("\nexit\n");
-            break;
+            break;            
         }
-        // check the read_line function
+ 
+        // // check the read_line function
         // printf("you entered: %s\n", line);
         // 3. parse the args
-        args = cell_split_line(line);
-        // check if the args are tokenized
+		tokens = tokenize(line);
+		if (tokens != NULL)
+		{
+			expand_tokens(tokens);
+			check_format_command(tokens);
+			// print_tokens(tokens);
+			cmds = parse_tokens(tokens);
+			// if (cmds)
+			// 	print_cmds(cmds);
+			free_tokens(tokens);
+		}
+		if (cmds != NULL)
+		{
+        	args = cell_split_line(line);
+        // // check if the args are tokenized
         // int i = 0;
         // while (args[i])
         // {
@@ -137,13 +147,20 @@ void shell_loop(t_env *env, char **envp)
         //     i++;
         // }
         // 4. execute the command
-        execute_shell(args, env, envp);
+        	execute_shell(args, env);
+			if (!args)
+                free(args);
+            if (!cmds)
+			    free_cmds(cmds);
+		}
+
         // 5. add history
 
 
         // 6. cleanup
-        free(line);
-        free(args);
+            if (!line)
+        	    free(line);
+
     }
 }
 
@@ -153,7 +170,8 @@ int main(int ac, char **av, char **envp)
     
     (void)ac;
     (void)av;
-    env.env_var = NULL;
-    shell_loop(&env, envp);
+    init_env(&env, envp);
+    shell_loop(&env);
+    free_env(&env);
     return (0);
 }

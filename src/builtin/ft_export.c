@@ -47,18 +47,22 @@ void split_key_value(char *arg, char **key, char **value)
         *key = ft_strdup(arg);
         *value = NULL;
     }
-    // extract key
-    *key = malloc(equal - arg + 1);
-    if (!*key)
-        return ;
-    ft_strlcpy(*key, arg, equal - arg + 1);
-    // extract value
-    *value = ft_strdup(equal + 1);
-    if (!*value)
+    else
     {
-        free(*key);
-        return ;
+        // extract key
+        *key = malloc(equal - arg + 1);
+        if (!*key)
+            return ;
+        ft_strlcpy(*key, arg, equal - arg + 1);
+        // extract value
+        *value = ft_strdup(equal + 1);
+        if (!*value)
+        {
+            free(*key);
+            return ;
+        }
     }
+    
 }
 
 /* export with no option 
@@ -69,7 +73,6 @@ void split_key_value(char *arg, char **key, char **value)
     - make them available to child processes
 
     implementation of ft_export
-    - init env var
     - input control
         - if no args
             - print_env
@@ -84,15 +87,18 @@ void split_key_value(char *arg, char **key, char **value)
         - else
             - udpate they key & value to the array
 */
-void ft_export(char **args, t_env *env, char **envp)
+void ft_export(char **args, t_env *env)
 {
     int i;
     char *key;
     char *value;
     
-    if (!envp || !env)
+    // check env init
+    if (!env)
+    {
+        printf("env not initialized\n");
         return ;
-    init_env(env, envp);
+    }
     // input control
     if (args[1] == NULL)
         print_env(env);
@@ -101,7 +107,16 @@ void ft_export(char **args, t_env *env, char **envp)
     while (args[i])
     {
         split_key_value(args[i], &key, &value);
-        printf("key: %s, value: %s\n", key, value); // check split_key_value
+        // printf("debug: key: %s, value: %s\n", key, value); // check split_key_value
+        if (check_valid_name(key) == 0)
+        {
+            printf("export: not a valid identifier\n");
+            continue;
+        }
+        if (value == NULL)
+            update_env(key, "''", env);
+        else
+            update_env(key, value, env);
         i++;
     }
 }
@@ -112,12 +127,28 @@ void ft_export(char **args, t_env *env, char **envp)
 //     (void)ac;
 //     printf("%d\n", is_valid_name(av[1]));
 // }
+// // === test split_key_value ===
+// int main(int ac, char **av)
+// {
+//     char *key;
+//     char *value;
 
+//     (void)ac;
+//     split_key_value(av[1], &key, &value);
+//     printf("key: %s, value: %s\n", key, value);
+// }
 // // === test ft_export ===
 // int main(int ac, char **av, char **envp)
 // {
 //     t_env env;
     
 //     (void)ac;
+//     init_env(&env, envp);
+//     printf("env before export: \n\n");
+//     print_env(&env);
+
 //     ft_export(av, &env, envp);
+
+//     printf("env after export: \n\n");
+//     print_env(&env);
 // }
