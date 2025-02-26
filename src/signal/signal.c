@@ -3,7 +3,12 @@
 /* global variable for exit status */
 extern int g_exit_status;
 
-/* Ctrl C handler */
+/* Ctrl C handler
+    - print a new line
+    - tell readline to move to a new line
+    - clear the current input line
+    - re display the prompt
+*/
 void sigint_handler(int sig)
 {
     (void)sig;
@@ -19,12 +24,21 @@ void sigint_handler(int sig)
 void sigquit_handler(int sig)
 {
     (void)sig;
+    rl_on_new_line();
+    rl_replace_line("", 0);
+    rl_redisplay();
 }
 
 /* setup signals */
 void setup_signal(void)
 {
     struct sigaction sa;
+    // struct termios term;
+
+    // config terminal settings
+    // tcgetattr(STDIN_FILENO, &term); // get the current terminal attributes
+    // term.c_lflag &= ~ECHO; // disable ECHO flag, c_lflag is local modes
+    // tcsetattr(STDIN_FILENO, TCSANOW, &term); // set new terminal attributes, TSCANOW apply the changes now
 
     // handle SIGINT
     sigemptyset(&sa.sa_mask);

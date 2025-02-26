@@ -14,6 +14,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <dirent.h>
+# include <termios.h>
 # include "../src/libft/libft.h"
 # include "../incl/execution.h"
 # include "../incl/builtin.h"
