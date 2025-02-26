@@ -23,13 +23,13 @@
 */
 void	ft_unsetenv(char *name, t_env *env)
 {
-	int	len;
+	// int	len;
 	int	i;
 	int	j;
 	
 	if (!env || !env->env_var)
 		return ;
-	len = count_env(env);
+	// len = count_env(env);
 	i = 0;
 	while (env->env_var[i])
 	{

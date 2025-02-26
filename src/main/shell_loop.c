@@ -1,6 +1,7 @@
 #include "../../incl/minishell.h"
 
 /* global variables */
+int g_exit_status = 0;
 int status = 0;
 t_builtin g_builtin[] = 
 {
@@ -21,13 +22,13 @@ t_builtin g_builtin[] =
 char *read_line(void)
 {
     char *buf;
-    char cwd[1024];
+    // char cwd[1024];
 
     buf = NULL;
-    if (!getcwd(cwd, sizeof(cwd)))
-        perror("getcwd");
-    printf("%s ", cwd);
-	buf = readline("$>");
+    // if (!getcwd(cwd, sizeof(cwd)))
+    //     perror("getcwd");
+    // printf("%s ", cwd);
+	buf = readline("minishell $>");
     return (buf);
 }
 
@@ -64,8 +65,13 @@ char    **cell_split_line(char *line)
 /* launch external programs */
 void launch_execution(char **args)
 {
-    if (Fork() == CHILD_PROCESS)
+    pid_t pid;
+
+    pid = Fork();
+    if (pid == CHILD_PROCESS)
+    {
         Execvp(args[0], args);
+    }
     else
         Wait(&status);
 }
@@ -110,17 +116,21 @@ void shell_loop(t_env *env)
 	t_token *tokens;
 	t_cmd	*cmds;
 
-
+    setup_signal();
     while (1)
     {
-        // 1. handle signal
+        // 1. reset signal handling for each loop
+        
         // 2. read line from command
         line = read_line();
         if (line == NULL)
         {
-            printf("\nexit\n");
+            printf("exit\n");
             break;            
         }
+        // add non-empty line to history
+        if (*line)
+            add_history(line);
  
         // // check the read_line function
         // printf("you entered: %s\n", line);
@@ -157,10 +167,10 @@ void shell_loop(t_env *env)
         // 5. add history
 
 
-        // 6. cleanup
+        // 6. cleanup before exit
             if (!line)
         	    free(line);
-
+            
     }
 }
 
@@ -173,5 +183,6 @@ int main(int ac, char **av, char **envp)
     init_env(&env, envp);
     shell_loop(&env);
     free_env(&env);
+    clear_history(); //linux change to: rl_clear_history()
     return (0);
 }

@@ -18,6 +18,7 @@
 # include "../incl/execution.h"
 # include "../incl/builtin.h"
 # include "../incl/loop.h"
+# include "../incl/sig.h"
 
 # define DEL "\n\t \v\f\r"
 # define CHILD_PROCESS 0
