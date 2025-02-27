@@ -2,7 +2,6 @@
 
 /* global variables */
 int g_exit_status = 0;
-int status = 0;
 t_builtin g_builtin[] = 
 {
     {"pwd", ft_pwd},
@@ -66,6 +65,7 @@ char    **cell_split_line(char *line)
 void launch_execution(char **args)
 {
     pid_t pid;
+    int status = 0;
 
     pid = Fork();
     if (pid == CHILD_PROCESS)
@@ -163,10 +163,7 @@ void shell_loop(t_env *env)
             if (!cmds)
 			    free_cmds(cmds);
 		}
-
-        // 5. add history
-
-
+        
         // 6. cleanup before exit
             if (!line)
         	    free(line);
@@ -183,6 +180,7 @@ int main(int ac, char **av, char **envp)
     init_env(&env, envp);
     shell_loop(&env);
     free_env(&env);
+    enable_echo();
     clear_history(); //linux change to: rl_clear_history()
     return (0);
 }
