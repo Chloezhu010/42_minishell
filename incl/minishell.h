@@ -30,5 +30,6 @@ void    *Realloc(void *ptr, size_t size);
 void    Execvp(const char *file, char *const av[]);
 pid_t   Fork(void);
 pid_t   Wait(int *status);
+int ft_strcmp(const char *s1, const char *s2);
 
 #endif

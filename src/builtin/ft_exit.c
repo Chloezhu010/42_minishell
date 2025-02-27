@@ -57,9 +57,10 @@ void ft_exit(char **args, t_env *env)
 	}
 	exit(exit_status);
 }
+/*
 // === testing exit ===
-// int main(int ac, char **av)
-// {
-// 	(void)ac;
-// 	ft_exit(av);
-// }
+int main(int ac, char **av)
+{
+	(void)ac;
+	ft_exit(av);
+}*/

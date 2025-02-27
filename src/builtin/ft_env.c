@@ -21,12 +21,12 @@
 void	ft_env(char **args, t_env *env)
 {
 	(void)args;
-    if (!env)
-    {
+	if (!env)
+	{
 		printf("env not initialized\n");
-        return ;
+		return ;
 	}
-    print_env(env);
+	print_env(env);
 }
 /*
 // === test env ===

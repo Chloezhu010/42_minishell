@@ -2,17 +2,6 @@
 
 /* global variables */
 int g_exit_status = 0;
-t_builtin g_builtin[] = 
-{
-    {"pwd", ft_pwd},
-    {"cd", ft_cd},
-    {"echo", ft_echo},
-    {"env", ft_env},
-    {"exit", ft_exit},
-    {"export", ft_export},
-    {"unset", ft_unset},
-    {NULL, NULL}
-};
 
 /* read the input from user
     - print the cwd before $>
@@ -34,30 +23,15 @@ char *read_line(void)
 /* tokenize the input line
     - parse the args
 */
-char    **cell_split_line(char *line)
+char **cell_split_line(char *line)
 {
-    char            **tokens;
-    unsigned int    position;
-    size_t          bufsize;
+    char **tokens;
 
-    bufsize = BUFSIZ;
-    position = 0;
-    tokens = malloc(bufsize * sizeof(*tokens));
+    if (!line)
+        return (NULL);
+    tokens = ft_split(line, ' ');
     if (!tokens)
         return (NULL);
-
-    for (char *token = strtok(line, DEL); token; token = strtok(NULL, DEL))
-    {
-        tokens[position++] = token;
-        if (position >= bufsize)
-        {
-            bufsize *= 2;
-            tokens = realloc(tokens, bufsize * sizeof(*tokens));
-            if (!tokens)
-                return (NULL);
-        }
-    }
-    tokens[position] = NULL;
     return (tokens);
 }
 
@@ -70,7 +44,7 @@ void launch_execution(char **args)
     pid = Fork();
     if (pid == CHILD_PROCESS)
     {
-        Execvp(args[0], args);
+        Execvp(args[0], args); //TODO replace execvp
     }
     else
         Wait(&status);
@@ -84,6 +58,7 @@ void launch_execution(char **args)
 void execute_shell(char **args, t_env *env)
 {
     int i;
+    t_builtin *builtin_in;
 
     // input control
     if (!args[0])
@@ -95,12 +70,13 @@ void execute_shell(char **args, t_env *env)
         return ;
     }
     // if builtin functions
+    builtin_in = init_builtin();
     i = 0;
-    while (g_builtin[i].builtin_name)
+    while (builtin_in[i].builtin_name)
     {
-        if (strcmp(args[0], g_builtin[i].builtin_name) == 0) // TODO replace strcmp
+        if (ft_strcmp(args[0], builtin_in[i].builtin_name) == 0)
         {
-            g_builtin[i].func(args, env);
+            builtin_in[i].func(args, env);
             return ;
         }
         i++;
@@ -116,11 +92,10 @@ void shell_loop(t_env *env)
 	t_token *tokens;
 	t_cmd	*cmds;
 
+    // 1. setup signal handler
     setup_signal();
     while (1)
     {
-        // 1. reset signal handling for each loop
-        
         // 2. read line from command
         line = read_line();
         if (line == NULL)
@@ -159,15 +134,13 @@ void shell_loop(t_env *env)
         // 4. execute the command
         	execute_shell(args, env);
 			if (!args)
-                free(args);
+                ft_freeup(args);
             if (!cmds)
 			    free_cmds(cmds);
 		}
-        
-        // 6. cleanup before exit
+        // 5. cleanup before exit
             if (!line)
         	    free(line);
-            
     }
 }
 
@@ -182,5 +155,5 @@ int main(int ac, char **av, char **envp)
     free_env(&env);
     enable_echo();
     clear_history(); //linux change to: rl_clear_history()
-    return (0);
+    return (g_exit_status);
 }

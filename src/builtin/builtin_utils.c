@@ -1,81 +1,5 @@
 #include "../incl/builtin.h"
 
-/* init the env from envp
-    - count the env variables
-    - malloc for env variables
-    - copy env variables to my own struct
-    - null terminated
-*/
-void	init_env(t_env *env, char **envp)
-{
-	int	i;
-	int	count;
-
-	i = 0;
-	count = 0;
-	if (!envp)
-	{
-		env->env_var = NULL;
-		return ;
-	}
-	while (envp[count])
-		count++;
-	env->env_var = (char **)malloc((count + 1) * sizeof(char *));
-	if (!env->env_var)
-	{
-		perror("malloc");
-		exit (1);
-	}
-	while (envp[i])
-	{
-		env->env_var[i] = ft_strdup(envp[i]);
-		i++;
-	}
-	env->env_var[i] = NULL;
-}
-
-/* printout the env variables */
-void	print_env(t_env *env)
-{
-	int	i;
-
-	i = 0;
-	while (env && env->env_var && env->env_var[i])
-	{
-		printf("%s\n", env->env_var[i]);
-		i++;
-	}
-}
-
-/* free malloc for env */
-void	free_env(t_env *env)
-{
-	int	i;
-
-	i = 0;
-	if (!env || !env->env_var)
-		return ;
-	while (env->env_var[i])
-	{
-		free(env->env_var[i]);
-		i++;
-	}
-	free(env->env_var);
-}
-
-/* count the nbr of env_var */
-int count_env(t_env *env)
-{
-	int i;
-
-	i = 0;
-	if (!env || !env->env_var)
-		return (0);
-	while (env->env_var[i])
-		i++;
-	return (i);
-}
-
 /* create a new entry of a key-value pair in env array
     - malloc for the new entry
     - copy the key, "=", new value, "\0" to the env array
@@ -103,10 +27,10 @@ char	*create_env_entry(char *key, char *value)
 	- count the # of items in the existing env array
 	- relloac for count + 2: new entry + null terminator
 */
-void add_env(char *key, char *value, t_env *env)
+void	add_env(char *key, char *value, t_env *env)
 {
-	int count;
-	char **new_env;
+	int		count;
+	char	**new_env;
 
 	count = count_env(env);
 	new_env = Realloc(env->env_var, (count + 2) * sizeof(char *));

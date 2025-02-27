@@ -8,24 +8,24 @@
         - if invalid, return 0
     - else, return 1 as valid
 */
-int check_valid_name(char *key)
+int	check_valid_name(char *key)
 {
-    int i;
-    
-    if (!key || !*key)
-        return (0);
-    if (!((key[0] >= 'a' && key[0] <= 'z')
-        || (key[0] >= 'A' && key[0] <= 'Z')
-        || (key[0] == '_')))
-        return (0);
-    i = 1;
-    while (key[i])
-    {
-        if (! (ft_isalnum(key[i]) || key[i] == '_'))
-            return (0);
-        i++;
-    }
-    return (1);
+	int	i;
+
+	if (!key || !*key)
+		return (0);
+	if (!((key[0] >= 'a' && key[0] <= 'z')
+		|| (key[0] >= 'A' && key[0] <= 'Z')
+		|| (key[0] == '_')))
+		return (0);
+	i = 1;
+	while (key[i])
+	{
+		if (! (ft_isalnum(key[i]) || key[i] == '_'))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 /* split input into key & value
@@ -37,32 +37,31 @@ int check_valid_name(char *key)
         - extract the key part (before =), ft_strlcpy is null terminated
         - extract the value part (after =)
 */
-void split_key_value(char *arg, char **key, char **value)
+void	split_key_value(char *arg, char **key, char **value)
 {
-    char *equal;
+	char	*equal;
 
-    equal = ft_strchr(arg, '=');
-    if (equal == NULL)
-    {
-        *key = ft_strdup(arg);
-        *value = NULL;
-    }
-    else
-    {
-        // extract key
-        *key = malloc(equal - arg + 1);
-        if (!*key)
-            return ;
-        ft_strlcpy(*key, arg, equal - arg + 1);
-        // extract value
-        *value = ft_strdup(equal + 1);
-        if (!*value)
-        {
-            free(*key);
-            return ;
-        }
-    }
-    
+	equal = ft_strchr(arg, '=');
+	if (equal == NULL)
+	{
+		*key = ft_strdup(arg);
+		*value = NULL;
+	}
+	else
+	{
+		// extract key
+		*key = malloc(equal - arg + 1);
+		if (!*key)
+			return ;
+		ft_strlcpy(*key, arg, equal - arg + 1);
+        	// extract value
+		*value = ft_strdup(equal + 1);
+		if (!*value)
+		{
+			free(*key);
+			return ;
+		}
+	}
 }
 
 /* export with no option 
@@ -73,6 +72,7 @@ void split_key_value(char *arg, char **key, char **value)
     - make them available to child processes
 
     implementation of ft_export
+    - check init env
     - input control
         - if no args
             - print_env
@@ -87,40 +87,39 @@ void split_key_value(char *arg, char **key, char **value)
         - else
             - udpate they key & value to the array
 */
-void ft_export(char **args, t_env *env)
+void	ft_export(char **args, t_env *env)
 {
-    int i;
-    char *key;
-    char *value;
-    
-    // check env init
-    if (!env)
-    {
-        printf("env not initialized\n");
-        return ;
-    }
-    // input control
-    if (args[1] == NULL)
-        print_env(env);
-    // loop through the args
-    i = 1;
-    while (args[i])
-    {
-        split_key_value(args[i], &key, &value);
-        // printf("debug: key: %s, value: %s\n", key, value); // check split_key_value
-        if (check_valid_name(key) == 0)
-        {
-            printf("export: not a valid identifier\n");
-            continue;
-        }
-        if (value == NULL)
-            update_env(key, "''", env);
-        else
-            update_env(key, value, env);
-        i++;
-    }
-}
+	int		i;
+	char	*key;
+	char	*value;
 
+	if (!env)
+	{
+		printf("env not initialized\n");
+		return ;
+	}
+	// input control
+	if (args[1] == NULL)
+		print_env(env);
+	// loop through the args
+	i = 1;
+	while (args[i])
+	{
+		split_key_value(args[i], &key, &value);
+		// printf("debug: key: %s, value: %s\n", key, value); // check split_key_value
+		if (check_valid_name(key) == 0)
+		{
+			printf("export: not a valid identifier\n");
+			continue;
+		}
+		if (value == NULL)
+			update_env(key, "''", env);
+		else
+			update_env(key, value, env);
+		i++;
+	}
+}
+/*
 // // === test is_valid_name ===
 // int main(int ac, char **av)
 // {
@@ -137,18 +136,18 @@ void ft_export(char **args, t_env *env)
 //     split_key_value(av[1], &key, &value);
 //     printf("key: %s, value: %s\n", key, value);
 // }
-// // === test ft_export ===
-// int main(int ac, char **av, char **envp)
-// {
-//     t_env env;
+// === test ft_export ===
+int main(int ac, char **av, char **envp)
+{
+    t_env env;
     
-//     (void)ac;
-//     init_env(&env, envp);
-//     printf("env before export: \n\n");
-//     print_env(&env);
+    (void)ac;
+    init_env(&env, envp);
+    printf("env before export: \n\n");
+    print_env(&env);
 
-//     ft_export(av, &env, envp);
+    ft_export(av, &env, envp);
 
-//     printf("env after export: \n\n");
-//     print_env(&env);
-// }
+    printf("env after export: \n\n");
+    print_env(&env);
+}*/
