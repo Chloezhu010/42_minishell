@@ -21,13 +21,10 @@
 # include "../incl/loop.h"
 # include "../incl/sig.h"
 
-# define DEL "\n\t \v\f\r"
 # define CHILD_PROCESS 0
 
 /* shell loop utils */
-void    *Malloc(size_t size);
-void    *Realloc(void *ptr, size_t size);
-void    Execvp(const char *file, char *const av[]);
-int ft_strcmp(const char *s1, const char *s2);
+void	*Malloc(size_t size);
+int		ft_strcmp(const char *s1, const char *s2);
 
 #endif

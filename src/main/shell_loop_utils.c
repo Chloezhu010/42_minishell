@@ -15,33 +15,6 @@ void    *Malloc(size_t size)
     return (ptr);
 }
 
-void    *Realloc(void *ptr, size_t size)
-{
-    void    *new_ptr;
-
-    new_ptr = realloc(ptr, size);
-    if (!new_ptr && size != 0)
-    {
-        perror("realloc failed");
-        exit(1);
-    }
-    return (new_ptr);
-}
-
-void    Execvp(const char *file, char *const av[])
-{
-    if (!file || !av)
-    {
-        fprintf(stderr, "execvp: invalid args\n");
-        exit(1);
-    }
-    if (execvp(file, av) == -1)
-    {
-        perror("cell_jr failed");
-        exit(1);
-    }
-}
-
 int ft_strcmp(const char *s1, const char *s2)
 {
     while ((*s1 || *s2) && (*s1 == *s2))

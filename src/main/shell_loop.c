@@ -112,10 +112,6 @@ void shell_loop(t_env *env)
         }
         // add non-empty line to history
         if (*line)
-            add_history(line);
- 
-        // // check the read_line function
-        // printf("you entered: %s\n", line);
         // 3. parse the args
 		tokens = tokenize(line);
 		if (tokens != NULL)
@@ -131,13 +127,6 @@ void shell_loop(t_env *env)
 		if (cmds != NULL)
 		{
         	args = cell_split_line(line);
-        // // check if the args are tokenized
-        // int i = 0;
-        // while (args[i])
-        // {
-        //     printf("token[%d]: %s\n", i, args[i]);
-        //     i++;
-        // }
         // 4. execute the command
         	execute_shell(args, env);
 			if (!args)
@@ -146,8 +135,8 @@ void shell_loop(t_env *env)
 			    free_cmds(cmds);
 		}
         // 5. cleanup before exit
-            if (!line)
-        	    free(line);
+        if (!line)
+            free(line);
     }
 }
 

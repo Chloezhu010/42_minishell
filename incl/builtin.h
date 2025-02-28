@@ -40,6 +40,8 @@ void			ft_export(char **args, t_env *env);
 
 /* built-in utils */
 char			*create_env_entry(char *key, char *value);
+char			**env_realloc(char **old_env, int new_size);
+void			add_env(char *key, char *value, t_env *env);
 void			update_env(char *key, char *value, t_env *env);
 
 /* init builtin */

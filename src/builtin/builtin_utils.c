@@ -23,6 +23,36 @@ char	*create_env_entry(char *key, char *value)
 	return (new_entry);
 }
 
+/* helper function to reproduce realloc
+	- malloc for the new_env array
+	- copy old_env to new_env
+	- null terminated
+	- free up old_env array
+	- return new_env
+*/
+char	**env_realloc(char **old_env, int new_size)
+{
+	char **new_env;
+	int i;
+
+	new_env = (char **)malloc(new_size * sizeof(char *));
+	if (!new_env)
+	{
+		perror("malloc");
+		return (NULL);
+	}
+	i = 0;
+	while (old_env[i] && i < new_size - 1)
+	{
+		new_env[i] = old_env[i];
+		i++;
+	}
+	new_env[i] = NULL;
+	if (old_env)
+		free(old_env); // free only the old array, not its contents
+	return (new_env);
+}
+
 /* add new_entry to the end of the existing env array
 	- count the # of items in the existing env array
 	- relloac for count + 2: new entry + null terminator
@@ -33,7 +63,7 @@ void	add_env(char *key, char *value, t_env *env)
 	char	**new_env;
 
 	count = count_env(env);
-	new_env = Realloc(env->env_var, (count + 2) * sizeof(char *));
+	new_env = env_realloc(env->env_var, (count + 2) * sizeof(char *));
 	env->env_var = new_env;
 	env->env_var[count] = create_env_entry(key, value);
 	env->env_var[count + 1] = NULL;
