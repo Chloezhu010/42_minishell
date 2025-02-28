@@ -28,18 +28,6 @@ void    *Realloc(void *ptr, size_t size)
     return (new_ptr);
 }
 
-pid_t   Fork(void)
-{
-    pid_t   pid;
-    pid = fork();
-    if (pid < 0)
-    {
-        perror("fork failed");
-        exit(1);
-    }
-    return (pid);
-}
-
 void    Execvp(const char *file, char *const av[])
 {
     if (!file || !av)
@@ -52,21 +40,6 @@ void    Execvp(const char *file, char *const av[])
         perror("cell_jr failed");
         exit(1);
     }
-}
-
-pid_t   Wait(int *status)
-{
-    pid_t   result;
-
-    if (!status)
-    {
-        fprintf(stderr, "wait: status arg required\n");
-        return (-1);
-    }
-    result = wait(status);
-    if (result == -1)
-        perror("wait failed");
-    return (result);
 }
 
 int ft_strcmp(const char *s1, const char *s2)

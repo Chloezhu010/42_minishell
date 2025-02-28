@@ -8,10 +8,10 @@ CFLAGS = -g -Wall -Wextra -Werror
 
 # main src files
 SRC_DIR = src
-EXEC_DIR = $(SRC_DIR)/execution
 BUILTIN_DIR = $(SRC_DIR)/builtin
 MAIN_DIR = $(SRC_DIR)/main
 SIG_DIR = $(SRC_DIR)/signal
+EXEC_DIR = $(SRC_DIR)/execution
 SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
 		$(BUILTIN_DIR)/ft_cd.c \
@@ -22,9 +22,11 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_unset.c \
 		$(BUILTIN_DIR)/init_builtin.c \
 		$(MAIN_DIR)/shell_loop_utils.c \
-		$(MAIN_DIR)/loop_util1.c \
 		$(MAIN_DIR)/shell_loop.c \
-		$(SIG_DIR)/signal.c 
+		$(MAIN_DIR)/loop_util1.c \
+		$(SIG_DIR)/signal.c \
+		$(EXEC_DIR)/execute_path.c \
+		$(EXEC_DIR)/execute_utils.c
 
 OBJ = $(SRC:.c=.o)
 

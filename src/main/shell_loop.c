@@ -36,15 +36,22 @@ char **cell_split_line(char *line)
 }
 
 /* launch external programs */
-void launch_execution(char **args)
+void launch_execution(char **args, t_env *env)
 {
     pid_t pid;
     int status = 0;
+    char *full_path;
 
     pid = Fork();
     if (pid == CHILD_PROCESS)
     {
-        Execvp(args[0], args); //TODO replace execvp
+        full_path = find_path(args[0]);
+        if (!full_path)
+        {
+            perror("Command not found");
+            exit(127);
+        }
+        Execve(full_path, args, env);
     }
     else
         Wait(&status);
@@ -82,7 +89,7 @@ void execute_shell(char **args, t_env *env)
         i++;
     }
     // if not, launch external programs
-    launch_execution(args);
+    launch_execution(args, env);
 }
 
 void shell_loop(t_env *env)
