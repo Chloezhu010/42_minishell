@@ -41,9 +41,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     t_cmd *current;
     int pipefd[2];// array to hold read / write end
     pid_t pid;
-    int status;
 
-    status = 0;
     /* execute pipeline */
     current = cmds;
     while (current && current->next)
@@ -64,7 +62,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
             close(pipefd[1]);
             dup2(pipefd[0], STDIN_FILENO);
             close(pipefd[0]);
-            waitpid(pid, &status, 0);
+            waitpid(pid, &g_exit_status, 0);// wait for child process
         }
         current = current->next;
     }
