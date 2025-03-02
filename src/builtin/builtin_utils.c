@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:03:37 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:15:08 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incl/builtin.h"
 
 /* create a new entry of a key-value pair in env array
@@ -32,8 +44,8 @@ char	*create_env_entry(char *key, char *value)
 */
 char	**env_realloc(char **old_env, int new_size)
 {
-	char **new_env;
-	int i;
+	char	**new_env;
+	int		i;
 
 	new_env = (char **)malloc(new_size * sizeof(char *));
 	if (!new_env)
@@ -49,7 +61,7 @@ char	**env_realloc(char **old_env, int new_size)
 	}
 	new_env[i] = NULL;
 	if (old_env)
-		free(old_env); // free only the old array, not its contents
+		free(old_env);
 	return (new_env);
 }
 
@@ -83,11 +95,11 @@ void	update_env(char *key, char *value, t_env *env)
 
 	key_len = ft_strlen(key);
 	new_entry = create_env_entry(key, value);
-	// if found, update the old entry with new entry
 	i = 0;
 	while (env->env_var[i])
 	{
-		if (ft_strncmp(env->env_var[i], key, key_len) == 0 && env->env_var[i][key_len] == '=')
+		if (ft_strncmp(env->env_var[i], key, key_len) == 0
+				&& env->env_var[i][key_len] == '=')
 		{
 			free(env->env_var[i]);
 			env->env_var[i] = new_entry;
@@ -95,6 +107,5 @@ void	update_env(char *key, char *value, t_env *env)
 		}
 		i++;
 	}
-	// if not found, add the new entry at the end
 	add_env(key, value, env);
 }

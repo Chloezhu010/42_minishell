@@ -6,7 +6,7 @@
 /*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:41:16 by czhu              #+#    #+#             */
-/*   Updated: 2025/02/18 17:41:23 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/02 13:15:57 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,11 @@
 */
 void	ft_cd(char **args, t_env *env)
 {
-	char *dir;
-	char cwd[1024];
+	char	*dir;
+	char	cwd[1024];
 
-    // check env init
 	if (!env)
-	{
-        printf("env not init\n");
-        return ;
-    }
-    // input control
+		return ;
 	if (!args[1])
 	{
 		dir = getenv("HOME");
@@ -45,13 +40,10 @@ void	ft_cd(char **args, t_env *env)
 	}
 	else
 		dir = args[1];
-    // store current dir for updating OLDPWD
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		perror("getcwd");
-    // change dir
 	if (chdir(dir) != 0)
 		perror("cd");
-    // update the OLDPWD, PWD env var
 	update_env("OLDPWD", cwd, env);
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 		update_env("PWD", cwd, env);

@@ -13,8 +13,8 @@ char	*get_path(void);
 char	*find_path(char *cmd);
 
 /* execute_utils */
-pid_t	Fork(void);
-pid_t	Wait(int *status);
-void	Execve(char *path, char **av, t_env *env);
+pid_t	ft_fork(void);
+pid_t	ft_wait(int *status);
+void	ft_execve(char *path, char **av, t_env *env);
 
 #endif

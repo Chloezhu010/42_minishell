@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:04:12 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:10:24 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incl/builtin.h"
 
 /* check if the name is valid
@@ -15,8 +27,8 @@ int	check_valid_name(char *key)
 	if (!key || !*key)
 		return (0);
 	if (!((key[0] >= 'a' && key[0] <= 'z')
-		|| (key[0] >= 'A' && key[0] <= 'Z')
-		|| (key[0] == '_')))
+			|| (key[0] >= 'A' && key[0] <= 'Z')
+			|| (key[0] == '_')))
 		return (0);
 	i = 1;
 	while (key[i])
@@ -49,12 +61,10 @@ void	split_key_value(char *arg, char **key, char **value)
 	}
 	else
 	{
-		// extract key
 		*key = malloc(equal - arg + 1);
 		if (!*key)
 			return ;
 		ft_strlcpy(*key, arg, equal - arg + 1);
-        	// extract value
 		*value = ft_strdup(equal + 1);
 		if (!*value)
 		{
@@ -94,23 +104,17 @@ void	ft_export(char **args, t_env *env)
 	char	*value;
 
 	if (!env)
-	{
-		printf("env not initialized\n");
 		return ;
-	}
-	// input control
 	if (args[1] == NULL)
 		print_env(env);
-	// loop through the args
 	i = 1;
 	while (args[i])
 	{
 		split_key_value(args[i], &key, &value);
-		// printf("debug: key: %s, value: %s\n", key, value); // check split_key_value
 		if (check_valid_name(key) == 0)
 		{
 			printf("export: not a valid identifier\n");
-			continue;
+			continue ;
 		}
 		if (value == NULL)
 			update_env(key, "''", env);

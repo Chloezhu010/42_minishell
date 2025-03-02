@@ -1,9 +1,21 @@
-# include "../incl/execution.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_path.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:18:19 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:18:53 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../incl/execution.h"
 
 /* helper function to get PATH */
 char	*get_path(void)
 {
-	char *path;
+	char	*path;
 
 	path = getenv("PATH");
 	if (!path)
@@ -25,11 +37,11 @@ char	*get_path(void)
 */
 char	*find_path(char *cmd)
 {
-	char *path;
-	char **dir;
-	char *tmp;
-	char *full_path;
-	int i;
+	char	*path;
+	char	**dir;
+	char	*tmp;
+	char	*full_path;
+	int		i;
 
 	path = get_path();
 	dir = ft_split(path, ':');

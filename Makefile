@@ -13,6 +13,7 @@ BUILTIN_DIR = $(SRC_DIR)/builtin
 MAIN_DIR = $(SRC_DIR)/main
 SIG_DIR = $(SRC_DIR)/signal
 SRC = $(BUILTIN_DIR)/builtin_utils.c \
+		$(BUILTIN_DIR)/init_builtin.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
 		$(BUILTIN_DIR)/ft_cd.c \
 		$(BUILTIN_DIR)/ft_echo.c \
@@ -26,18 +27,18 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(MAIN_DIR)/token_utils_2.c \
 		$(MAIN_DIR)/tokenize_utils.c \
 		$(MAIN_DIR)/shell_loop.c \
-		$(SIG_DIR)/signal.c 
+		$(SIG_DIR)/signal.c \
+		$(EXEC_DIR)/execute_path.c \
+		$(EXEC_DIR)/execute_utils.c
 
 OBJ = $(SRC:.c=.o)
 
 # readline
-# READLINE = -lreadline
 READLINE_INC = -I/opt/homebrew/opt/readline/include
 READLINE_LIB = -L/opt/homebrew/opt/readline/lib -lreadline -lhistory
 
 
 # include directory
-# INC = -I./incl -I$(SRC_DIR)/libft
 INC = -I./incl -I$(SRC_DIR)/libft $(READLINE_INC)
 
 # libft directory

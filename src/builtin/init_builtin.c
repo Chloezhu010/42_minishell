@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init_builtin.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:10:36 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:13:17 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../incl/builtin.h"
 
 /* init the built_in toggle
@@ -5,17 +17,17 @@
 */
 t_builtin	*init_builtin(void)
 {
-	static t_builtin	builtin_in[] =
-	{
-		{"pwd", ft_pwd},
-		{"cd", ft_cd},
-		{"echo", ft_echo},
-		{"env", ft_env},
-		{"exit", ft_exit},
-		{"export", ft_export},
-		{"unset", ft_unset},
-		{NULL, NULL}
-	};
+	static t_builtin	builtin_in[]
+	= {
+				{"pwd", ft_pwd},
+				{"cd", ft_cd},
+				{"echo", ft_echo},
+				{"env", ft_env},
+				{"exit", ft_exit},
+				{"export", ft_export},
+				{"unset", ft_unset},
+				{NULL, NULL}
+				};
 	return (builtin_in);
 }
 
@@ -83,9 +95,9 @@ void	free_env(t_env *env)
 }
 
 /* count the nbr of env_var */
-int count_env(t_env *env)
+int	count_env(t_env *env)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!env || !env->env_var)

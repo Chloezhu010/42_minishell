@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:16:34 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:17:57 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../incl/sig.h"
 
 /* global variable for exit status */
 extern int	g_exit_status;
 
-/* disable the print ouf of Ctrl C or Ctrl \ 
+/* disable the print ouf of Ctrl C or Ctrl backslash 
     - using termios.h
     - get the current terminal attributes
     - disable ECHOCTL flag
@@ -11,17 +23,17 @@ extern int	g_exit_status;
 */
 void	disable_echo(void)
 {
-	struct	termios term;
+	struct termios	term;
 
 	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL; 
+	term.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
 /* re-enable echo afterwards */
 void	enable_echo(void)
 {
-	struct	termios term;
+	struct termios	term;
 
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag |= ECHOCTL;
@@ -41,7 +53,7 @@ void	sigint_handler(int sig)
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
-	rl_redisplay(); 
+	rl_redisplay();
 	g_exit_status = 130;
 }
 
@@ -62,7 +74,7 @@ void	sigquit_handler(int sig)
 */
 void	setup_signal(void)
 {
-	struct	sigaction sa;
+	struct sigaction	sa;
 
 	disable_echo();
 	sigemptyset(&sa.sa_mask);

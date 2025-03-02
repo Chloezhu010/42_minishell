@@ -1,10 +1,22 @@
-# include "../incl/execution.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_utils.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/02 13:19:05 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/02 13:19:39 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../incl/execution.h"
 
 /* fork function wrapper */
-pid_t	Fork(void)
+pid_t	ft_fork(void)
 {
 	pid_t	pid;
-	
+
 	pid = fork();
 	if (pid < 0)
 	{
@@ -20,7 +32,7 @@ pid_t	Fork(void)
     - use execve to execute the cmd
         - if execve fails (returns -1), print error and exit
 */
-void	Execve(char *path, char **av, t_env *env)
+void	ft_execve(char *path, char **av, t_env *env)
 {
 	if (!path || !av)
 	{
@@ -43,7 +55,7 @@ void	Execve(char *path, char **av, t_env *env)
     - check status
     - if wait fails, print error and return result
 */
-pid_t	Wait(int *status)
+pid_t	ft_wait(int *status)
 {
 	pid_t	result;
 

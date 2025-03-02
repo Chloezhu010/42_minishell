@@ -6,7 +6,7 @@
 /*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:16:25 by czhu              #+#    #+#             */
-/*   Updated: 2025/02/18 16:30:37 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/02 13:07:41 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,11 @@
 */
 void	ft_unsetenv(char *name, t_env *env)
 {
-	// int	len;
 	int	i;
 	int	j;
-	
+
 	if (!env || !env->env_var)
 		return ;
-	// len = count_env(env);
 	i = 0;
 	while (env->env_var[i])
 	{
@@ -91,11 +89,6 @@ void	ft_unset(char **av, t_env *env)
 	if (!av[1])
 	{
 		printf("unset: not enough arguments\n");
-		return ;
-	}
-	if (!env)
-	{
-		printf("env not init\n");
 		return ;
 	}
 	i = 1;
