@@ -2,6 +2,17 @@
 
 /* global variables */
 int g_exit_status = 0;
+t_builtin g_builtin[] = 
+{
+    {"pwd", ft_pwd},
+    {"cd", ft_cd},
+    {"echo", ft_echo},
+    {"env", ft_env},
+    {"exit", ft_exit},
+    {"export", ft_export},
+    {"unset", ft_unset},
+    {NULL, NULL}
+};
 
 /* read the input from user
     - print the cwd before $>
@@ -23,35 +34,43 @@ char *read_line(void)
 /* tokenize the input line
     - parse the args
 */
-char **cell_split_line(char *line)
+char    **cell_split_line(char *line)
 {
-    char **tokens;
+    char            **tokens;
+    unsigned int    position;
+    size_t          bufsize;
 
-    if (!line)
-        return (NULL);
-    tokens = ft_split(line, ' ');
+    bufsize = BUFSIZ;
+    position = 0;
+    tokens = malloc(bufsize * sizeof(*tokens));
     if (!tokens)
         return (NULL);
+
+    for (char *token = strtok(line, DEL); token; token = strtok(NULL, DEL))
+    {
+        tokens[position++] = token;
+        if (position >= bufsize)
+        {
+            bufsize *= 2;
+            tokens = realloc(tokens, bufsize * sizeof(*tokens));
+            if (!tokens)
+                return (NULL);
+        }
+    }
+    tokens[position] = NULL;
     return (tokens);
 }
 
 /* launch external programs */
-void launch_execution(char **args, t_env *env)
+void launch_execution(char **args)
 {
     pid_t pid;
     int status = 0;
-    char *full_path;
 
     pid = Fork();
     if (pid == CHILD_PROCESS)
     {
-        full_path = find_path(args[0]);
-        if (!full_path)
-        {
-            perror("Command not found");
-            exit(127);
-        }
-        Execve(full_path, args, env);
+        Execvp(args[0], args);
     }
     else
         Wait(&status);
@@ -65,7 +84,6 @@ void launch_execution(char **args, t_env *env)
 void execute_shell(char **args, t_env *env)
 {
     int i;
-    t_builtin *builtin_in;
 
     // input control
     if (!args[0])
@@ -77,19 +95,18 @@ void execute_shell(char **args, t_env *env)
         return ;
     }
     // if builtin functions
-    builtin_in = init_builtin();
     i = 0;
-    while (builtin_in[i].builtin_name)
+    while (g_builtin[i].builtin_name)
     {
-        if (ft_strcmp(args[0], builtin_in[i].builtin_name) == 0)
+        if (strcmp(args[0], g_builtin[i].builtin_name) == 0) // TODO replace strcmp
         {
-            builtin_in[i].func(args, env);
+            g_builtin[i].func(args, env);
             return ;
         }
         i++;
     }
     // if not, launch external programs
-    launch_execution(args, env);
+    launch_execution(args);
 }
 
 void shell_loop(t_env *env)
@@ -99,10 +116,11 @@ void shell_loop(t_env *env)
 	t_token *tokens;
 	t_cmd	*cmds;
 
-    // 1. setup signal handler
     setup_signal();
     while (1)
     {
+        // 1. reset signal handling for each loop
+        
         // 2. read line from command
         line = read_line();
         if (line == NULL)
@@ -112,6 +130,10 @@ void shell_loop(t_env *env)
         }
         // add non-empty line to history
         if (*line)
+            add_history(line);
+ 
+        // // check the read_line function
+        // printf("you entered: %s\n", line);
         // 3. parse the args
 		tokens = tokenize(line);
 		if (tokens != NULL)
@@ -127,16 +149,25 @@ void shell_loop(t_env *env)
 		if (cmds != NULL)
 		{
         	args = cell_split_line(line);
+        // // check if the args are tokenized
+        // int i = 0;
+        // while (args[i])
+        // {
+        //     printf("token[%d]: %s\n", i, args[i]);
+        //     i++;
+        // }
         // 4. execute the command
         	execute_shell(args, env);
 			if (!args)
-                ft_freeup(args);
+                free(args);
             if (!cmds)
 			    free_cmds(cmds);
 		}
-        // 5. cleanup before exit
-        if (!line)
-            free(line);
+        
+        // 6. cleanup before exit
+            if (!line)
+        	    free(line);
+            
     }
 }
 
@@ -151,5 +182,5 @@ int main(int ac, char **av, char **envp)
     free_env(&env);
     enable_echo();
     clear_history(); //linux change to: rl_clear_history()
-    return (g_exit_status);
+    return (0);
 }
