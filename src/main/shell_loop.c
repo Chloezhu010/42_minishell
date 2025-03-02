@@ -1,4 +1,5 @@
 #include "../../incl/minishell.h"
+#include "../../incl/loop.h"
 
 /* global variables */
 int g_exit_status = 0;
@@ -98,26 +99,25 @@ void execute_shell(char **args, t_env *env)
 void shell_loop(t_env *env)
 {
     char *line;
-    char **args;
 	t_token *tokens;
 	t_cmd	*cmds;
 
     setup_signal();
     while (1)
     {
-        // 2. read line from command
+        /* read line from command */
         line = read_line();
         if (line == NULL)
         {
             printf("exit\n");
             break;            
         }
-        // add non-empty line to history
+        /* add non-empty line to history */
         if (*line)
             add_history(line);
-        // 3. parse the args
+        /* 3. parse the args */
 		tokens = tokenize(line);
-		if (tokens != NULL)
+		if (tokens)
 		{
 			expand_tokens(tokens);
 			check_format_command(tokens);
@@ -125,25 +125,28 @@ void shell_loop(t_env *env)
 			cmds = parse_tokens(tokens);
 			// if (cmds)
 			// 	print_cmds(cmds);
+            /* execute the cmds */
+            if (cmds)
+            {
+                /*
+                    - if there is muliple cmds, use execute_pipeline
+                    - if only 1 cmd, use execute_shell
+                    - free_cmds at the end
+                */
+                if (cmds && cmds->next)
+                    execute_pipeline(cmds, env);
+                else
+                    execute_shell(cmds->args, env);
+                free_cmds(cmds);
+            }
 			free_tokens(tokens);
 		}
-		if (cmds != NULL)
-		{
-        	args = cell_split_line(line);
-        // 4. execute the command
-        	execute_shell(args, env);
-			if (!args)
-                ft_freeup(args);
-            if (!cmds)
-			    free_cmds(cmds);
-		}
-        // 5. cleanup before exit
-            if (!line)
-        	    free(line);
-            
+        /* cleanup before exit */
+        free(line);   
     }
 }
 
+/* main function */
 int main(int ac, char **av, char **envp)
 {    
     t_env env;
@@ -154,6 +157,6 @@ int main(int ac, char **av, char **envp)
     shell_loop(&env);
     free_env(&env);
     enable_echo();
-    rl_clear_history(); //linux change to: rl_clear_history()
+    rl_clear_history();
     return (g_exit_status);
 }

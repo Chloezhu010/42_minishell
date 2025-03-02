@@ -12,6 +12,7 @@ EXEC_DIR = $(SRC_DIR)/execution
 BUILTIN_DIR = $(SRC_DIR)/builtin
 MAIN_DIR = $(SRC_DIR)/main
 SIG_DIR = $(SRC_DIR)/signal
+PIPE_DIR = $(SRC_DIR)/pipe
 SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/init_builtin.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
@@ -29,7 +30,8 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(MAIN_DIR)/shell_loop.c \
 		$(SIG_DIR)/signal.c \
 		$(EXEC_DIR)/execute_path.c \
-		$(EXEC_DIR)/execute_utils.c
+		$(EXEC_DIR)/execute_utils.c \
+		$(PIPE_DIR)/pipe.c
 
 OBJ = $(SRC:.c=.o)
 

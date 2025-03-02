@@ -1,6 +1,6 @@
 #include "../incl/minishell.h"
 
-void    *Malloc(size_t size)
+void    *ft_malloc(size_t size)
 {
     void    *ptr;
 

@@ -23,8 +23,22 @@
 
 # define CHILD_PROCESS 0
 
+typedef struct s_cmd t_cmd;
+typedef struct s_env t_env;
+
+/* pipe */
+void execute_pipeline(t_cmd *cmds, t_env *env);
+void ft_pipe(int pipefd[2]);
+
+/* shell loop */
+char *read_line(void);
+char    **cell_split_line(char *line);
+void launch_execution(char **args, t_env *env);
+void execute_shell(char **args, t_env *env);
+void shell_loop(t_env *env);
+
 /* shell loop utils */
-void	*Malloc(size_t size);
+void	*ft_malloc(size_t size);
 int		ft_strcmp(const char *s1, const char *s2);
 
 #endif
