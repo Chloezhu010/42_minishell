@@ -39,33 +39,54 @@ void ft_pipe(int pipefd[2])
 void execute_pipeline(t_cmd *cmds, t_env *env)
 {
     t_cmd *current;
-    int pipefd[2];// array to hold read / write end
+    int pipefd[2];
     pid_t pid;
+    int stdin_backup = dup(STDIN_FILENO);
+    pid_t pids[64];
+    int pid_count = 0;
 
-    /* execute pipeline */
     current = cmds;
-    while (current && current->next)
+    while (current)
     {
-        ft_pipe(pipefd);
+        if (current->next)
+            ft_pipe(pipefd);
+        
         pid = ft_fork();
-        /* if in the child process */
+        pids[pid_count++] = pid;
+
         if (pid == CHILD_PROCESS)
         {
-            close(pipefd[0]);// close reading end
-            dup2(pipefd[1], STDOUT_FILENO);// setup output to current pipe
-            close(pipefd[1]);
+            if (current != cmds)
+            {
+                dup2(pipefd[0], STDIN_FILENO);
+                close(pipefd[0]);
+            }
+            if (current->next)
+            {
+                dup2(pipefd[1], STDOUT_FILENO);
+                close(pipefd[1]);
+            }
             execute_shell(current->args, env);
             exit(g_exit_status);
         }
         else
         {
-            close(pipefd[1]);
-            dup2(pipefd[0], STDIN_FILENO);
-            close(pipefd[0]);
-            waitpid(pid, &g_exit_status, 0);// wait for child process
+            if (current != cmds)
+                close(pipefd[0]);
+            if (current->next)
+                close(pipefd[1]);
         }
         current = current->next;
     }
-    /* execute the last cmd without piping */
-    execute_shell(current->args, env);
+
+    dup2(stdin_backup, STDIN_FILENO);
+    close(stdin_backup);
+    for (int i = 0; i < pid_count; i++)
+    {
+        int status;
+        while (waitpid(pids[i], &status, 0) == -1 && errno == EINTR)
+            ;  // 重试直到成功
+        if (WIFEXITED(status))
+            g_exit_status = WEXITSTATUS(status);
+    }
 }
