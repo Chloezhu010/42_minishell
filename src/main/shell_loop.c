@@ -1,5 +1,4 @@
 #include "../../incl/minishell.h"
-#include "../../incl/loop.h"
 
 /* global variables */
 int g_exit_status = 0;

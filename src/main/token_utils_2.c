@@ -12,22 +12,6 @@
 
 #include "../../incl/loop.h"
 
-void	expand_tokens(t_token *tokens)
-{
-	char	*expanded;
-
-	while (tokens)
-	{
-		if (tokens->value[0] == '$')
-		{
-			expanded = expand_variable(tokens->value);
-			free(tokens->value);
-			tokens->value = expanded;
-		}
-		tokens = tokens->next;
-	}
-}
-
 int	check_format_of_pipe(t_token *tokens)
 {
 	if (!tokens->next || tokens->next->type == TOKEN_PIPE)

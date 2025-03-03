@@ -57,24 +57,6 @@ t_token	*tokenize(char *input)
 	return (tokens);
 }
 
-
-
-char	*expand_variable(const char *str)
-{
-	// char		*status;
-	const char	*env;
-
-	if (str[0] != '$')
-		return (strdup(str));
-	// if (strcmp(str, "$?") == 0)
-	// {
-	// 	status = ft_itoa(g_exit)
-	// 	return (status);
-	// }
-	env = getenv(str + 1);
-	return env ? strdup(env) : strdup("");
-}
-
 void	free_cmds(t_cmd *cmds)
 {
 	t_cmd	*tmp;
@@ -93,8 +75,6 @@ void	free_cmds(t_cmd *cmds)
 		free(tmp);
 	}
 }
-
-
 
 t_cmd	*create_new_cmd(void)
 {
@@ -169,7 +149,34 @@ t_cmd *parse_tokens(t_token *tokens)
     return cmd_head;
 }
 
-
+void	check_format_command(t_token *tokens)
+{
+	while (tokens)
+	{
+		if (tokens->type == TOKEN_WORD)
+		{
+			if ((strcmp(tokens->value, "cd") == 0)
+				|| (strcmp(tokens->value, "ls") == 0)
+				|| (strcmp(tokens->value, "cp") == 0)
+				|| (strcmp(tokens->value, "mv") == 0)
+				|| (strcmp(tokens->value, "rm") == 0)
+				|| (strcmp(tokens->value, "mkdir") == 0)
+				|| (strcmp(tokens->value, "rmdir") == 0)
+				|| (strcmp(tokens->value, "man") == 0)
+				|| (strcmp(tokens->value, "more") == 0)
+				|| (strcmp(tokens->value, "cat") == 0)
+				|| (strcmp(tokens->value, "echo") == 0)
+				|| (strcmp(tokens->value, "grep") == 0)
+				|| (strcmp(tokens->value, "pwd") == 0)
+				|| (strcmp(tokens->value, "export") == 0)
+				|| (strcmp(tokens->value, "unset") == 0)
+				|| (strcmp(tokens->value, "env") == 0)
+				|| (strcmp(tokens->value, "exit") == 0))
+				tokens->type = TOKEN_COMMAND;
+		}
+		tokens = tokens->next;
+	}
+}
 
 // void	print_cmds(t_cmd *cmd)
 // {
@@ -203,35 +210,6 @@ t_cmd *parse_tokens(t_token *tokens)
 // 	}
 // }
 
-void	check_format_command(t_token *tokens)
-{
-	while (tokens)
-	{
-		if (tokens->type == TOKEN_WORD)
-		{
-			if ((strcmp(tokens->value, "cd") == 0)
-				|| (strcmp(tokens->value, "ls") == 0)
-				|| (strcmp(tokens->value, "cp") == 0)
-				|| (strcmp(tokens->value, "mv") == 0)
-				|| (strcmp(tokens->value, "rm") == 0)
-				|| (strcmp(tokens->value, "mkdir") == 0)
-				|| (strcmp(tokens->value, "rmdir") == 0)
-				|| (strcmp(tokens->value, "man") == 0)
-				|| (strcmp(tokens->value, "more") == 0)
-				|| (strcmp(tokens->value, "cat") == 0)
-				|| (strcmp(tokens->value, "echo") == 0)
-				|| (strcmp(tokens->value, "grep") == 0)
-				|| (strcmp(tokens->value, "pwd") == 0)
-				|| (strcmp(tokens->value, "export") == 0)
-				|| (strcmp(tokens->value, "unset") == 0)
-				|| (strcmp(tokens->value, "env") == 0)
-				|| (strcmp(tokens->value, "exit") == 0))
-				tokens->type = TOKEN_COMMAND;
-		}
-		tokens = tokens->next;
-	}
-}
-
 // int	main(void)
 // {
 // 	char	*input;
@@ -256,4 +234,12 @@ void	check_format_command(t_token *tokens)
 // 			free_cmds(cmds);
 // 	}
 // 	return (0);
+// }
+
+// // === test expand_token ===
+// int main(int ac, char **av)
+// {
+// 	(void)ac;
+
+// 	printf("%s\n", expand_variable(av[1]));
 // }

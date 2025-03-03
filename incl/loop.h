@@ -31,8 +31,11 @@ typedef struct s_cmd {
     struct s_cmd	*next;
 }				t_cmd;
 
-t_token	*tokenize(char *input);
+/* expander */
 char	*expand_variable(const char *str);
+void	expand_tokens(t_token *tokens);
+
+t_token	*tokenize(char *input);
 
 void	free_cmds(t_cmd *cmds);
 t_cmd	*create_new_cmd(void);
@@ -53,7 +56,6 @@ int		get_token_type(char *s);
 void	free_tokens(t_token *tokens);
 
 //token_utils_2
-void	expand_tokens(t_token *tokens);
 int		check_format_of_pipe(t_token *tokens);
 int		check_format_of_redirect(t_token *tokens);
 int		validate_tokens(t_token *tokens);
