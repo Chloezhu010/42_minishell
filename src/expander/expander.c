@@ -47,7 +47,7 @@ void	expand_tokens(t_token *tokens)
 	while (current)
 	{
         /* skip single quoted string */
-        if (current->type == TOKEN_QUOTE && current->value)// TODO, need to change to quote_single
+        if (current->type == TOKEN_SINGLE_QUOTE && current->value)// TODO, need to change to quote_single
         {
             current = current->next;
             continue ;

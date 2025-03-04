@@ -35,14 +35,23 @@ t_token	*tokenize(char *input)
 			add_token(&tokens, create_token(op, get_token_type(op)));
 			i++;
 		}
-		else if (input[i] == '"' || input[i] == '\'')
+		else if (input[i] == '\'')
 		{
 			char quote = input[i++];
 			char *quoted = extract_quoted(input, &i, quote);
 			if (!quoted)
 				return (NULL);
-			add_token(&tokens, create_token(quoted, TOKEN_QUOTE));
+			add_token(&tokens, create_token(quoted, TOKEN_SINGLE_QUOTE));
 			free(quoted);
+		}
+		else if (input[i] == '"')
+		{
+			int start = i + 1;
+			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+				i++;
+			char *word = strndup(&input[start], i - start - 1);
+			add_token(&tokens, create_token(word, TOKEN_WORD));
+			free(word);
 		}
 		else
 		{
@@ -105,7 +114,7 @@ t_cmd *parse_tokens(t_token *tokens)
         }
 
         if (tokens->type == TOKEN_WORD
-			|| tokens->type == TOKEN_QUOTE
+			|| tokens->type == TOKEN_SINGLE_QUOTE
 			|| tokens->type == TOKEN_COMMAND)
         {
             i = 0;
@@ -136,7 +145,7 @@ t_cmd *parse_tokens(t_token *tokens)
         }
         else if (tokens->type == TOKEN_PIPE) // 如果遇到管道符号，创建新的命令
         {
-            if (tokens->next && (tokens->next->type == TOKEN_COMMAND || tokens->next->type == TOKEN_QUOTE))
+            if (tokens->next && (tokens->next->type == TOKEN_COMMAND || tokens->next->type == TOKEN_SINGLE_QUOTE))
             {
                 current_cmd->next = create_new_cmd(); // 创建新的命令块
                 current_cmd = current_cmd->next; // 设置当前命令为新的命令块
