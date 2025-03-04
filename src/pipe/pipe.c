@@ -44,48 +44,77 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     int stdin_backup = dup(STDIN_FILENO);
     pid_t pids[64];
     int pid_count = 0;
+    int prev_pipe_read = -1;
 
     current = cmds;
     while (current)
     {
+        // 只有在不是最后一个命令时才创建管道
         if (current->next)
-            ft_pipe(pipefd);
-        
-        pid = ft_fork();
-        pids[pid_count++] = pid;
-
-        if (pid == CHILD_PROCESS)
         {
-            if (current != cmds)
+            if (pipe(pipefd) == -1)
             {
-                dup2(pipefd[0], STDIN_FILENO);
-                close(pipefd[0]);
+                perror("pipe");
+                break;
             }
+        }
+
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            break;
+        }
+
+        if (pid == 0)  // Child process
+        {
+            // 处理输入重定向
+            if (prev_pipe_read != -1)
+            {
+                dup2(prev_pipe_read, STDIN_FILENO);
+                close(prev_pipe_read);
+            }
+
+            // 处理输出重定向
             if (current->next)
             {
                 dup2(pipefd[1], STDOUT_FILENO);
+                close(pipefd[0]);
                 close(pipefd[1]);
             }
+
             execute_shell(current->args, env);
             exit(g_exit_status);
         }
-        else
+        else  // Parent process
         {
-            if (current != cmds)
-                close(pipefd[0]);
+            pids[pid_count++] = pid;
+
+            // 关闭上一个管道的读端
+            if (prev_pipe_read != -1)
+                close(prev_pipe_read);
+
+            // 如果不是最后一个命令，准备下一个管道的读端
             if (current->next)
+            {
                 close(pipefd[1]);
+                prev_pipe_read = pipefd[0];
+            }
         }
+
         current = current->next;
     }
 
+    // 恢复标准输入
     dup2(stdin_backup, STDIN_FILENO);
     close(stdin_backup);
+
+    // 等待所有子进程
     for (int i = 0; i < pid_count; i++)
     {
         int status;
         while (waitpid(pids[i], &status, 0) == -1 && errno == EINTR)
-            ;  // 重试直到成功
+            ; // 重试直到成功
         if (WIFEXITED(status))
             g_exit_status = WEXITSTATUS(status);
     }
