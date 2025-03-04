@@ -5,7 +5,7 @@
 
 # define TOKEN_WORD 0
 # define TOKEN_PIPE 1
-# define TOKEN_OR 10
+# define TOKEN_OR 11 //update to 11
 # define TOKEN_REDIRECT_IN 2
 # define TOKEN_REDIRECT_OUT 3
 # define TOKEN_REDIRECT_APPEND 4
