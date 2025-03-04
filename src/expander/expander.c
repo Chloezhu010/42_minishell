@@ -1,9 +1,11 @@
-#include "../../incl/loop.h"
+#include "../../incl/minishell.h"
 
 /* global variables */
 extern int g_exit_status;
 
-/*	replace the $param with env_var
+/*	expand a single env_var
+	- assumption:
+		- the str should start with $, eg. $USER
 	- if str is null, empty or space
 		- return ""
 	- if no $, copy the str as it is
@@ -29,6 +31,64 @@ char	*expand_variable(const char *str)
 	return (ft_strdup(env));
 }
 
+/* extract the var name from a double quoted str
+	- example
+		- extract $USER from "hi $USER this is 42"
+*/
+char *extract_var_name(char *str)
+{
+	char *var_start;
+	char *var_end;
+
+	/* find the $ sign */
+	var_start = ft_strchr(str, '$');
+	if (!var_start)
+		return (NULL);
+	/* find the var_end */
+	var_end = var_start + 1;
+	while (*var_end && (ft_isalnum(*var_end) || *var_end == '_'))
+		var_end++;
+	return (strndup(var_start, var_end - var_start)); //TODO replace
+}
+
+/* expand var in a str */
+char *expand_var_instr(char *input)
+{
+	char *res;
+	char *ptr = input;
+	char *var_name;
+	char *expanded;
+	char *temp;
+
+	res = ft_strdup("");
+	while (*ptr)
+	{
+		if (*ptr == '$')
+		{
+			var_name = extract_var_name(ptr);
+			expanded = expand_variable(var_name);
+			if (expanded)
+			{
+				temp = ft_strjoin(res, expanded);
+				free(res);
+				res = temp;
+				free(expanded);
+			}
+			ptr += ft_strlen(var_name) + 1;
+			free(var_name);
+		}
+		else
+		{
+			char temp_char[2] = {*ptr, '\0'};
+			temp = ft_strjoin(res, temp_char);
+			free(res);
+			res = temp;
+			ptr++;
+		}
+	}
+	return (res);
+}
+
 /*  iterate through all args if they need expand
 	- handle single quote case
     - check if token has $
@@ -40,29 +100,37 @@ char	*expand_variable(const char *str)
 */
 void	expand_tokens(t_token *tokens)
 {
-	char	*expanded;
+	char	*expanded_value;
     t_token *current;
 
     current = tokens;
 	while (current)
 	{
         /* skip single quoted string */
-        if (current->type == TOKEN_SINGLE_QUOTE && current->value)// TODO, need to change to quote_single
+        if (current->type == TOKEN_SINGLE_QUOTE && current->value)
         {
             current = current->next;
             continue ;
         }
-        /* add null check */
-		else if (current->value && current->value[0] == '$')
+        /* handle double quoted string or normal words */
+		else if (current->value && (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD))
 		{
-			expanded = expand_variable(current->value);
-            /* add check for expanded */
-            if (expanded)
+			expanded_value = expand_var_instr(current->value);
+			// printf("debug: expanded name: %s\n", expanded_value); //debug
+			/* add check for expanded */
+            if (expanded_value)
             {
                 free(current->value);
-                current->value = expanded;
+                current->value = expanded_value;
             }
 		}
 		current = current->next;
 	}
 }
+
+// //===test extract_var_name ===
+// int main()
+// {
+// 	char *str = "hi $USER_NAME bkdsk_dksekd";
+// 	printf("extracted name: %s\n", extract_var_name(str));
+// }

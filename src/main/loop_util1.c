@@ -16,6 +16,7 @@ t_token	*tokenize(char *input)
 {
 	t_token *tokens = NULL;
 	int i = 0;
+	int type = 0;
 
 	while (input[i])
 	{
@@ -35,15 +36,30 @@ t_token	*tokenize(char *input)
 			add_token(&tokens, create_token(op, get_token_type(op)));
 			i++;
 		}
-		else if (input[i] == '\'')
+		/* update the quote handler, extract_quoted also for double quoted str */
+		else if (input[i] == '\'' || input[i] == '"')
 		{
 			char quote = input[i++];
 			char *quoted = extract_quoted(input, &i, quote);
 			if (!quoted)
 				return (NULL);
-			add_token(&tokens, create_token(quoted, TOKEN_SINGLE_QUOTE));
+			if (quote == '\'')
+				type = TOKEN_SINGLE_QUOTE;
+			else
+				type = TOKEN_DOUBLE_QUOTE;
+			add_token(&tokens, create_token(quoted, type));
 			free(quoted);
 		}
+		// /* version origin */
+		// else if (input[i] == '\'')
+		// {
+		// 	char quote = input[i++];
+		// 	char *quoted = extract_quoted(input, &i, quote);
+		// 	if (!quoted)
+		// 		return (NULL);
+		// 	add_token(&tokens, create_token(quoted, TOKEN_SINGLE_QUOTE));
+		// 	free(quoted);
+		// }
 		else if (input[i] == '"')
 		{
 			int start = i + 1;
@@ -115,6 +131,7 @@ t_cmd *parse_tokens(t_token *tokens)
 
         if (tokens->type == TOKEN_WORD
 			|| tokens->type == TOKEN_SINGLE_QUOTE
+			|| tokens->type == TOKEN_DOUBLE_QUOTE // add double quote
 			|| tokens->type == TOKEN_COMMAND)
         {
             i = 0;
@@ -190,7 +207,6 @@ void	check_format_command(t_token *tokens)
 // void	print_cmds(t_cmd *cmd)
 // {
 // 	int	i;
-
 // 	i = 0;
 // 	while (cmd)
 // 	{
@@ -224,7 +240,6 @@ void	check_format_command(t_token *tokens)
 // 	char	*input;
 // 	t_token	*tokens;
 // 	t_cmd	*cmds;
-
 // 	while (1){
 // 		input = readline("$>");
 // 		tokens = tokenize(input);
@@ -244,11 +259,42 @@ void	check_format_command(t_token *tokens)
 // 	}
 // 	return (0);
 // }
-
 // // === test expand_token ===
 // int main(int ac, char **av)
 // {
 // 	(void)ac;
-
 // 	printf("%s\n", expand_variable(av[1]));
+// }
+
+// // === test tokenize() ===
+// void test_tokenize(char *input)
+// {
+// 	printf("test input: %s\n", input);
+// 	t_token *tokens = tokenize(input);
+// 	if (!tokens)
+// 	{
+// 		printf("no token generated\n");
+// 		return ;
+// 	}
+// 	t_token *current = tokens;
+// 	while (current)
+// 	{
+// 		printf("token: %s, type: %d\n", current->value, current->type);
+// 		current = current->next;
+// 	}
+// 	free_tokens(tokens);
+// }
+// // === test tokenize() main function ===
+// int main(void)
+// {
+// 	test_tokenize("echo \"hi $USER\"");
+//     test_tokenize("ls -l");
+//     test_tokenize("echo 'Hello World'");
+//     test_tokenize("ls > output.txt");
+//     test_tokenize("ls | grep .c");
+//     test_tokenize("cat << EOF");
+//     test_tokenize("");
+//     test_tokenize("   ");
+//     test_tokenize("echo 'Hello World' > output.txt | cat");
+//     return 0;
 // }
