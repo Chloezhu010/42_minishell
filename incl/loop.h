@@ -33,7 +33,7 @@ typedef struct s_cmd {
     char			*delimiter;// store the delimiter of heredoc
     int				fd_in;// store heredoc fd to use for input
     struct s_cmd	*next;
-}				t_cmd;s
+}				t_cmd;
 
 t_token	*tokenize(char *input);
 

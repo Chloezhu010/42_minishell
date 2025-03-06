@@ -81,8 +81,9 @@ void execute_shell(t_cmd *cmd, t_env *env)
     {
         /* save original std input for restoration later */
         stdin_backup = dup(STDIN_FILENO);
-        /* redirect stdin to use the heredoc file */
+        /* redirect standard input to the heredoc file */
         dup2(cmd->fd_in, STDIN_FILENO);
+        /* close fd_in to avoid resource leaks */
         close(cmd->fd_in);
     }
     /* handle builtin & external cmd execution */
@@ -93,7 +94,7 @@ void execute_shell(t_cmd *cmd, t_env *env)
         if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
         {
             builtin_in[i].func(cmd->args, env);
-            /* restore original stdin if changed */
+            /* restore original stdin after the execution of builtin */
             if (stdin_backup != -1)
             {
                 dup2(stdin_backup, STDIN_FILENO);
@@ -104,7 +105,7 @@ void execute_shell(t_cmd *cmd, t_env *env)
         i++;
     }
     launch_execution(cmd->args, env);
-    /* restore original stdin if changed */
+    /* restore original stdin after the execution of eternal program */
     if (stdin_backup != -1)
     {
         dup2(stdin_backup, STDIN_FILENO);
