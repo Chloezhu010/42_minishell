@@ -26,22 +26,18 @@ typedef struct s_token {
 
 typedef struct s_cmd {
     char			**args;
-    char			*infile;
-    char			*outfile;
-    int				append;
-    int heredoc;// 0 no, 1 yes
-    char *delimiter;// store the delimiter of heredoc
-    int fd_in;// store heredoc fd to use for input
+    char			*infile;// for < redirect
+    char			*outfile;// for > redirect
+    int				append;// for >> redirect
+    int				heredoc;// flag: 0 no, 1 yes
+    char			*delimiter;// store the delimiter of heredoc
+    int				fd_in;// store heredoc fd to use for input
     struct s_cmd	*next;
 }				t_cmd;
 
-/* expander */
-char	*expand_variable(const char *str);
-void	expand_tokens(t_token *tokens);
-
 t_token	*tokenize(char *input);
 
-void	free_cmds(t_cmd *cmds);
+void		free_cmds(t_cmd *cmds);
 t_cmd	*create_new_cmd(void);
 t_cmd	*parse_tokens(t_token *tokens);
 // void	print_cmds(t_cmd *cmd);
@@ -49,19 +45,19 @@ t_cmd	*parse_tokens(t_token *tokens);
 void	check_format_command(t_token *tokens);
 
 //tokenize_utils
-int		ft_isspace(char a);
-int		is_special_char(char c);
+int			ft_isspace(char a);
+int			is_special_char(char c);
 
 //token_utils_1
-void	add_token(t_token **head, t_token *new_token);
-char	*extract_quoted(char *input, int *i, char quote);
+void		add_token(t_token **head, t_token *new_token);
+char		*extract_quoted(char *input, int *i, char quote);
 t_token	*create_token(char *value, int type);
-int		get_token_type(char *s);
-void	free_tokens(t_token *tokens);
+int			get_token_type(char *s);
+void		free_tokens(t_token *tokens);
 
 //token_utils_2
-int		check_format_of_pipe(t_token *tokens);
-int		check_format_of_redirect(t_token *tokens);
-int		validate_tokens(t_token *tokens);
+int			check_format_of_pipe(t_token *tokens);
+int			check_format_of_redirect(t_token *tokens);
+int			validate_tokens(t_token *tokens);
 
 #endif

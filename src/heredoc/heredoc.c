@@ -2,10 +2,13 @@
 
 /*
     - create a temp file to store input line
+        - write only
+        - if not exits, create one
+        - if the file exists, content will be erased
     - read user input until the delimiter
-    - redirect input from temp file
-    - cleanup temp file
-    - return the fd
+        - input lines are read & written to the temp file
+        - close and reopen with read-only mode
+    - return the fd for redirection
 */
 int handle_heredoc(char *delimiter)
 {
@@ -19,11 +22,7 @@ int handle_heredoc(char *delimiter)
         perror("open");
         return (-1);
     }
-    /* read input until the delimiter
-        redirect input from temp file
-        cleanup temp file
-        close file
-    */
+    /* read input until the delimiter */
     while (1)
     {
         line = readline("heredoc> ");

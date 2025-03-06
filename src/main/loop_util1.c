@@ -96,6 +96,7 @@ void	free_cmds(t_cmd *cmds)
 		free(cmds->args);
 		free(cmds->infile);
 		free(cmds->outfile);
+		free(cmds->delimiter);
 		cmds = cmds->next;
 		free(tmp);
 	}
@@ -155,16 +156,14 @@ t_cmd *parse_tokens(t_token *tokens)
             {
                 if (tokens->type == TOKEN_REDIRECT_OUT)
                 {
-                    current_cmd->outfile = strdup(tokens->value);
+                    current_cmd->outfile = ft_strdup(tokens->value);
                     current_cmd->append = 0;
                 }
                 else if (tokens->type == TOKEN_REDIRECT_APPEND)
                 {
-                    current_cmd->outfile = strdup(tokens->value);
+                    current_cmd->outfile = ft_strdup(tokens->value);
                     current_cmd->append = 1;
                 }
-                else
-                    current_cmd->infile = strdup(tokens->value);
             }
         }
         else if (tokens->type == TOKEN_PIPE) // 如果遇到管道符号，创建新的命令
@@ -175,7 +174,7 @@ t_cmd *parse_tokens(t_token *tokens)
                 current_cmd = current_cmd->next; // 设置当前命令为新的命令块
             }
         }
-		/* add case for heredoc
+		/* add case for heredoc separately
 			if the token after ">>" exits, meaning there is a delimiter
 			- put heredoc as 1
 			- append token value as the delimiter
@@ -189,7 +188,6 @@ t_cmd *parse_tokens(t_token *tokens)
 				current_cmd->delimiter = ft_strdup(tokens->value);
 			}
 		}
-
         tokens = tokens->next;
     }
 
