@@ -60,15 +60,15 @@ t_token	*tokenize(char *input)
 		// 	add_token(&tokens, create_token(quoted, TOKEN_SINGLE_QUOTE));
 		// 	free(quoted);
 		// }
-		else if (input[i] == '"')
-		{
-			int start = i + 1;
-			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
-				i++;
-			char *word = strndup(&input[start], i - start - 1);
-			add_token(&tokens, create_token(word, TOKEN_WORD));
-			free(word);
-		}
+		// else if (input[i] == '"')
+		// {
+		// 	int start = i + 1;
+		// 	while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+		// 		i++;
+		// 	char *word = strndup(&input[start], i - start - 1);
+		// 	add_token(&tokens, create_token(word, TOKEN_WORD));
+		// 	free(word);
+		// }
 		else
 		{
 			int start = i;
