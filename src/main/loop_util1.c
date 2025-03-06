@@ -108,6 +108,13 @@ t_cmd	*create_new_cmd(void)
 	if (!cmd)
 		return NULL;
 	cmd->args = calloc(64, sizeof(char *));
+	cmd->infile = NULL;
+	cmd->outfile = NULL;
+	cmd->append = 0;
+	cmd->heredoc = 0;
+	cmd->delimiter = NULL;
+	cmd->fd_in = 0;
+	cmd->next = NULL;
 	return cmd;
 }
 
@@ -168,6 +175,20 @@ t_cmd *parse_tokens(t_token *tokens)
                 current_cmd = current_cmd->next; // 设置当前命令为新的命令块
             }
         }
+		/* add case for heredoc
+			if the token after ">>" exits, meaning there is a delimiter
+			- put heredoc as 1
+			- append token value as the delimiter
+		*/
+		else if (tokens->type == TOKEN_HEREDOC)
+		{
+			tokens = tokens->next;
+			if (tokens)
+			{
+				current_cmd->heredoc = 1;
+				current_cmd->delimiter = ft_strdup(tokens->value);
+			}
+		}
 
         tokens = tokens->next;
     }

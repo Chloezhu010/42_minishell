@@ -25,16 +25,30 @@
 
 typedef struct s_cmd t_cmd;
 typedef struct s_env t_env;
+typedef struct s_token t_token;
 
 /* pipe */
 void execute_pipeline(t_cmd *cmds, t_env *env);
 void ft_pipe(int pipefd[2]);
 
+/* expander */
+char	*expand_variable(const char *str);
+char *extract_var_name(char *str);
+char *expand_var_instr(char *input);
+void	expand_tokens(t_token *tokens);
+
+/* expander utils */
+char *handle_regular_char(char *res, char current_char);
+char *handle_var_expansion(char *res, char **ptr);
+
+/* heredoc */
+int handle_heredoc(char *delimiter);
+
 /* shell loop */
 char *read_line(void);
 char    **cell_split_line(char *line);
 void launch_execution(char **args, t_env *env);
-void execute_shell(char **args, t_env *env);
+void execute_shell(t_cmd *cmd, t_env *env);
 void shell_loop(t_env *env);
 
 /* shell loop utils */

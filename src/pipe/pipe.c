@@ -1,4 +1,4 @@
-#include "../incl/minishell.h"
+#include "../../incl/minishell.h"
 
 /* global variable for exit status */
 extern int	g_exit_status;
@@ -83,7 +83,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 close(pipefd[1]);
             }
 
-            execute_shell(current->args, env);
+            execute_shell(current, env);
             exit(g_exit_status);
         }
         else  // Parent process

@@ -58,33 +58,58 @@ void launch_execution(char **args, t_env *env)
 /* execute shell
     - input control
     - check env init
+    - handle input redirect for heredoc
     - if it's build in function, call it
     - if not, launch external programs
 */
-void execute_shell(char **args, t_env *env)
+void execute_shell(t_cmd *cmd, t_env *env)
 {
     int i;
+    int stdin_backup;
     t_builtin *builtin_in;
 
-    if (!args[0])
+    stdin_backup = -1;
+    if (!cmd->args[0])
         return ;
     if (!env)
     {
         printf("env not initialized\n");
         return ;
     }
+    /* handle heredoc input redirect if present */
+    if (cmd->heredoc && cmd->fd_in > 0)
+    {
+        /* save original std input for restoration later */
+        stdin_backup = dup(STDIN_FILENO);
+        /* redirect stdin to use the heredoc file */
+        dup2(cmd->fd_in, STDIN_FILENO);
+        close(cmd->fd_in);
+    }
+    /* handle builtin & external cmd execution */
     builtin_in = init_builtin();
     i = 0;
     while (builtin_in[i].builtin_name)
     {
-        if(ft_strcmp(args[0], builtin_in[i].builtin_name) == 0)
+        if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
         {
-            builtin_in[i].func(args, env);
+            builtin_in[i].func(cmd->args, env);
+            /* restore original stdin if changed */
+            if (stdin_backup != -1)
+            {
+                dup2(stdin_backup, STDIN_FILENO);
+                close(stdin_backup);
+            }
             return ;
         }
         i++;
     }
-    launch_execution(args, env);
+    launch_execution(cmd->args, env);
+    /* restore original stdin if changed */
+    if (stdin_backup != -1)
+    {
+        dup2(stdin_backup, STDIN_FILENO);
+        close(stdin_backup);
+    }
 }
 
 /* shell loop
@@ -100,6 +125,8 @@ void shell_loop(t_env *env)
     char *line;
 	t_token *tokens;
 	t_cmd	*cmds;
+    t_cmd   *cmd_temp;
+    int     fd;
 
     setup_signal();
     while (1)
@@ -127,7 +154,19 @@ void shell_loop(t_env *env)
             /* execute the cmds */
             if (cmds)
             {
-                /*
+                /* handle heredoc first */
+                cmd_temp = cmds;
+                while (cmd_temp)
+                {
+                    if (cmd_temp->heredoc && cmd_temp->delimiter)
+                    {
+                        fd = handle_heredoc(cmd_temp->delimiter);
+                        if (fd != -1)
+                            cmd_temp->fd_in = fd;
+                    }
+                    cmd_temp = cmd_temp->next;
+                }
+                /*  then handle execution
                     - if there is muliple cmds, use execute_pipeline
                     - if only 1 cmd, use execute_shell
                     - free_cmds at the end
@@ -135,7 +174,7 @@ void shell_loop(t_env *env)
                 if (cmds && cmds->next)
                     execute_pipeline(cmds, env);
                 else
-                    execute_shell(cmds->args, env);
+                    execute_shell(cmds, env);
                 free_cmds(cmds);
             }
 			free_tokens(tokens);

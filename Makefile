@@ -14,6 +14,7 @@ MAIN_DIR = $(SRC_DIR)/main
 SIG_DIR = $(SRC_DIR)/signal
 PIPE_DIR = $(SRC_DIR)/pipe
 EXPAND_DIR = $(SRC_DIR)/expander
+HEREDOC_DIR = $(SRC_DIR)/heredoc
 SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/init_builtin.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
@@ -33,7 +34,9 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(EXEC_DIR)/execute_path.c \
 		$(EXEC_DIR)/execute_utils.c \
 		$(EXPAND_DIR)/expander.c \
-		$(PIPE_DIR)/pipe.c
+		$(EXPAND_DIR)/expander_utils.c \
+		$(PIPE_DIR)/pipe.c \
+		$(HEREDOC_DIR)/heredoc.c
 
 OBJ = $(SRC:.c=.o)
 

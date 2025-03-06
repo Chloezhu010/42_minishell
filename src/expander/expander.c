@@ -4,8 +4,9 @@
 extern int g_exit_status;
 
 /*	expand a single env_var
-	- assumption:
-		- the str should start with $, eg. $USER
+	- use case
+		- expand $USER to user_name in env
+	- implementation
 	- if str is null, empty or space
 		- return ""
 	- if no $, copy the str as it is
@@ -32,71 +33,63 @@ char	*expand_variable(const char *str)
 }
 
 /* extract the var name from a double quoted str
-	- example
+	- use case
 		- extract $USER from "hi $USER this is 42"
+	- implementation
+		- find the $ sign using ft_strchr
+		- find the var_end
+			- whenever it's alpha numberic or "_", move the ptr forward
 */
 char *extract_var_name(char *str)
 {
 	char *var_start;
 	char *var_end;
 
-	/* find the $ sign */
 	var_start = ft_strchr(str, '$');
 	if (!var_start)
 		return (NULL);
-	/* find the var_end */
 	var_end = var_start + 1;
 	while (*var_end && (ft_isalnum(*var_end) || *var_end == '_'))
 		var_end++;
 	return (strndup(var_start, var_end - var_start)); //TODO replace
 }
 
-/* expand var in a str */
+/* expand var in a str
+	- set up an empty str res
+	- loop through the input str
+		- if encounter $
+			- call handle_var_expansion
+		- if not (a regular string)
+			- call handle_regular_char
+*/
 char *expand_var_instr(char *input)
 {
 	char *res;
-	char *ptr = input;
-	char *var_name;
-	char *expanded;
-	char *temp;
+	char *ptr;
 
+	ptr = input;
 	res = ft_strdup("");
 	while (*ptr)
 	{
 		if (*ptr == '$')
-		{
-			var_name = extract_var_name(ptr);
-			expanded = expand_variable(var_name);
-			if (expanded)
-			{
-				temp = ft_strjoin(res, expanded);
-				free(res);
-				res = temp;
-				free(expanded);
-			}
-			ptr += ft_strlen(var_name) + 1;
-			free(var_name);
-		}
+			res = handle_var_expansion(res, &ptr);
 		else
 		{
-			char temp_char[2] = {*ptr, '\0'};
-			temp = ft_strjoin(res, temp_char);
-			free(res);
-			res = temp;
+			res = handle_regular_char(res, *ptr);
 			ptr++;
 		}
 	}
 	return (res);
 }
 
-/*  iterate through all args if they need expand
-	- handle single quote case
-    - check if token has $
-	- if yes
-		- call expand_variable()
-		- replace the token value with env_var
-	- if no
-		- keep the original value
+/*  expand var in the token array
+	- skip single quoted string
+	- handle double quoted string or normal string
+		- expand var using expand_var_instr
+		- if expand successfully
+			- free current token value
+			- update with the expanded value
+		- move to the next token
 */
 void	expand_tokens(t_token *tokens)
 {
@@ -106,18 +99,14 @@ void	expand_tokens(t_token *tokens)
     current = tokens;
 	while (current)
 	{
-        /* skip single quoted string */
         if (current->type == TOKEN_SINGLE_QUOTE && current->value)
         {
             current = current->next;
             continue ;
-        }
-        /* handle double quoted string or normal words */
+		}
 		else if (current->value && (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD))
 		{
 			expanded_value = expand_var_instr(current->value);
-			// printf("debug: expanded name: %s\n", expanded_value); //debug
-			/* add check for expanded */
             if (expanded_value)
             {
                 free(current->value);
