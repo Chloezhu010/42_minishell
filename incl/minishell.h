@@ -43,6 +43,10 @@ char *handle_var_expansion(char *res, char **ptr);
 
 /* heredoc */
 int handle_heredoc(char *delimiter);
+void handle_input_redirect(t_cmd *cmd, int *stdin_backup);
+
+/* io utils */
+void restore_io(int stdin_backup);
 
 /* shell loop */
 char *read_line(void);

@@ -69,23 +69,10 @@ void execute_shell(t_cmd *cmd, t_env *env)
     t_builtin *builtin_in;
 
     stdin_backup = -1;
-    if (!cmd->args[0])
+    if (!cmd->args[0] || !env)
         return ;
-    if (!env)
-    {
-        printf("env not initialized\n");
-        return ;
-    }
     /* handle heredoc input redirect if present */
-    if (cmd->heredoc && cmd->fd_in > 0)
-    {
-        /* save original std input for restoration later */
-        stdin_backup = dup(STDIN_FILENO);
-        /* redirect standard input to the heredoc file */
-        dup2(cmd->fd_in, STDIN_FILENO);
-        /* close fd_in to avoid resource leaks */
-        close(cmd->fd_in);
-    }
+    handle_input_redirect(cmd, &stdin_backup);
     /* handle builtin & external cmd execution */
     builtin_in = init_builtin();
     i = 0;
@@ -95,22 +82,14 @@ void execute_shell(t_cmd *cmd, t_env *env)
         {
             builtin_in[i].func(cmd->args, env);
             /* restore original stdin after the execution of builtin */
-            if (stdin_backup != -1)
-            {
-                dup2(stdin_backup, STDIN_FILENO);
-                close(stdin_backup);
-            }
+            restore_io(stdin_backup);
             return ;
         }
         i++;
     }
     launch_execution(cmd->args, env);
     /* restore original stdin after the execution of eternal program */
-    if (stdin_backup != -1)
-    {
-        dup2(stdin_backup, STDIN_FILENO);
-        close(stdin_backup);
-    }
+    restore_io(stdin_backup);
 }
 
 /* shell loop
