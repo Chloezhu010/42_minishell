@@ -68,12 +68,17 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
 
         if (pid == 0)  // Child process
         {
+            // int stdin_backup_child = -1;//add for redirect
             // 处理输入重定向
             if (prev_pipe_read != -1)
             {
+                // stdin_backup_child = dup(STDIN_FILENO);
                 dup2(prev_pipe_read, STDIN_FILENO);
                 close(prev_pipe_read);
             }
+            // /* handle input redirect: currently only heredoc */
+            // else if (current->heredoc && current->fd_in > 0)
+            //     handle_input_redirect(current, &stdin_backup_child);
 
             // 处理输出重定向
             if (current->next)
