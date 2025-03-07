@@ -41,12 +41,11 @@ void	expand_tokens(t_token *tokens);
 char *handle_regular_char(char *res, char current_char);
 char *handle_var_expansion(char *res, char **ptr);
 
-/* heredoc */
+/* redirect */
+void restore_io(int stdin_backup, int stdout_backup);
 int handle_heredoc(char *delimiter);
-void handle_input_redirect(t_cmd *cmd, int *stdin_backup);
-
-/* io utils */
-void restore_io(int stdin_backup);
+int handle_input_redirect(t_cmd *cmd, int *stdin_backup);
+int handle_output_redirect(t_cmd *cmd, int *stdout_backup);
 
 /* shell loop */
 char *read_line(void);

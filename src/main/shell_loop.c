@@ -66,13 +66,21 @@ void execute_shell(t_cmd *cmd, t_env *env)
 {
     int i;
     int stdin_backup;
+    int stdout_backup;
     t_builtin *builtin_in;
 
     stdin_backup = -1;
+    stdout_backup = -1;
     if (!cmd->args[0] || !env)
         return ;
-    /* handle heredoc input redirect if present */
-    handle_input_redirect(cmd, &stdin_backup);
+    /* handle redirections */
+    if (handle_input_redirect(cmd, &stdin_backup) == -1
+        || handle_output_redirect(cmd, &stdout_backup) == -1)
+    {
+        restore_io(stdin_backup, stdout_backup);
+        return ;
+    }
+
     /* handle builtin & external cmd execution */
     builtin_in = init_builtin();
     i = 0;
@@ -82,14 +90,14 @@ void execute_shell(t_cmd *cmd, t_env *env)
         {
             builtin_in[i].func(cmd->args, env);
             /* restore original stdin after the execution of builtin */
-            restore_io(stdin_backup);
+            restore_io(stdin_backup, stdout_backup);
             return ;
         }
         i++;
     }
     launch_execution(cmd->args, env);
     /* restore original stdin after the execution of eternal program */
-    restore_io(stdin_backup);
+    restore_io(stdin_backup, stdout_backup);
 }
 
 /* shell loop
@@ -134,10 +142,11 @@ void shell_loop(t_env *env)
             /* execute the cmds */
             if (cmds)
             {
-                /* handle heredoc first */
+                /* process all redirect before execution */
                 cmd_temp = cmds;
                 while (cmd_temp)
                 {
+                    /* handle heredoc */
                     if (cmd_temp->heredoc && cmd_temp->delimiter)
                     {
                         fd = handle_heredoc(cmd_temp->delimiter);

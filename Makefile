@@ -14,7 +14,7 @@ MAIN_DIR = $(SRC_DIR)/main
 SIG_DIR = $(SRC_DIR)/signal
 PIPE_DIR = $(SRC_DIR)/pipe
 EXPAND_DIR = $(SRC_DIR)/expander
-HEREDOC_DIR = $(SRC_DIR)/heredoc
+REDIRECT_DIR = $(SRC_DIR)/redirect
 SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/init_builtin.c \
 		$(BUILTIN_DIR)/ft_pwd.c \
@@ -30,14 +30,13 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(MAIN_DIR)/token_utils_2.c \
 		$(MAIN_DIR)/tokenize_utils.c \
 		$(MAIN_DIR)/shell_loop.c \
-		$(MAIN_DIR)/io_utils.c \
 		$(SIG_DIR)/signal.c \
 		$(EXEC_DIR)/execute_path.c \
 		$(EXEC_DIR)/execute_utils.c \
 		$(EXPAND_DIR)/expander.c \
 		$(EXPAND_DIR)/expander_utils.c \
 		$(PIPE_DIR)/pipe.c \
-		$(HEREDOC_DIR)/heredoc.c
+		$(REDIRECT_DIR)/redirect.c
 
 OBJ = $(SRC:.c=.o)
 

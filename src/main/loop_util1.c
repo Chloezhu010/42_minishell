@@ -154,7 +154,7 @@ t_cmd *parse_tokens(t_token *tokens)
             tokens = tokens->next;
             if (tokens)
             {
-                if (tokens->type == TOKEN_REDIRECT_OUT)
+				if (tokens->type == TOKEN_REDIRECT_OUT)
                 {
                     current_cmd->outfile = ft_strdup(tokens->value);
                     current_cmd->append = 0;
@@ -164,6 +164,11 @@ t_cmd *parse_tokens(t_token *tokens)
                     current_cmd->outfile = ft_strdup(tokens->value);
                     current_cmd->append = 1;
                 }
+				/* add redirect in */
+				else if (tokens->type == TOKEN_REDIRECT_IN)
+				{
+					current_cmd->infile = ft_strdup(tokens->value);
+				}
             }
         }
         else if (tokens->type == TOKEN_PIPE) // 如果遇到管道符号，创建新的命令
