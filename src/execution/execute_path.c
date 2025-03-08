@@ -51,6 +51,7 @@ char	*find_path(char *cmd)
 		tmp = ft_strjoin(dir[i], "/");
 		full_path = ft_strjoin(tmp, cmd);
 		free(tmp);
+		// printf("trying path: %s\n", full_path);// debug
 		if (access(full_path, X_OK) == 0)
 			return (full_path);
 		free(full_path);

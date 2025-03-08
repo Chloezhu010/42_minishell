@@ -42,6 +42,9 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     int pipefd[2];
     pid_t pid;
     int stdin_backup = dup(STDIN_FILENO);
+    int stdout_backup = dup(STDOUT_FILENO); // add stdout backup
+    int stdin_backup_child = -1; // add for child process
+    int stdout_backup_child = -1; // add for child process
     pid_t pids[64];
     int pid_count = 0;
     int prev_pipe_read = -1;
@@ -76,9 +79,9 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 dup2(prev_pipe_read, STDIN_FILENO);
                 close(prev_pipe_read);
             }
-            // /* handle input redirect: currently only heredoc */
-            // else if (current->heredoc && current->fd_in > 0)
-            //     handle_input_redirect(current, &stdin_backup_child);
+            /* add handle input redirect */
+            else if (current->infile || (current->heredoc && current->fd_in > 0))
+                handle_input_redirect(current, &stdin_backup_child);
 
             // 处理输出重定向
             if (current->next)
@@ -87,8 +90,14 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 close(pipefd[0]);
                 close(pipefd[1]);
             }
+            /* add handle output redirect */
+            else if (current->outfile)
+                handle_output_redirect(current, &stdout_backup_child);
 
             execute_shell(current, env);
+            /* add restore */
+            restore_io(stdin_backup_child, stdout_backup_child);
+
             exit(g_exit_status);
         }
         else  // Parent process
@@ -111,8 +120,11 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     }
 
     // 恢复标准输入
+    /* add stdout restoration */
     dup2(stdin_backup, STDIN_FILENO);
+    dup2(stdout_backup, STDOUT_FILENO);
     close(stdin_backup);
+    close(stdout_backup);
 
     // 等待所有子进程
     for (int i = 0; i < pid_count; i++)

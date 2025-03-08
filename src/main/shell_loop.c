@@ -43,7 +43,12 @@ void launch_execution(char **args, t_env *env)
     pid = ft_fork();
     if (pid == CHILD_PROCESS)
     {
-        full_path = find_path(args[0]);
+        if (!args[0])
+            exit(1);
+        if (ft_strchr(args[0], '/'))
+            full_path = ft_strdup(args[0]);
+        else
+            full_path = find_path(args[0]);
         if (!full_path)
         {
             perror("Command not found");

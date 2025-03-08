@@ -45,6 +45,11 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
 {
     int fd;
     
+    if (!cmd->heredoc && !cmd->infile)
+    {
+        *stdin_backup = -1;
+        return (0);
+    }
     *stdin_backup = dup(STDIN_FILENO);
     if (*stdin_backup == -1)
     {
@@ -71,22 +76,16 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
             perror("minishell");
             return (-1);
         }
-        else
-            printf("input redirect file created with fd %d\n", fd);//debug
         /* redirect stdin to the input file */
         if (dup2(fd, STDIN_FILENO) == -1)
         {
             perror("dup2");
             close(fd);
+            close(*stdin_backup);
             return (-1);
         }
         close(fd);
     }
-    else
-    {
-        close(*stdin_backup);
-        *stdin_backup = -1;
-    }  
     return (0);
 }
 

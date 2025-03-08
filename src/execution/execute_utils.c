@@ -34,7 +34,7 @@ pid_t	ft_fork(void)
 */
 void	ft_execve(char *path, char **av, t_env *env)
 {
-	if (!path || !av)
+	if (!path || !av || !av[0])
 	{
 		printf("execve: invalid args\n");
 		exit(1);
@@ -46,6 +46,7 @@ void	ft_execve(char *path, char **av, t_env *env)
 	}
 	if (execve(path, av, env->env_var) == -1)
 	{
+		// printf("executing path: %s\n", path); //debug
 		perror("execve failed");
 		exit(126);
 	}

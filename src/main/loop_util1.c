@@ -109,6 +109,12 @@ t_cmd	*create_new_cmd(void)
 	if (!cmd)
 		return NULL;
 	cmd->args = calloc(64, sizeof(char *));
+	if (!cmd->args)
+	{
+		free(cmd);
+		return (NULL);
+	}
+	cmd->args[0] = NULL;//
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
 	cmd->append = 0;
@@ -139,38 +145,47 @@ t_cmd *parse_tokens(t_token *tokens)
 
         if (tokens->type == TOKEN_WORD
 			|| tokens->type == TOKEN_SINGLE_QUOTE
-			|| tokens->type == TOKEN_DOUBLE_QUOTE // add double quote
+			|| tokens->type == TOKEN_DOUBLE_QUOTE
 			|| tokens->type == TOKEN_COMMAND)
         {
             i = 0;
-            while (current_cmd->args[i]) // 依次找到当前命令中空闲的位置
-                i++;
-            current_cmd->args[i] = strdup(tokens->value); // 将当前词添加到命令的参数中
-        }
-        else if (tokens->type == TOKEN_REDIRECT_IN
-            || tokens->type == TOKEN_REDIRECT_OUT
-            || tokens->type == TOKEN_REDIRECT_APPEND)
-        {
-            tokens = tokens->next;
-            if (tokens)
-            {
-				if (tokens->type == TOKEN_REDIRECT_OUT)
-                {
-                    current_cmd->outfile = ft_strdup(tokens->value);
-                    current_cmd->append = 0;
-                }
-                else if (tokens->type == TOKEN_REDIRECT_APPEND)
-                {
-                    current_cmd->outfile = ft_strdup(tokens->value);
-                    current_cmd->append = 1;
-                }
-				/* add redirect in */
-				else if (tokens->type == TOKEN_REDIRECT_IN)
+			/* only add to args if it's not going to be used as a redirect targets */
+			if ((i == 0 || !tokens->next || (tokens->next->type != TOKEN_REDIRECT_IN
+					&& tokens->next->type != TOKEN_REDIRECT_OUT
+					&& tokens->next->type != TOKEN_REDIRECT_APPEND))
+					&& tokens->value[0] != '\0') // skip empty values
 				{
-					current_cmd->infile = ft_strdup(tokens->value);
+					while (current_cmd->args[i]) // 依次找到当前命令中空闲的位置
+						i++;
+					current_cmd->args[i] = strdup(tokens->value); // 将当前词添加到命令的参数中
 				}
-            }
         }
+        /* output redirect */
+		else if (tokens->type == TOKEN_REDIRECT_OUT)
+		{
+			tokens = tokens->next;
+			if (tokens)
+			{
+				current_cmd->outfile = ft_strdup(tokens->value);
+				current_cmd->append = 0;
+			}
+		}
+		else if (tokens->type == TOKEN_REDIRECT_APPEND)
+		{
+			tokens = tokens->next;
+			if (tokens)
+			{
+				current_cmd->outfile = ft_strdup(tokens->value);
+				current_cmd->append = 1;
+			}
+		}
+		/* input redirect */
+		else if (tokens->type == TOKEN_REDIRECT_IN)
+		{
+			tokens = tokens->next;
+			if (tokens)
+				current_cmd->infile = ft_strdup(tokens->value);
+		}
         else if (tokens->type == TOKEN_PIPE) // 如果遇到管道符号，创建新的命令
         {
             if (tokens->next && (tokens->next->type == TOKEN_COMMAND || tokens->next->type == TOKEN_SINGLE_QUOTE))
@@ -193,7 +208,7 @@ t_cmd *parse_tokens(t_token *tokens)
 				current_cmd->delimiter = ft_strdup(tokens->value);
 			}
 		}
-        tokens = tokens->next;
+		tokens = tokens->next;
     }
 
     return cmd_head;
