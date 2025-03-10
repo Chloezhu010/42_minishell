@@ -6,7 +6,7 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 13:57:37 by auzou             #+#    #+#             */
-/*   Updated: 2025/02/28 20:02:55 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/10 16:21:17 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,19 @@ t_token	*tokenize(char *input)
 		else
 		{
 			int start = i;
-			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]) && !is_quote(input[i]))
+			{
 				i++;
+			}
 			char *word = strndup(&input[start], i - start);
+			while (input[i] && is_quote(input[i]))
+			{
+				start = ++i;
+				while (input[i] && !is_quote(input[i]))
+					i++;
+				word = ft_strjoin(word, strndup(&input[start], i - start));
+				i++;
+			}
 			add_token(&tokens, create_token(word, TOKEN_WORD));
 			free(word);
 		}

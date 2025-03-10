@@ -47,6 +47,7 @@ void	check_format_command(t_token *tokens);
 //tokenize_utils
 int			ft_isspace(char a);
 int			is_special_char(char c);
+int			is_quote(char c);
 
 //token_utils_1
 void		add_token(t_token **head, t_token *new_token);
