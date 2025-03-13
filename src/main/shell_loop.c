@@ -138,7 +138,7 @@ void shell_loop(t_env *env)
 		tokens = tokenize(line ,env);
 		if (tokens)
 		{
-			expand_tokens(tokens);
+			expand_tokens(tokens, env);
 			check_format_command(tokens);
 			// print_tokens(tokens);
 			cmds = parse_tokens(tokens);

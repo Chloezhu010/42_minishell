@@ -1,35 +1,5 @@
 #include "../../incl/minishell.h"
 
-/*	expand a single env_var
-	- use case
-		- expand $USER to user_name in env
-	- implementation
-	- if str is null, empty or space
-		- return ""
-	- if no $, copy the str as it is
-	- if contains $
-		- if "$?", return the exit value
-		- if "$" + other cases
-			- skip the $ char
-			- search the parameter in env_var
-*/
-char	*expand_variable(const char *str)
-{
-	const char	*env;
-	int			exit_status = 1;
-
-	if (!str || str[0] == '\0')
-		return (ft_strdup(""));
-	if (str[0] != '$')
-		return (ft_strdup(str));
-	if (ft_strcmp(str, "$?") == 0)
-		return (ft_itoa(exit_status));
-	env = getenv(str + 1);
-	if (!env)
-		return (ft_strdup(""));
-	return (ft_strdup(env));
-}
-
 /* extract the var name from a double quoted str
 	- use case
 		- extract $USER from "hi $USER this is 42"
@@ -72,7 +42,7 @@ char *extract_var_name(char *str)
 		- if not (a regular string)
 			- call handle_regular_char
 */
-char *expand_var_instr(char *input)
+char *expand_var_instr(char *input, t_env *env)
 {
 	char *res;
 	char *ptr;
@@ -82,7 +52,7 @@ char *expand_var_instr(char *input)
 	while (*ptr)
 	{
 		if (*ptr == '$')
-			res = handle_var_expansion(res, &ptr);
+			res = handle_var_expansion(res, &ptr, env);
 		else
 		{
 			res = handle_regular_char(res, *ptr);
@@ -101,7 +71,7 @@ char *expand_var_instr(char *input)
 			- update with the expanded value
 		- move to the next token
 */
-void	expand_tokens(t_token *tokens)
+void	expand_tokens(t_token *tokens, t_env *env)
 {
 	char	*expanded_value;
     t_token *current;
@@ -116,7 +86,7 @@ void	expand_tokens(t_token *tokens)
 		}
 		else if (current->value && (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD))
 		{
-			expanded_value = expand_var_instr(current->value);
+			expanded_value = expand_var_instr(current->value, env);
             if (expanded_value)
             {
                 free(current->value);

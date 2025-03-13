@@ -32,14 +32,13 @@ void execute_pipeline(t_cmd *cmds, t_env *env);
 void ft_pipe(int pipefd[2]);
 
 /* expander */
-char	*expand_variable(const char *str);
 char *extract_var_name(char *str);
-char *expand_var_instr(char *input);
-void	expand_tokens(t_token *tokens);
+char *expand_var_instr(char *input, t_env *env);
+void	expand_tokens(t_token *tokens, t_env *env);
 
 /* expander utils */
 char *handle_regular_char(char *res, char current_char);
-char *handle_var_expansion(char *res, char **ptr);
+char *handle_var_expansion(char *res, char **ptr, t_env *env);
 
 /* redirect */
 void restore_io(int stdin_backup, int stdout_backup);

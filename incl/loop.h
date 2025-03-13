@@ -17,6 +17,7 @@
 # define TOKEN_AND_SINGLE 8
 # define TOKEN_COMMAND 9
 
+typedef struct s_env t_env;
 
 typedef struct s_token {
     char			*value;
