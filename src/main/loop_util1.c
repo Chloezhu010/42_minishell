@@ -6,13 +6,13 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 13:57:37 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/10 16:21:17 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/12 16:32:06 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../incl/loop.h"
 
-t_token	*tokenize(char *input)
+t_token	*tokenize(char *input, t_env *env)
 {
 	t_token *tokens = NULL;
 	int i = 0;
@@ -42,7 +42,11 @@ t_token	*tokenize(char *input)
 			char quote = input[i++];
 			char *quoted = extract_quoted(input, &i, quote);
 			if (!quoted)
+			{
+				env->exit_status = 2;
 				return (NULL);
+			}
+				
 			if (quote == '\'')
 				type = TOKEN_SINGLE_QUOTE;
 			else

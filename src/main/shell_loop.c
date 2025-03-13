@@ -135,7 +135,7 @@ void shell_loop(t_env *env)
         if (*line)
             add_history(line);
         /* 3. parse the args */
-		tokens = tokenize(line);
+		tokens = tokenize(line ,env);
 		if (tokens)
 		{
 			expand_tokens(tokens);

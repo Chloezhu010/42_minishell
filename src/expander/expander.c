@@ -1,8 +1,5 @@
 #include "../../incl/minishell.h"
 
-/* global variables */
-extern int g_exit_status;
-
 /*	expand a single env_var
 	- use case
 		- expand $USER to user_name in env
@@ -19,13 +16,14 @@ extern int g_exit_status;
 char	*expand_variable(const char *str)
 {
 	const char	*env;
+	int			exit_status = 1;
 
 	if (!str || str[0] == '\0')
 		return (ft_strdup(""));
 	if (str[0] != '$')
 		return (ft_strdup(str));
 	if (ft_strcmp(str, "$?") == 0)
-		return (ft_itoa(g_exit_status));
+		return (ft_itoa(exit_status));
 	env = getenv(str + 1);
 	if (!env)
 		return (ft_strdup(""));
@@ -49,8 +47,20 @@ char *extract_var_name(char *str)
 	if (!var_start)
 		return (NULL);
 	var_end = var_start + 1;
-	while (*var_end && (ft_isalnum(*var_end) || *var_end == '_'))
-		var_end++;
+	while (*var_end)
+	{
+		if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')))
+		{
+			var_end++;
+			break;
+		}
+		if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_')
+		{
+			while ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_' || (*var_end >= '0' && *var_end <= '9'))
+				var_end++;
+			break;
+		}
+	}
 	return (strndup(var_start, var_end - var_start)); //TODO replace
 }
 
