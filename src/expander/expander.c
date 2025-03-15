@@ -17,7 +17,7 @@ char *extract_var_name(char *str)
 	if (!var_start)
 		return (NULL);
 	var_end = var_start + 1;
-	while (*var_end)
+	while (*var_end && !ft_isspace(*var_end))
 	{
 		if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')))
 		{

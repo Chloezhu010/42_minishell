@@ -114,6 +114,7 @@ void	ft_export(char **args, t_env *env)
 		if (check_valid_name(key) == 0)
 		{
 			printf("export: not a valid identifier\n");
+			i++;
 			continue ;
 		}
 		if (value == NULL)
