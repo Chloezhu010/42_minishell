@@ -25,10 +25,10 @@ int	check_format_of_pipe(t_token *tokens)
 int	check_format_of_redirect(t_token *tokens)
 {
 	if (!tokens->next)
-		return (printf("bash: syntax error near unexpected token 'newline'\n"));
+		return (printf("bash: syntax error near unexpected token 'newline'\n"), 1);
 	else if (tokens->type == TOKEN_REDIRECT_IN
 		&& tokens->next->type == TOKEN_REDIRECT_OUT)
-		return (printf("bash: syntax error near unexpected token 'newline'\n"));
+		return (printf("bash: syntax error near unexpected token 'newline'\n"), 1);
 	else if (tokens->next->type == TOKEN_REDIRECT_IN
 		|| tokens->next->type == TOKEN_REDIRECT_OUT
 		|| tokens->next->type == TOKEN_REDIRECT_APPEND
@@ -39,7 +39,10 @@ int	check_format_of_redirect(t_token *tokens)
 			tokens->next->value);
 		return (1);
 	}
-	else if (tokens->next->type != TOKEN_WORD)
+	else if (tokens->next->type != TOKEN_WORD
+			&& tokens->next->type != TOKEN_SINGLE_QUOTE // add
+			&& tokens->next->type != TOKEN_DOUBLE_QUOTE // add
+	)
 	{
 		printf("bash: syntax error near unexpected token 'newline'\n");
 		return (1);

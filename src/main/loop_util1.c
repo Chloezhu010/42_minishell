@@ -54,32 +54,12 @@ t_token	*tokenize(char *input, t_env *env)
 			add_token(&tokens, create_token(quoted, type));
 			free(quoted);
 		}
-		// /* version origin */
-		// else if (input[i] == '\'')
-		// {
-		// 	char quote = input[i++];
-		// 	char *quoted = extract_quoted(input, &i, quote);
-		// 	if (!quoted)
-		// 		return (NULL);
-		// 	add_token(&tokens, create_token(quoted, TOKEN_SINGLE_QUOTE));
-		// 	free(quoted);
-		// }
-		// else if (input[i] == '"')
-		// {
-		// 	int start = i + 1;
-		// 	while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
-		// 		i++;
-		// 	char *word = strndup(&input[start], i - start - 1);
-		// 	add_token(&tokens, create_token(word, TOKEN_WORD));
-		// 	free(word);
-		// }
+		/* handle regular words incl. file names for redirect */
 		else
 		{
 			int start = i;
 			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]) && !is_quote(input[i]))
-			{
 				i++;
-			}
 			char *word = strndup(&input[start], i - start);
 			while (input[i] && is_quote(input[i]))
 			{
@@ -128,7 +108,7 @@ t_cmd	*create_new_cmd(void)
 		free(cmd);
 		return (NULL);
 	}
-	cmd->args[0] = NULL;//
+	cmd->args[0] = NULL;
 	cmd->infile = NULL;
 	cmd->outfile = NULL;
 	cmd->append = 0;
@@ -156,7 +136,7 @@ t_cmd *parse_tokens(t_token *tokens)
             if (!cmd_head)
                 cmd_head = current_cmd;
         }
-
+		// printf("debug parser: token = %s, type = %d\n", tokens->value, tokens->type);
         if (tokens->type == TOKEN_WORD
 			|| tokens->type == TOKEN_SINGLE_QUOTE
 			|| tokens->type == TOKEN_DOUBLE_QUOTE
@@ -178,27 +158,32 @@ t_cmd *parse_tokens(t_token *tokens)
 		else if (tokens->type == TOKEN_REDIRECT_OUT)
 		{
 			tokens = tokens->next;
-			if (tokens)
+			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
 				current_cmd->outfile = ft_strdup(tokens->value);
 				current_cmd->append = 0;
+				// printf("debug parser: set outfile = %s\n", tokens->value);
 			}
 		}
 		else if (tokens->type == TOKEN_REDIRECT_APPEND)
 		{
 			tokens = tokens->next;
-			if (tokens)
+			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
 				current_cmd->outfile = ft_strdup(tokens->value);
 				current_cmd->append = 1;
+				// printf("debug parser: set outfile (append) = %s\n", tokens->value);
 			}
 		}
 		/* input redirect */
 		else if (tokens->type == TOKEN_REDIRECT_IN)
 		{
 			tokens = tokens->next;
-			if (tokens)
+			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
+			{
 				current_cmd->infile = ft_strdup(tokens->value);
+				// printf("debug parser: set infile = %s\n", tokens->value);
+			}	
 		}
         else if (tokens->type == TOKEN_PIPE) // 如果遇到管道符号，创建新的命令
         {
@@ -206,6 +191,7 @@ t_cmd *parse_tokens(t_token *tokens)
             {
                 current_cmd->next = create_new_cmd(); // 创建新的命令块
                 current_cmd = current_cmd->next; // 设置当前命令为新的命令块
+				// printf("debug parser: created new cmd for pipe\n");
             }
         }
 		/* add case for heredoc separately
@@ -216,10 +202,11 @@ t_cmd *parse_tokens(t_token *tokens)
 		else if (tokens->type == TOKEN_HEREDOC)
 		{
 			tokens = tokens->next;
-			if (tokens)
+			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
 				current_cmd->heredoc = 1;
 				current_cmd->delimiter = ft_strdup(tokens->value);
+				// printf("debug parser: set heredoc delimiter = %s\n", tokens->value);
 			}
 		}
 		tokens = tokens->next;
@@ -322,8 +309,10 @@ void	check_format_command(t_token *tokens)
 // // === test tokenize() ===
 // void test_tokenize(char *input)
 // {
+// 	t_env env;
+	
 // 	printf("test input: %s\n", input);
-// 	t_token *tokens = tokenize(input);
+// 	t_token *tokens = tokenize(input, &env);
 // 	if (!tokens)
 // 	{
 // 		printf("no token generated\n");
@@ -340,6 +329,9 @@ void	check_format_command(t_token *tokens)
 // // === test tokenize() main function ===
 // int main(void)
 // {
+// 	test_tokenize("cat < \"output.txt\"");
+// 	test_tokenize("cat \"output.txt\"");
+// 	test_tokenize("cat output.txt");
 // 	test_tokenize("echo \"hi $USER\"");
 //     test_tokenize("ls -l");
 //     test_tokenize("echo 'Hello World'");
@@ -351,3 +343,4 @@ void	check_format_command(t_token *tokens)
 //     test_tokenize("echo 'Hello World' > output.txt | cat");
 //     return 0;
 // }
+

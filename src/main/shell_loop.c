@@ -57,7 +57,11 @@ void launch_execution(char **args, t_env *env)
         ft_execve(full_path, args, env);
     }
     else
+    {
         ft_wait(&status);
+        if (WIFEXITED(status))
+            g_exit_status = WEXITSTATUS(status);
+    }
 }
 
 /* execute shell
@@ -73,6 +77,7 @@ void execute_shell(t_cmd *cmd, t_env *env)
     int stdin_backup;
     int stdout_backup;
     t_builtin *builtin_in;
+    int redirect_failed = 0;
 
     stdin_backup = -1;
     stdout_backup = -1;
@@ -82,25 +87,29 @@ void execute_shell(t_cmd *cmd, t_env *env)
     if (handle_input_redirect(cmd, &stdin_backup) == -1
         || handle_output_redirect(cmd, &stdout_backup) == -1)
     {
+        redirect_failed = 1;
         restore_io(stdin_backup, stdout_backup);
-        return ;
     }
 
     /* handle builtin & external cmd execution */
-    builtin_in = init_builtin();
-    i = 0;
-    while (builtin_in[i].builtin_name)
+    if (!redirect_failed)
     {
-        if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
+        builtin_in = init_builtin();
+        i = 0;
+        while (builtin_in[i].builtin_name)
         {
-            builtin_in[i].func(cmd->args, env);
-            /* restore original stdin after the execution of builtin */
-            restore_io(stdin_backup, stdout_backup);
-            return ;
+            if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
+            {
+                builtin_in[i].func(cmd->args, env);
+                /* restore original stdin after the execution of builtin */
+                restore_io(stdin_backup, stdout_backup);
+                break ;
+            }
+            i++;
         }
-        i++;
+        if (!builtin_in[i].builtin_name)
+            launch_execution(cmd->args, env);
     }
-    launch_execution(cmd->args, env);
     /* restore original stdin after the execution of eternal program */
     restore_io(stdin_backup, stdout_backup);
 }
