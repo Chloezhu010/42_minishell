@@ -10,7 +10,7 @@
         - close and reopen with read-only mode
     - return the fd for redirection
 */
-int handle_heredoc(char *delimiter)
+int handle_heredoc(char *delimiter, t_env *env)
 {
     char *line;
     int fd;
@@ -20,6 +20,7 @@ int handle_heredoc(char *delimiter)
     if (fd == -1)
     {
         perror("open");
+        env->exit_status = 1;
         return (-1);
     }
     /* read input until the delimiter */
@@ -41,7 +42,7 @@ int handle_heredoc(char *delimiter)
 /* handle input redirect
     - return -1 for error, 0 for success
 */
-int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
+int handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 {
     int fd;
     
@@ -54,6 +55,7 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
     if (*stdin_backup == -1)
     {
         perror("dup");
+        env->exit_status = 1;
         return (-1);
     }
     /* handle heredoc */
@@ -63,6 +65,7 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
         {
             perror("dup2");
             close(*stdin_backup);
+            env->exit_status = 1;
             return (-1);
         }
         close(cmd->fd_in);
@@ -74,6 +77,8 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
         if (fd == -1)
         {
             perror("minishell");
+            close(*stdin_backup);
+            env->exit_status = 1;
             return (-1);
         }
         /* redirect stdin to the input file */
@@ -82,6 +87,7 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
             perror("dup2");
             close(fd);
             close(*stdin_backup);
+            env->exit_status = 1;
             return (-1);
         }
         close(fd);
@@ -90,7 +96,7 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup)
 }
 
 /* handle output redirect TODO */
-int handle_output_redirect(t_cmd *cmd, int *stdout_backup)
+int handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env)
 {
     int fd;
     
@@ -103,6 +109,7 @@ int handle_output_redirect(t_cmd *cmd, int *stdout_backup)
     if (*stdout_backup == -1)
     {
         perror("dup");
+        env->exit_status = 1;
         return (-1);
     }
     if (cmd->append)
@@ -113,6 +120,7 @@ int handle_output_redirect(t_cmd *cmd, int *stdout_backup)
     {
         perror("minishell");
         close(*stdout_backup);
+        env->exit_status = 1;
         return (-1);
     }
     if (dup2(fd, STDOUT_FILENO) == -1)
@@ -120,6 +128,7 @@ int handle_output_redirect(t_cmd *cmd, int *stdout_backup)
         perror("minishell");
         close(fd);
         close(*stdout_backup);
+        env->exit_status = 1;
         return (-1);
     }
     close(fd);

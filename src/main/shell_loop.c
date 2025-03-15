@@ -1,8 +1,5 @@
 #include "../../incl/minishell.h"
 
-/* global variables */
-int g_exit_status = 0;
-
 /* read the input from user
     - print the cwd before $>
     - read the input
@@ -60,7 +57,7 @@ void launch_execution(char **args, t_env *env)
     {
         ft_wait(&status);
         if (WIFEXITED(status))
-            g_exit_status = WEXITSTATUS(status);
+            env->exit_status = WEXITSTATUS(status);
     }
 }
 
@@ -77,39 +74,36 @@ void execute_shell(t_cmd *cmd, t_env *env)
     int stdin_backup;
     int stdout_backup;
     t_builtin *builtin_in;
-    int redirect_failed = 0;
 
     stdin_backup = -1;
     stdout_backup = -1;
     if (!cmd->args[0] || !env)
         return ;
     /* handle redirections */
-    if (handle_input_redirect(cmd, &stdin_backup) == -1
-        || handle_output_redirect(cmd, &stdout_backup) == -1)
+    if (handle_input_redirect(cmd, &stdin_backup, env) == -1
+        || handle_output_redirect(cmd, &stdout_backup, env) == -1)
     {
-        redirect_failed = 1;
+        env->exit_status = 1;
         restore_io(stdin_backup, stdout_backup);
+        return ;
     }
 
     /* handle builtin & external cmd execution */
-    if (!redirect_failed)
+    builtin_in = init_builtin();
+    i = 0;
+    while (builtin_in[i].builtin_name)
     {
-        builtin_in = init_builtin();
-        i = 0;
-        while (builtin_in[i].builtin_name)
+        if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
         {
-            if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
-            {
-                builtin_in[i].func(cmd->args, env);
-                /* restore original stdin after the execution of builtin */
-                restore_io(stdin_backup, stdout_backup);
-                break ;
-            }
-            i++;
+            builtin_in[i].func(cmd->args, env);
+            /* restore original stdin after the execution of builtin */
+            restore_io(stdin_backup, stdout_backup);
+            return ;
         }
-        if (!builtin_in[i].builtin_name)
-            launch_execution(cmd->args, env);
+        i++;
     }
+    if (!builtin_in[i].builtin_name)
+        launch_execution(cmd->args, env);
     /* restore original stdin after the execution of eternal program */
     restore_io(stdin_backup, stdout_backup);
 }
@@ -130,7 +124,7 @@ void shell_loop(t_env *env)
     t_cmd   *cmd_temp;
     int     fd;
 
-    setup_signal();
+    setup_signal(env);
     while (1)
     {
         /* read line from command */
@@ -163,7 +157,7 @@ void shell_loop(t_env *env)
                     /* handle heredoc */
                     if (cmd_temp->heredoc && cmd_temp->delimiter)
                     {
-                        fd = handle_heredoc(cmd_temp->delimiter);
+                        fd = handle_heredoc(cmd_temp->delimiter, env);
                         if (fd != -1)
                             cmd_temp->fd_in = fd;
                     }
@@ -199,5 +193,5 @@ int main(int ac, char **av, char **envp)
     free_env(&env);
     enable_echo();
     rl_clear_history();
-    return (g_exit_status);
+    return (env.exit_status);
 }

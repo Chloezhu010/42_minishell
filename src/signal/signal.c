@@ -12,8 +12,13 @@
 
 #include "../../incl/sig.h"
 
-/* global variable for exit status */
-extern int	g_exit_status;
+static t_env *g_env = NULL;
+
+/* set global env pointer */
+void set_signal_env(t_env *env)
+{
+	g_env = env;
+}
 
 /* disable the print ouf of Ctrl C or Ctrl backslash 
     - using termios.h
@@ -54,7 +59,8 @@ void	sigint_handler(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	g_exit_status = 130;
+	if (g_env)
+		g_env->exit_status = 130;
 }
 
 /* Ctrl \ handler */
@@ -64,7 +70,8 @@ void	sigquit_handler(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	g_exit_status = 131;
+	if (g_env)
+		g_env->exit_status = 131;
 }
 
 /* setup signals
@@ -72,10 +79,11 @@ void	sigquit_handler(int sig)
     - handle SIGINT
     - handle SIGQUIT
 */
-void	setup_signal(void)
+void	setup_signal(t_env *env)
 {
 	struct sigaction	sa;
 
+	set_signal_env(env);
 	disable_echo();
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = sigint_handler;

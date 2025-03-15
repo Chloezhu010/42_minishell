@@ -58,6 +58,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
             if (pipe(pipefd) == -1)
             {
                 perror("pipe");
+                env->exit_status = 1;
                 break;
             }
         }
@@ -66,6 +67,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
         if (pid == -1)
         {
             perror("fork");
+            env->exit_status = 1;
             break;
         }
 
@@ -81,8 +83,10 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
             }
             /* add handle input redirect */
             else if (current->infile || (current->heredoc && current->fd_in > 0))
-                handle_input_redirect(current, &stdin_backup_child);
-
+            {
+                if (handle_input_redirect(current, &stdin_backup_child, env) == -1)
+                    exit(1);
+            }
             // 处理输出重定向
             if (current->next)
             {
@@ -92,13 +96,15 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
             }
             /* add handle output redirect */
             else if (current->outfile)
-                handle_output_redirect(current, &stdout_backup_child);
-
+            {
+                if (handle_output_redirect(current, &stdout_backup_child, env) == -1)
+                    exit(1);
+            }
             execute_shell(current, env);
             /* add restore */
             restore_io(stdin_backup_child, stdout_backup_child);
 
-            exit(g_exit_status);
+            exit(env->exit_status);
         }
         else  // Parent process
         {
@@ -133,6 +139,6 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
         while (waitpid(pids[i], &status, 0) == -1 && errno == EINTR)
             ; // 重试直到成功
         if (WIFEXITED(status))
-            g_exit_status = WEXITSTATUS(status);
+            env->exit_status = WEXITSTATUS(status);
     }
 }
