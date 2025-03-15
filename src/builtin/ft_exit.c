@@ -45,13 +45,18 @@ void	ft_exit(char **args, t_env *env)
 	(void)env;
 	exit_status = 0;
 	if (args[1] != NULL && args[2] != NULL)
-		printf("exit: too many arguments\n");
+	{
+		ft_putstr_fd(" too many arguments\n", 2);
+		env->exit_status = 1;
+		return ;
+	}
 	if (args[1] != NULL)
 	{
 		if (is_digit(args[1]) == 0)
 		{
-			printf("exit: numeric argument is needed\n");
-			exit_status = 2;
+			ft_putstr_fd(" numeric argument required\n", 2);
+			env->exit_status = 2;
+			return ;
 		}
 		exit_status = ft_atoi(args[1]);
 	}

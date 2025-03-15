@@ -43,7 +43,10 @@ void	ft_cd(char **args, t_env *env)
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		perror("getcwd");
 	if (chdir(dir) != 0)
+	{
+		env->exit_status = 1;
 		perror("cd");
+	}
 	update_env("OLDPWD", cwd, env);
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 		update_env("PWD", cwd, env);

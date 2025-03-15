@@ -87,10 +87,7 @@ void	ft_unset(char **av, t_env *env)
 	if (!av || !env)
 		return ;
 	if (!av[1])
-	{
-		printf("unset: not enough arguments\n");
 		return ;
-	}
 	i = 1;
 	while (av[i])
 	{
