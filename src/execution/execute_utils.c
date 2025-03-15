@@ -48,7 +48,7 @@ void	ft_execve(char *path, char **av, t_env *env)
 	{
 		// printf("executing path: %s\n", path); //debug
 		perror("execve failed");
-		exit(126);
+		env->exit_status = 126;
 	}
 }
 

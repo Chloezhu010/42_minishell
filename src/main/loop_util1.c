@@ -12,7 +12,7 @@
 
 #include "../../incl/loop.h"
 
-t_token	*tokenize(char *input, t_env *env)
+t_token	*tokenize(char *input)
 {
 	t_token *tokens = NULL;
 	int i = 0;
@@ -43,7 +43,7 @@ t_token	*tokenize(char *input, t_env *env)
 			char *quoted = extract_quoted(input, &i, quote);
 			if (!quoted)
 			{
-				env->exit_status = 0;
+				exit(0);
 				return (NULL);
 			}
 				

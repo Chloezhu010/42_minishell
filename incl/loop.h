@@ -36,7 +36,7 @@ typedef struct s_cmd {
     struct s_cmd	*next;
 }				t_cmd;
 
-t_token	*tokenize(char *input, t_env *env);
+t_token	*tokenize(char *input);
 
 void		free_cmds(t_cmd *cmds);
 t_cmd	*create_new_cmd(void);
