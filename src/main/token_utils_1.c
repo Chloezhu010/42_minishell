@@ -33,6 +33,8 @@ char	*extract_quoted(char *input, int *i, char quote)
 	char	*quoted;
 
 	start = *i;
+	if (is_quote(input[start]))
+		return NULL;
 	while (input[*i] && input[*i] != quote)
 		(*i)++;
 	if (!input[*i])

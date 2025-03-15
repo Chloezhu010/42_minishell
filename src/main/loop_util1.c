@@ -43,7 +43,7 @@ t_token	*tokenize(char *input, t_env *env)
 			char *quoted = extract_quoted(input, &i, quote);
 			if (!quoted)
 			{
-				env->exit_status = 2;
+				env->exit_status = 0;
 				return (NULL);
 			}
 				
@@ -61,14 +61,20 @@ t_token	*tokenize(char *input, t_env *env)
 			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]) && !is_quote(input[i]))
 				i++;
 			char *word = strndup(&input[start], i - start);
-			while (input[i] && is_quote(input[i]))
+			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
 			{
-				start = ++i;
-				while (input[i] && !is_quote(input[i]))
+				while (input[i] && is_quote(input[i]))
+				{
+					start = ++i;
+					if (input[i] && is_quote(input[i]))
+						continue ;
+					while (input[i] && !is_quote(input[i]))
+						i++;
+					word = ft_strjoin(word, strndup(&input[start], i - start));
 					i++;
-				word = ft_strjoin(word, strndup(&input[start], i - start));
-				i++;
+				}
 			}
+			
 			add_token(&tokens, create_token(word, TOKEN_WORD));
 			free(word);
 		}
