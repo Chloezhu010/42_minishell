@@ -38,7 +38,12 @@ void	ft_cd(char **args, t_env *env)
 		if (!dir)
 			printf("cd: HOME not set\n");
 	}
-	else
+	else if (args[1] != NULL && args[2] != NULL)
+	{
+		ft_putstr_fd(" too many arguments", 2);
+		env->exit_status = 1;
+		return ;
+	}
 		dir = args[1];
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
 		perror("getcwd");

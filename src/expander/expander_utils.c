@@ -39,6 +39,8 @@ static char	*expand_variable(const char *str, t_env *enve)
 
 	if (!str || str[0] == '\0')
 		return (ft_strdup(""));
+	if (str[0] == '$' && str[1] == '\0')
+		return (ft_strdup("$"));
 	if (str[0] != '$')
 		return (ft_strdup(str));
 	if (ft_strcmp(str, "$?") == 0)
