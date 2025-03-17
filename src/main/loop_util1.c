@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../incl/loop.h"
+#include "../../incl/minishell.h"
 
 t_token	*tokenize(char *input)
 {
@@ -20,12 +21,15 @@ t_token	*tokenize(char *input)
 
 	while (input[i])
 	{
+		/* handle space */
 		while (ft_isspace(input[i]))
 			i++;
+		/* handle special char */
 		if (is_special_char(input[i]))
 		{
 			char op[3] = {0};
 			op[0] = input[i];
+			/* handle double operators */
 			if ((input[i] == '<' || input[i] == '>') && input[i + 1] == input[i])
 				op[1] = input[++i];
 			else if (input[i] == '&' && input[i + 1] == '&')
@@ -58,47 +62,95 @@ t_token	*tokenize(char *input)
 		else
 		{
 			int start = i;
+			/* read until hit a special char, space, or quote */
 			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]) && !is_quote(input[i]))
 				i++;
-			char *word = strndup(&input[start], i - start);
-			while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+			/* only create a token if read something */
+			if (i > start)
 			{
-				while (input[i] && is_quote(input[i]))
-				{
-					start = ++i;
-					if (input[i] && is_quote(input[i]))
-						continue ;
-					while (input[i] && !is_quote(input[i]))
-						i++;
-					word = ft_strjoin(word, strndup(&input[start], i - start));
-					i++;
-				}
+				char *word = strndup(&input[start], i - start);
+				add_token(&tokens, create_token(word, TOKEN_WORD));
+				free(word);
+				// char *word = strndup(&input[start], i - start);
+				// while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+				// {
+				// 	while (input[i] && is_quote(input[i]))
+				// 	{
+				// 		start = ++i;
+				// 		if (input[i] && is_quote(input[i]))
+				// 			continue ;
+				// 		while (input[i] && !is_quote(input[i]))
+				// 			i++;
+				// 		word = ft_strjoin(word, strndup(&input[start], i - start));
+				// 		i++;
+				// 	}
+				// }
+				// add_token(&tokens, create_token(word, TOKEN_WORD));
+				// free(word);
 			}
-			
-			add_token(&tokens, create_token(word, TOKEN_WORD));
-			free(word);
 		}
 	}
 	return (tokens);
 }
 
-void	free_cmds(t_cmd *cmds)
+/* helper function: create a new redirect node */
+t_redir *create_new_redir(char *file, int type)
 {
-	t_cmd	*tmp;
-	int		i;
+	t_redir *redir;
 
-	while (cmds)
+	redir = ft_malloc(sizeof(t_redir));
+	redir->file = ft_strdup(file);
+	redir->type = type;
+	redir->next = NULL;
+	return (redir);
+}
+
+/* helper function: add a redirect to the redirection list */
+void add_redir(t_cmd *cmd, char *file, int type)
+{
+	t_redir *new_redir;
+	t_redir *temp;
+
+	new_redir = create_new_redir(file, type);
+	if (!new_redir)
+		return ;
+	/* update the legacy fields for backward comptability */
+	if (type == TOKEN_REDIRECT_IN)
 	{
-		tmp = cmds;
-		i = 0;
-		while (cmds->args && cmds->args[i])
-			free(cmds->args[i++]);
-		free(cmds->args);
-		free(cmds->infile);
-		free(cmds->outfile);
-		free(cmds->delimiter);
-		cmds = cmds->next;
-		free(tmp);
+		if (cmd->infile)
+			free(cmd->infile);
+		cmd->infile = ft_strdup(file);
+	}
+	if (type == TOKEN_REDIRECT_APPEND || type == TOKEN_REDIRECT_OUT)
+	{
+		if (cmd->outfile)
+			free(cmd->outfile);
+		cmd->outfile = ft_strdup(file);
+		cmd->append = (type == TOKEN_REDIRECT_APPEND);
+	}
+	/* add to the linked list */
+	if (!cmd->redirects)
+		cmd->redirects = new_redir;
+	else
+	{
+		temp = cmd->redirects;
+		while (temp->next)
+			temp = temp->next;
+		temp->next = new_redir;
+	}
+}
+
+/* helper function: free the redirect list */
+void free_redir(t_redir *redir)
+{
+	t_redir *temp;
+
+	while (redir)
+	{
+		temp = redir;
+		free(redir->file);
+		redir = redir->next;
+		free(temp);
 	}
 }
 
@@ -121,8 +173,30 @@ t_cmd	*create_new_cmd(void)
 	cmd->heredoc = 0;
 	cmd->delimiter = NULL;
 	cmd->fd_in = 0;
+	cmd->redirects = NULL;
 	cmd->next = NULL;
 	return cmd;
+}
+
+void	free_cmds(t_cmd *cmds)
+{
+	t_cmd	*tmp;
+	int		i;
+
+	while (cmds)
+	{
+		tmp = cmds;
+		i = 0;
+		while (cmds->args && cmds->args[i])
+			free(cmds->args[i++]);
+		free(cmds->args);
+		free(cmds->infile);
+		free(cmds->outfile);
+		free(cmds->delimiter);
+		free_redir(cmds->redirects);
+		cmds = cmds->next;
+		free(tmp);
+	}
 }
 
 t_cmd *parse_tokens(t_token *tokens)
@@ -166,8 +240,9 @@ t_cmd *parse_tokens(t_token *tokens)
 			tokens = tokens->next;
 			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
-				current_cmd->outfile = ft_strdup(tokens->value);
-				current_cmd->append = 0;
+				add_redir(current_cmd, tokens->value, TOKEN_REDIRECT_OUT);
+				// current_cmd->outfile = ft_strdup(tokens->value);
+				// current_cmd->append = 0;
 				// printf("debug parser: set outfile = %s\n", tokens->value);
 			}
 		}
@@ -176,8 +251,9 @@ t_cmd *parse_tokens(t_token *tokens)
 			tokens = tokens->next;
 			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
-				current_cmd->outfile = ft_strdup(tokens->value);
-				current_cmd->append = 1;
+				add_redir(current_cmd, tokens->value, TOKEN_REDIRECT_APPEND);
+				// current_cmd->outfile = ft_strdup(tokens->value);
+				// current_cmd->append = 1;
 				// printf("debug parser: set outfile (append) = %s\n", tokens->value);
 			}
 		}
@@ -187,7 +263,8 @@ t_cmd *parse_tokens(t_token *tokens)
 			tokens = tokens->next;
 			if (tokens && (tokens->type == TOKEN_WORD || tokens->type == TOKEN_DOUBLE_QUOTE || tokens->type == TOKEN_SINGLE_QUOTE))
 			{
-				current_cmd->infile = ft_strdup(tokens->value);
+				add_redir(current_cmd, tokens->value, TOKEN_REDIRECT_IN);
+				// current_cmd->infile = ft_strdup(tokens->value);
 				// printf("debug parser: set infile = %s\n", tokens->value);
 			}	
 		}
@@ -349,4 +426,5 @@ void	check_format_command(t_token *tokens)
 //     test_tokenize("echo 'Hello World' > output.txt | cat");
 //     return 0;
 // }
+
 

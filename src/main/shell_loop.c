@@ -74,11 +74,57 @@ void execute_shell(t_cmd *cmd, t_env *env)
     int stdin_backup;
     int stdout_backup;
     t_builtin *builtin_in;
+    t_redir *redir;
+    int input_error = 0;
 
     stdin_backup = -1;
     stdout_backup = -1;
     if (!cmd->args[0] || !env)
         return ;
+    /* check input file first */
+    redir = cmd->redirects;
+    while (redir)
+    {
+        if (redir->type == TOKEN_REDIRECT_IN)
+        {
+            int fd = open(redir->file, O_RDONLY);
+            if (fd == -1)
+            {
+                perror("minishell");
+                env->exit_status = 1;
+                input_error = 1;
+                break;
+            }
+            close(fd);
+        }
+        redir = redir->next;
+    }
+    /* if input file doesn't exit, don't create output files or execute cmd */
+    if (input_error)
+        return ;
+
+    /* create all output files only if all input files exit */
+    redir = cmd->redirects;
+    while (redir)
+    {
+        if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_REDIRECT_APPEND)
+        {
+            int fd;
+            if (redir->type == TOKEN_REDIRECT_APPEND)
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            else
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fd == -1)
+            {
+                perror("minishell");
+                env->exit_status = 1;
+                return ;
+            }
+            close (fd);
+        }
+        redir = redir->next;
+    }
+
     /* handle redirections */
     if (handle_input_redirect(cmd, &stdin_backup, env) == -1
         || handle_output_redirect(cmd, &stdout_backup, env) == -1)

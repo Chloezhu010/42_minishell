@@ -13,6 +13,62 @@ void ft_pipe(int pipefd[2])
     }
 }
 
+/* helper function: check if input files exist for a cmd
+    - return 1 for error
+    - return 0 for success
+*/
+int check_input_file(t_cmd *cmd, t_env *env)
+{
+    t_redir *redir;
+    int fd;
+
+    redir = cmd->redirects;
+    while (redir)
+    {
+        if (redir->type == TOKEN_REDIRECT_IN)
+        {
+            fd = open(redir->file, O_RDONLY);
+            if (fd == -1)
+            {
+                perror("minishell");
+                env->exit_status = 1;
+                return (1);
+            }
+            close(fd);
+        }
+        redir = redir->next;
+    }
+    return (0);
+}
+
+/* helper function: create output files for a cmd */
+int create_output_file(t_cmd *cmd, t_env *env)
+{
+    t_redir *redir;
+    int fd;
+
+    redir = cmd->redirects;
+    while (redir)
+    {
+        if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_REDIRECT_APPEND)
+        {
+            if (redir->type == TOKEN_REDIRECT_APPEND)
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            else
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fd == -1)
+            {
+                perror("minishell");
+                env->exit_status = 1;
+                return (1);
+            }
+            close(fd);
+        }
+        redir = redir->next;
+    }
+    return (0);
+}
+
 /* 
     Implementation
     - loop through each cmd
@@ -48,11 +104,12 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     pid_t pids[64];
     int pid_count = 0;
     int prev_pipe_read = -1;
+    int input_error = 0;
 
     current = cmds;
     while (current)
     {
-        // 只有在不是最后一个命令时才创建管道
+        /* only create pipe if not the last cmd */
         if (current->next)
         {
             if (pipe(pipefd) == -1)
@@ -62,7 +119,6 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 break;
             }
         }
-
         pid = fork();
         if (pid == -1)
         {
@@ -73,11 +129,23 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
 
         if (pid == 0)  // Child process
         {
-            // int stdin_backup_child = -1;//add for redirect
-            // 处理输入重定向
+            /* check input files first */
+            input_error = check_input_file(current, env);
+            if (input_error)
+            {
+                if (current->next)
+                {
+                    close(pipefd[0]);
+                    close(pipefd[1]);
+                }
+                exit(1);
+            }
+            /* only create output file if input file exists */
+            if (create_output_file(current, env))
+                exit(1);
+            // handle input from previous pipe
             if (prev_pipe_read != -1)
             {
-                // stdin_backup_child = dup(STDIN_FILENO);
                 dup2(prev_pipe_read, STDIN_FILENO);
                 close(prev_pipe_read);
             }
@@ -121,7 +189,6 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 prev_pipe_read = pipefd[0];
             }
         }
-
         current = current->next;
     }
 
