@@ -13,6 +13,25 @@
 #include "../../incl/loop.h"
 #include "../../incl/minishell.h"
 
+/* helper function to extract a filename that follows a redirect ops */
+void extract_redirect_filename(char *input, int *i, t_token **tokens)
+{
+	int start;
+	char *word;
+
+	start = *i;
+	/* read until hit a space or quote */
+	while (input[*i] && !ft_isspace(input[*i]) && !is_quote(input[*i]) && input[*i] != '|')
+		(*i)++;
+	/* only create a token if read something */
+	if (*i > start)
+	{
+		word = strndup(&input[start], *i - start);
+		add_token(tokens, create_token(word, TOKEN_WORD));
+		free(word);
+	}
+}
+
 t_token	*tokenize(char *input)
 {
 	t_token *tokens = NULL;
@@ -24,19 +43,49 @@ t_token	*tokenize(char *input)
 		/* handle space */
 		while (ft_isspace(input[i]))
 			i++;
-		/* handle special char */
+		/* handle special char
+			- only if it appears at the start of the input or immediately after a space
+		*/
 		if (is_special_char(input[i]))
+		// && (i == 0 || ft_isspace(input[i - 1]))
 		{
 			char op[3] = {0};
 			op[0] = input[i];
-			/* handle double operators */
+			/* handle double operators (<<, >>) */
 			if ((input[i] == '<' || input[i] == '>') && input[i + 1] == input[i])
+			{
 				op[1] = input[++i];
+				add_token(&tokens, create_token(op, get_token_type(op)));
+				i++;
+				/* after a redirect, look for the filename */
+				extract_redirect_filename(input, &i, &tokens);
+			}
+			/* handle single operators (<, >) */
+			else if (input[i] == '<' || input[i] == '>')
+			{
+				add_token(&tokens, create_token(op, get_token_type(op)));
+				i++;
+				/* after a redirect, look for the filename */
+				extract_redirect_filename(input, &i, &tokens);
+			}
+			/* handle (&&) */
 			else if (input[i] == '&' && input[i + 1] == '&')
 			{
 				op[1] = '&';
 				i++;
+				add_token(&tokens, create_token(op, get_token_type(op)));
+				i++;
 			}
+			else
+			{
+				add_token(&tokens, create_token(op, get_token_type(op)));
+				i++;
+			}
+		}
+		else if (input[i] == '|')
+		{
+			char op[3] = {0};
+			op[0] = input[i];
 			add_token(&tokens, create_token(op, get_token_type(op)));
 			i++;
 		}
@@ -71,22 +120,6 @@ t_token	*tokenize(char *input)
 				char *word = strndup(&input[start], i - start);
 				add_token(&tokens, create_token(word, TOKEN_WORD));
 				free(word);
-				// char *word = strndup(&input[start], i - start);
-				// while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
-				// {
-				// 	while (input[i] && is_quote(input[i]))
-				// 	{
-				// 		start = ++i;
-				// 		if (input[i] && is_quote(input[i]))
-				// 			continue ;
-				// 		while (input[i] && !is_quote(input[i]))
-				// 			i++;
-				// 		word = ft_strjoin(word, strndup(&input[start], i - start));
-				// 		i++;
-				// 	}
-				// }
-				// add_token(&tokens, create_token(word, TOKEN_WORD));
-				// free(word);
 			}
 		}
 	}
@@ -392,10 +425,8 @@ void	check_format_command(t_token *tokens)
 // // === test tokenize() ===
 // void test_tokenize(char *input)
 // {
-// 	t_env env;
-	
 // 	printf("test input: %s\n", input);
-// 	t_token *tokens = tokenize(input, &env);
+// 	t_token *tokens = tokenize(input);
 // 	if (!tokens)
 // 	{
 // 		printf("no token generated\n");
@@ -412,18 +443,20 @@ void	check_format_command(t_token *tokens)
 // // === test tokenize() main function ===
 // int main(void)
 // {
+// 	test_tokenize("cat <minishell.h|ls");
+// 	test_tokenize("cat <minishell.h>./outfiles/outfile");
 // 	test_tokenize("cat < \"output.txt\"");
-// 	test_tokenize("cat \"output.txt\"");
-// 	test_tokenize("cat output.txt");
-// 	test_tokenize("echo \"hi $USER\"");
-//     test_tokenize("ls -l");
-//     test_tokenize("echo 'Hello World'");
-//     test_tokenize("ls > output.txt");
-//     test_tokenize("ls | grep .c");
-//     test_tokenize("cat << EOF");
-//     test_tokenize("");
-//     test_tokenize("   ");
-//     test_tokenize("echo 'Hello World' > output.txt | cat");
+// 	// test_tokenize("cat \"output.txt\"");
+// 	// test_tokenize("cat output.txt");
+// 	// test_tokenize("echo \"hi $USER\"");
+//     // test_tokenize("ls -l");
+//     // test_tokenize("echo 'Hello World'");
+//     // test_tokenize("ls > output.txt");
+//     // test_tokenize("ls | grep .c");
+//     // test_tokenize("cat << EOF");
+//     // test_tokenize("");
+//     // test_tokenize("   ");
+//     // test_tokenize("echo 'Hello World' > output.txt | cat");
 //     return 0;
 // }
 

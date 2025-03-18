@@ -128,9 +128,13 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
         }
 
         if (pid == 0)  // Child process
-        {
+        {           
             /* check input files first */
             input_error = check_input_file(current, env);
+            /* only create output file */
+            if (create_output_file(current, env))
+                exit(1);
+            /* if there is input error, exit */
             if (input_error)
             {
                 if (current->next)
@@ -140,9 +144,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                 }
                 exit(1);
             }
-            /* only create output file if input file exists */
-            if (create_output_file(current, env))
-                exit(1);
+            
             // handle input from previous pipe
             if (prev_pipe_read != -1)
             {

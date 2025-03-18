@@ -30,6 +30,8 @@ typedef struct s_token t_token;
 /* pipe */
 void execute_pipeline(t_cmd *cmds, t_env *env);
 void ft_pipe(int pipefd[2]);
+int check_input_file(t_cmd *cmd, t_env *env);
+int create_output_file(t_cmd *cmd, t_env *env);
 
 /* expander */
 char *extract_var_name(char *str);
