@@ -48,7 +48,7 @@ void launch_execution(char **args, t_env *env)
             full_path = find_path(args[0]);
         if (!full_path)
         {
-            perror("Command not found");
+            ft_putstr_fd(" command not found\n", 2);
             exit(127);
         }
         ft_execve(full_path, args, env);

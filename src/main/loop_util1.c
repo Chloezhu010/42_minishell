@@ -118,6 +118,19 @@ t_token	*tokenize(char *input)
 			if (i > start)
 			{
 				char *word = strndup(&input[start], i - start);
+				while (input[i] && !ft_isspace(input[i]) && !is_special_char(input[i]))
+				{
+					while (input[i] && is_quote(input[i]))
+					{
+						start = ++i;
+						if (input[i] && is_quote(input[i]))
+							continue ;
+						while (input[i] && !is_quote(input[i]))
+							i++;
+						word = ft_strjoin(word, strndup(&input[start], i - start));
+						i++;
+					}
+				}
 				add_token(&tokens, create_token(word, TOKEN_WORD));
 				free(word);
 			}

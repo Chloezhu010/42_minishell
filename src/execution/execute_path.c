@@ -58,7 +58,6 @@ char	*find_path(char *cmd)
 		i++;
 	}
 	ft_freeup(dir);
-	free(dir);
 	return (NULL);
 }
 // // ==== test find_path ===
