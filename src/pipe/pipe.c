@@ -287,6 +287,7 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     pid_t pid;
     int stdin_backup = dup(STDIN_FILENO);
     int stdout_backup = dup(STDOUT_FILENO); // add stdout backup
+    int stderr_backup = dup(STDERR_FILENO); // add stderr backup
     int stdin_backup_child = -1; // add for child process
     int stdout_backup_child = -1; // add for child process
     pid_t pids[64];
@@ -333,6 +334,17 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
                     close(pipefd[1]);
                 }
                 exit(1);
+            }
+
+            /* for non-last cmd, redirect stderr to /dev/null if it's not the last cmd */
+            if (current->next)
+            {
+                int null_fd = open("/dev/null", O_WRONLY);
+                if (null_fd != -1)
+                {
+                    dup2(null_fd, STDERR_FILENO);
+                    close(null_fd);
+                }
             }
 
             // handle input from previous pipe
@@ -402,8 +414,10 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
     /* add stdout restoration */
     dup2(stdin_backup, STDIN_FILENO);
     dup2(stdout_backup, STDOUT_FILENO);
+    dup2(stderr_backup, STDERR_FILENO);
     close(stdin_backup);
     close(stdout_backup);
+    close(stderr_backup);
 
     /* wait for all child processes, but only set exit status from the last cmd */
     for (int i = 0; i < pid_count; i++)
@@ -412,6 +426,12 @@ void execute_pipeline(t_cmd *cmds, t_env *env)
         
         waitpid(pids[i], &status, 0);
         if (pids[i] == last_pid && WIFEXITED(status))
-            env->exit_status = WEXITSTATUS(status);
+        {
+            int exit_code = WEXITSTATUS(status);
+            if (exit_code == 2)
+                env->exit_status = 1;
+            else
+                env->exit_status = exit_code;
+        }
     }
 }
