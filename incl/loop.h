@@ -40,6 +40,7 @@ typedef struct s_cmd {
     char			*delimiter;// store the delimiter of heredoc
     int				fd_in;// store heredoc fd to use for input
     t_redir *redirects; // linked list of all redirect cmds
+    int in_pipe;
     struct s_cmd	*next;
 }				t_cmd;
 

@@ -220,6 +220,7 @@ t_cmd	*create_new_cmd(void)
 	cmd->delimiter = NULL;
 	cmd->fd_in = 0;
 	cmd->redirects = NULL;
+	cmd->in_pipe = 0;
 	cmd->next = NULL;
 	return cmd;
 }

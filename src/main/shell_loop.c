@@ -74,20 +74,26 @@ void execute_shell(t_cmd *cmd, t_env *env)
     int stdin_backup;
     int stdout_backup;
     t_builtin *builtin_in;
-    int input_error = 0;
+    // int input_error = 0;
 
     stdin_backup = -1;
     stdout_backup = -1;
     if (!cmd->args[0] || !env)
         return ;
-    /* check input file first */
-    input_error = check_input_file(cmd, env);
-    /* only create output file */
-    if (create_output_file(cmd, env))
-        exit(1);
-    /* if there is input error, return */
-    if (input_error)
+    
+    if (!cmd->in_pipe && process_redirect(cmd, env))
         return ;
+
+    // /* check input file first */
+    // input_error = check_input_file(cmd, env);
+    // /* only create output file */
+    // if (create_output_file(cmd, env))
+    //     exit(1);
+    // /* if there is input error, return */
+    // if (input_error)
+    //     return ;
+
+
     /* handle redirections */
     if (handle_input_redirect(cmd, &stdin_backup, env) == -1
         || handle_output_redirect(cmd, &stdout_backup, env) == -1)
@@ -152,10 +158,7 @@ void shell_loop(t_env *env)
 		{
 			expand_tokens(tokens, env);
 			check_format_command(tokens);
-			// print_tokens(tokens);
 			cmds = parse_tokens(tokens);
-			// if (cmds)
-			// 	print_cmds(cmds);
             /* execute the cmds */
             if (cmds)
             {
@@ -178,9 +181,21 @@ void shell_loop(t_env *env)
                     - free_cmds at the end
                 */
                 if (cmds && cmds->next)
+                {
+                    /* for pipes, mark all cmds */
+                    cmd_temp = cmds;
+                    while (cmd_temp)
+                    {
+                        cmd_temp->in_pipe = 1;
+                        cmd_temp = cmd_temp->next;
+                    }
                     execute_pipeline(cmds, env);
+                }
                 else
+                {
+                    cmds->in_pipe = 0;
                     execute_shell(cmds, env);
+                }
                 free_cmds(cmds);
             }
 			free_tokens(tokens);

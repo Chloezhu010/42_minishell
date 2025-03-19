@@ -47,6 +47,7 @@ void restore_io(int stdin_backup, int stdout_backup);
 int handle_heredoc(char *delimiter, t_env *env);
 int handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env);
+int process_redirect(t_cmd *cmd, t_env *env);
 
 /* shell loop */
 char *read_line(void);

@@ -150,6 +150,52 @@ void restore_io(int stdin_backup, int stdout_backup)
     }
 }
 
+/* process all redirect in order (from left to right) 
+    - check if files exist/ can be created, and handle permissions
+    - return 0 on success, 1 on error
+*/
+int process_redirect(t_cmd *cmd, t_env *env)
+{
+    t_redir *redir;
+    int fd;
+
+    redir = cmd->redirects;
+    while (redir)
+    {
+        if (redir->type == TOKEN_REDIRECT_IN)
+        {
+            fd = open(redir->file, O_RDONLY);
+            if (fd == -1)
+            {
+                perror("minishell");
+                /* only set the exit status if it's not in a pipe */
+                if (!cmd->in_pipe)
+                    env->exit_status = 1;
+                return (1);
+            }
+            close(fd);
+        }
+        else if (redir->type == TOKEN_REDIRECT_APPEND || redir->type == TOKEN_REDIRECT_OUT)
+        {
+            if (redir->type == TOKEN_REDIRECT_APPEND)
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            else
+                fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            if (fd == -1)
+            {
+                perror("minishell");
+                /* only set the exit status if it's not in a pipe */
+                if (!cmd->in_pipe)
+                    env->exit_status = 1;
+                return (1);
+            }
+            close(fd);
+        }
+        redir = redir->next;
+    }
+    return (0);
+}
+
 // // === test redirect ===
 // int main()
 // {

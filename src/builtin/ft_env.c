@@ -21,7 +21,7 @@
 void	ft_env(char **args, t_env *env)
 {
 	(void)args;
-	if (!env)
+	if (!env || !env->env_var)
 	{
 		printf("env not initialized\n");
 		return ;
