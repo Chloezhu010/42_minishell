@@ -51,7 +51,6 @@ char	*find_path(char *cmd)
 		tmp = ft_strjoin(dir[i], "/");
 		full_path = ft_strjoin(tmp, cmd);
 		free(tmp);
-		// printf("trying path: %s\n", full_path);// debug
 		if (access(full_path, X_OK) == 0)
 			return (full_path);
 		free(full_path);
@@ -60,6 +59,26 @@ char	*find_path(char *cmd)
 	ft_freeup(dir);
 	return (NULL);
 }
+
+/* get the full path for an external cmd 
+	- if the cmd name contains absolute path, then copy the path
+	- if not, find_path
+*/
+char *get_cmd_path(t_cmd *cmd)
+{
+	char *path;
+
+	path = NULL;
+	if (cmd->args && cmd->args[0])
+    {
+        if (ft_strchr(cmd->args[0], '/'))
+            path = ft_strdup(cmd->args[0]);
+        else
+            path = find_path(cmd->args[0]);
+    }
+	return (path);
+}
+
 // // ==== test find_path ===
 // int main(int ac, char **av)
 // {

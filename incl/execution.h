@@ -7,10 +7,12 @@
 # include "../incl/builtin.h"
 
 typedef struct s_env t_env;
+typedef struct s_cmd t_cmd;
 
 /* execute_path */
 char	*get_path(void);
 char	*find_path(char *cmd);
+char *get_cmd_path(t_cmd *cmd);
 
 /* execute_utils */
 pid_t	ft_fork(void);

@@ -8,14 +8,13 @@
     - read user input until the delimiter
         - input lines are read & written to the temp file
         - close and reopen with read-only mode
-    - return the fd for redirection
+    - reopen the file and return fd
 */
 int handle_heredoc(char *delimiter, t_env *env)
 {
     char *line;
     int fd;
     
-    /* create a temp file */
     fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1)
     {
@@ -23,7 +22,6 @@ int handle_heredoc(char *delimiter, t_env *env)
         env->exit_status = 1;
         return (-1);
     }
-    /* read input until the delimiter */
     while (1)
     {
         line = readline("heredoc> ");
@@ -34,7 +32,6 @@ int handle_heredoc(char *delimiter, t_env *env)
         free(line);
     }
     close(fd);
-    /* reopen the file */
     fd = open("/tmp/minishell_heredoc", O_RDONLY);
     return (fd);
 }

@@ -49,10 +49,15 @@ int handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env);
 int process_redirect(t_cmd *cmd, t_env *env);
 
+/* execution */
+void execute_builtin(t_cmd *cmd, t_env *env);
+void execute_external(t_cmd *cmd, t_env *env);
+
 /* shell loop */
 char *read_line(void);
 char    **cell_split_line(char *line);
-void launch_execution(char **args, t_env *env);
+void execute_cmd(t_cmd *cmd, t_env *env);
+// void launch_execution(t_cmd *cmd, t_env *env);
 void execute_shell(t_cmd *cmd, t_env *env);
 void shell_loop(t_env *env);
 

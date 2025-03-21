@@ -20,7 +20,7 @@ pid_t	ft_fork(void)
 	pid = fork();
 	if (pid < 0)
 	{
-		perror("fork failed");
+		perror("fork");
 		exit(1);
 	}
 	return (pid);
@@ -47,6 +47,7 @@ void ft_execve(char *path, char **av, t_env *env)
 		write(2, "env not initialized\n", 20);
 		exit(1);
 	}
+	/* try the execve with the provided path and env */
 	if (execve(path, av, env->env_var) == -1)
 	{
         dir = opendir(path);

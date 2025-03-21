@@ -7,19 +7,13 @@
 char *read_line(void)
 {
     char *buf;
-    // char cwd[1024];
 
     buf = NULL;
-    // if (!getcwd(cwd, sizeof(cwd)))
-    //     perror("getcwd");
-    // printf("%s ", cwd);
 	buf = readline("minishell $>");
     return (buf);
 }
 
-/* tokenize the input line
-    - parse the args
-*/
+/* tokenize the input line */
 char    **cell_split_line(char *line)
 {
     char            **tokens;
@@ -30,36 +24,90 @@ char    **cell_split_line(char *line)
     return (tokens);
 }
 
-/* launch external programs */
-void launch_execution(char **args, t_env *env)
+/* execute a builtin cmd */
+void execute_builtin(t_cmd *cmd, t_env *env)
 {
-    pid_t pid;
-    int status = 0;
-    char *full_path;
+    t_builtin *builtins;
+    int i;
 
-    pid = ft_fork();
-    if (pid == CHILD_PROCESS)
+    builtins = init_builtin();
+    i = 0;
+    while (builtins[i].builtin_name)
     {
-        if (!args[0])
-            exit(1);
-        if (ft_strchr(args[0], '/'))
-            full_path = ft_strdup(args[0]);
-        else
-            full_path = find_path(args[0]);
-        if (!full_path)
+        if (cmd->args && ft_strcmp(cmd->args[0], builtins[i].builtin_name) == 0)
         {
-            ft_putstr_fd(" command not found\n", 2);
-            exit(127);
+            builtins[i].func(cmd->args, env);
+            exit(env->exit_status);
         }
-        ft_execve(full_path, args, env);
-    }
-    else
-    {
-        ft_wait(&status);
-        if (WIFEXITED(status))
-            env->exit_status = WEXITSTATUS(status);
+        i++;
     }
 }
+
+/* execute external functions
+    - if the cmd name contains absolute path, then copy the path
+        - if not, find_path
+        - if path exists, execve the external function
+    - if cmd failed
+        - return error
+*/
+void execute_external(t_cmd *cmd, t_env *env)
+{
+    char *path;
+
+    path = get_cmd_path(cmd);
+    if (path)
+    {
+        ft_execve(path, cmd->args, env);
+        free(path);
+    }
+    if (cmd->args && cmd->args[0])
+        perror("command not found");
+    exit(127);
+}
+
+/* execute both builtin and external functions */
+void execute_cmd(t_cmd *cmd, t_env *env)
+{
+    execute_builtin(cmd, env);
+    execute_external(cmd, env);
+}
+
+/* handle redirection */
+int handle_redirect(t_cmd *cmd, int *stdin_backup, int *stdout_backup, t_env *env)
+{
+    if (!cmd->in_pipe && process_redirect(cmd, env))
+        return (1);
+    if (handle_input_redirect(cmd, stdin_backup, env) == -1
+        || handle_output_redirect(cmd, stdout_backup, env) == -1)
+    {
+        env->exit_status = 1;
+        // restore_io(stdin_backup, stdout_backup);
+        return (1);
+    }
+    return (0);
+}
+
+// /* launch external programs */
+// void launch_execution(t_cmd *cmd, t_env *env)
+// {
+//     pid_t pid;
+//     int status;
+//     // char *full_path;
+
+//     pid = ft_fork();
+//     if (pid == CHILD_PROCESS)
+//     {
+//         if (!cmd->args[0])
+//             exit(1);
+//         execute_external(cmd, env);
+//     }
+//     else
+//     {
+//         ft_wait(&status);
+//         if (WIFEXITED(status))
+//             env->exit_status = WEXITSTATUS(status);
+//     }
+// }
 
 /* execute shell
     - input control
@@ -70,56 +118,33 @@ void launch_execution(char **args, t_env *env)
 */
 void execute_shell(t_cmd *cmd, t_env *env)
 {
-    int i;
     int stdin_backup;
     int stdout_backup;
-    t_builtin *builtin_in;
-    // int input_error = 0;
+    pid_t pid;
+    int status;
 
     stdin_backup = -1;
     stdout_backup = -1;
     if (!cmd->args[0] || !env)
         return ;
-    
-    if (!cmd->in_pipe && process_redirect(cmd, env))
+    if (handle_redirect(cmd, &stdin_backup, &stdout_backup, env))
         return ;
-
-    // /* check input file first */
-    // input_error = check_input_file(cmd, env);
-    // /* only create output file */
-    // if (create_output_file(cmd, env))
-    //     exit(1);
-    // /* if there is input error, return */
-    // if (input_error)
-    //     return ;
-
-
-    /* handle redirections */
-    if (handle_input_redirect(cmd, &stdin_backup, env) == -1
-        || handle_output_redirect(cmd, &stdout_backup, env) == -1)
+    /* if in a pipe, shouldn't call this function directly */
+    if (cmd->in_pipe)
     {
-        env->exit_status = 1;
-        restore_io(stdin_backup, stdout_backup);
+        perror("execute_shell called directly for piped cmd");
         return ;
     }
-
-    /* handle builtin & external cmd execution */
-    builtin_in = init_builtin();
-    i = 0;
-    while (builtin_in[i].builtin_name)
+    /* for singale cmd, fork and execute */
+    pid = ft_fork();
+    if (pid == CHILD_PROCESS)
+        execute_cmd(cmd, env);
+    else
     {
-        if(ft_strcmp(cmd->args[0], builtin_in[i].builtin_name) == 0)
-        {
-            builtin_in[i].func(cmd->args, env);
-            /* restore original stdin after the execution of builtin */
-            restore_io(stdin_backup, stdout_backup);
-            return ;
-        }
-        i++;
+        ft_wait(&status);
+        if (WIFEXITED(status))
+            env->exit_status = WEXITSTATUS(status);
     }
-    if (!builtin_in[i].builtin_name)
-        launch_execution(cmd->args, env);
-    /* restore original stdin after the execution of eternal program */
     restore_io(stdin_backup, stdout_backup);
 }
 
