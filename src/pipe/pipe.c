@@ -147,12 +147,7 @@ void handle_stderr_redirect(t_cmd *cmd)
 */
 int setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 {
-    if (ctx->prev_pipe_read != -1)
-    {
-        dup2(ctx->prev_pipe_read, STDIN_FILENO);
-        close(ctx->prev_pipe_read);
-    }
-    else if (cmd->infile || (cmd->heredoc && cmd->fd_in > 0))
+    if (cmd->infile || (cmd->heredoc && cmd->fd_in > 0))
     {
         if (handle_input_redirect(cmd, stdin_backup, env) == -1)
         {
@@ -163,6 +158,11 @@ int setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
             }
             return (1);
         }
+    }
+    else if (ctx->prev_pipe_read != -1)
+    {
+        dup2(ctx->prev_pipe_read, STDIN_FILENO);
+        close(ctx->prev_pipe_read);
     }
     return (0);
 }

@@ -36,7 +36,11 @@ void	ft_cd(char **args, t_env *env)
 	{
 		dir = getenv("HOME");
 		if (!dir)
+		{
 			printf("cd: HOME not set\n");
+			env->exit_status = 1;
+			return ;
+		}
 	}
 	else if (args[1] != NULL && args[2] != NULL)
 	{
@@ -46,11 +50,16 @@ void	ft_cd(char **args, t_env *env)
 	}
 		dir = args[1];
 	if (getcwd(cwd, sizeof(cwd)) == NULL)
+	{
 		perror("getcwd");
+		env->exit_status = 1;
+		return ;
+	}
 	if (chdir(dir) != 0)
 	{
 		env->exit_status = 1;
 		perror("cd");
+		return ;
 	}
 	update_env("OLDPWD", cwd, env);
 	if (getcwd(cwd, sizeof(cwd)) != NULL)

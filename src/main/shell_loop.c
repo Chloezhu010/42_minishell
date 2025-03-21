@@ -87,28 +87,6 @@ int handle_redirect(t_cmd *cmd, int *stdin_backup, int *stdout_backup, t_env *en
     return (0);
 }
 
-// /* launch external programs */
-// void launch_execution(t_cmd *cmd, t_env *env)
-// {
-//     pid_t pid;
-//     int status;
-//     // char *full_path;
-
-//     pid = ft_fork();
-//     if (pid == CHILD_PROCESS)
-//     {
-//         if (!cmd->args[0])
-//             exit(1);
-//         execute_external(cmd, env);
-//     }
-//     else
-//     {
-//         ft_wait(&status);
-//         if (WIFEXITED(status))
-//             env->exit_status = WEXITSTATUS(status);
-//     }
-// }
-
 /* execute shell
     - input control
     - check env init
@@ -129,13 +107,25 @@ void execute_shell(t_cmd *cmd, t_env *env)
         return ;
     if (handle_redirect(cmd, &stdin_backup, &stdout_backup, env))
         return ;
-    /* if in a pipe, shouldn't call this function directly */
-    if (cmd->in_pipe)
+
+    /* Check if it's a builtin command */
+    t_builtin *builtins;
+    int i;
+    builtins = init_builtin();
+    i = 0;
+    while (builtins[i].builtin_name)
     {
-        perror("execute_shell called directly for piped cmd");
-        return ;
+        if (ft_strcmp(cmd->args[0], builtins[i].builtin_name) == 0)
+        {
+            /* Execute builtin directly in the parent process */
+            builtins[i].func(cmd->args, env);
+            restore_io(stdin_backup, stdout_backup);
+            return;
+        }
+        i++;
     }
-    /* for singale cmd, fork and execute */
+
+    /* for non-builtin, fork and execute */
     pid = ft_fork();
     if (pid == CHILD_PROCESS)
         execute_cmd(cmd, env);
