@@ -32,11 +32,34 @@ pid_t	ft_fork(void)
     - use execve to execute the cmd
         - if execve fails (returns -1), print error and exit
 */
-void ft_execve(char *path, char **av, t_env *env)
+static int	check_execve_errors(char *path)
 {
-	DIR*dir;
-	struct stat path_stat;
+	DIR			*dir;
+	struct stat	path_stat;
 
+	dir = opendir(path);
+	if (dir != NULL)
+	{
+		closedir(dir);
+		write(2, "execve failed: Is a directory\n", 29);
+		exit(126);
+	}
+	if (stat(path, &path_stat) == -1)
+	{
+		write(2, "execve failed: No such file or directory\n", 40);
+		exit(127);
+	}
+	if (access(path, X_OK) == -1)
+	{
+		write(2, "execve failed: Permission denied\n", 32);
+		exit(126);
+	}
+	ft_putstr_fd(" command not found", 2);
+	exit(127);
+}
+
+void	ft_execve(char *path, char **av, t_env *env)
+{
 	if (!path || !av || !av[0])
 	{
 		write(2, "execve: invalid args\n", 21);
@@ -47,30 +70,8 @@ void ft_execve(char *path, char **av, t_env *env)
 		write(2, "env not initialized\n", 20);
 		exit(1);
 	}
-	/* try the execve with the provided path and env */
 	if (execve(path, av, env->env_var) == -1)
-	{
-        dir = opendir(path);
-
-		if (dir != NULL)
-		{
-			closedir(dir);
-			write(2, "execve failed: Is a directory\n", 29);
-			exit(126);
-		}
-		if (stat(path, &path_stat) == -1)
-		{
-			write(2, "execve failed: No such file or directory\n", 40);
-			exit(127);
-		}
-		if (access(path, X_OK) == -1)
-		{
-			write(2, "execve failed: Permission denied\n", 32);
-			exit(126);
-		}
-		ft_putstr_fd(" command not found", 2);
-		exit(127);
-	}
+		check_execve_errors(path);
 }
 
 /* wait function wrapper

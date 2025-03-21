@@ -29,52 +29,15 @@ void	add_token(t_token **head, t_token *new_token)
 
 char	*extract_quoted(char *input, int *i, char quote)
 {
-	int		start;
 	char	*quoted;
 
-	start = *i;
-	if (is_quote(input[start]))
-		return NULL;
-	while (input[*i] && input[*i] != quote)
-		(*i)++;
-	if (!input[*i])
-	{
-		printf("quote need be close\n");
-		return (NULL);
-	}
-	if (*i - start <= 0)
-		return (strdup(""));
-
-	quoted = strndup(&input[start], *i - start);
-	(*i)++;
 	if (is_quote(input[*i]))
-	{
-		while (input[*i] && is_quote(input[*i]))
-		{
-			quote = input[*i];
-			start = ++(*i);
-			if(input[*i] && quote != input[*i])
-			{
-				while (input[*i] && quote != input[*i])
-					(*i)++;
-				if (!input[*i])
-				{
-					printf("quote need be close\n");
-					free(quoted);
-					return (NULL);
-				}
-				quoted = ft_strjoin(quoted, strndup(&input[start], *i - start));
-				(*i)++;
-			}
-			else if (!input[*i])
-				{
-					printf("quote need be close\n");
-					free(quoted);
-					return (NULL);
-				}
-		}
-	}
-	
+		return (NULL);
+	quoted = extract_single_quoted(input, i, quote);
+	if (!quoted)
+		return (NULL);
+	if (is_quote(input[*i]))
+		quoted = process_additional_quotes(input, i, quoted);
 	return (quoted);
 }
 

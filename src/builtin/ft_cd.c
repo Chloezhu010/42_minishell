@@ -25,45 +25,61 @@
             - if fail, return -1
         - update the OLDPWD and PWD env var
 */
-void	ft_cd(char **args, t_env *env)
+static char	*resolve_directory(char **args, t_env *env)
 {
 	char	*dir;
-	char	cwd[1024];
 
-	if (!env)
-		return ;
 	if (!args[1])
 	{
 		dir = getenv("HOME");
 		if (!dir)
 		{
 			printf("cd: HOME not set\n");
-			env->exit_status = 1;
-			return ;
+			return (NULL);
 		}
 	}
-	else if (args[1] != NULL && args[2] != NULL)
+	else if (args[1] && args[2])
 	{
-		ft_putstr_fd(" too many arguments", 2);
+		ft_putstr_fd("cd: too many arguments\n", 2);
 		env->exit_status = 1;
-		return ;
+		return (NULL);
 	}
+	else
 		dir = args[1];
-	if (getcwd(cwd, sizeof(cwd)) == NULL)
-	{
-		perror("getcwd");
-		env->exit_status = 1;
+
+	return (dir);
+}
+
+static void	execute_cd(char *dir, t_env *env)
+{
+	char	cwd[1024];
+
+	if (!dir)
 		return ;
-	}
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+		perror("getcwd");
 	if (chdir(dir) != 0)
 	{
 		env->exit_status = 1;
 		perror("cd");
-		return ;
 	}
-	update_env("OLDPWD", cwd, env);
-	if (getcwd(cwd, sizeof(cwd)) != NULL)
-		update_env("PWD", cwd, env);
+	else
+	{
+		update_env("OLDPWD", cwd, env);
+		if (getcwd(cwd, sizeof(cwd)) != NULL)
+			update_env("PWD", cwd, env);
+	}
+}
+
+void	ft_cd(char **args, t_env *env)
+{
+	char	*dir;
+
+	if (!env)
+		return ;
+
+	dir = resolve_directory(args, env);
+	execute_cd(dir, env);
 }
 /*
 // // === test create_env_entry ===

@@ -17,17 +17,17 @@
 */
 t_builtin	*init_builtin(void)
 {
-	static t_builtin	builtin_in[]
-	= {
-				{"pwd", ft_pwd},
-				{"cd", ft_cd},
-				{"echo", ft_echo},
-				{"env", ft_env},
-				{"exit", ft_exit},
-				{"export", ft_export},
-				{"unset", ft_unset},
-				{NULL, NULL}
-				};
+	static t_builtin	builtin_in[] = {
+	{"pwd", ft_pwd},
+	{"cd", ft_cd},
+	{"echo", ft_echo},
+	{"env", ft_env},
+	{"exit", ft_exit},
+	{"export", ft_export},
+	{"unset", ft_unset},
+	{NULL, NULL}
+	};
+
 	return (builtin_in);
 }
 

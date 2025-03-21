@@ -8,10 +8,10 @@
 		- find the var_end
 			- whenever it's alpha numberic or "_", move the ptr forward
 */
-char *extract_var_name(char *str)
+char	*extract_var_name(char *str)
 {
-	char *var_start;
-	char *var_end;
+	char	*var_start;
+	char	*var_end;
 
 	var_start = ft_strchr(str, '$');
 	if (!var_start)
@@ -19,19 +19,21 @@ char *extract_var_name(char *str)
 	var_end = var_start + 1;
 	while (*var_end && !ft_isspace(*var_end))
 	{
-		if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')))
+		if (*var_end && (*var_end == '?'
+				|| (*var_end >= '0' && *var_end <= '9')))
 		{
 			var_end++;
-			break;
+			break ;
 		}
 		if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_')
 		{
-			while ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_' || (*var_end >= '0' && *var_end <= '9'))
+			while ((*var_end >= 'A' && *var_end <= 'Z') 
+				|| *var_end == '_' || (*var_end >= '0' && *var_end <= '9'))
 				var_end++;
-			break;
+			break ;
 		}
 	}
-	return (strndup(var_start, var_end - var_start)); //TODO replace
+	return (strndup(var_start, var_end - var_start));
 }
 
 /* expand var in a str
@@ -42,10 +44,10 @@ char *extract_var_name(char *str)
 		- if not (a regular string)
 			- call handle_regular_char
 */
-char *expand_var_instr(char *input, t_env *env)
+char	*expand_var_instr(char *input, t_env *env)
 {
-	char *res;
-	char *ptr;
+	char	*res;
+	char	*ptr;
 
 	ptr = input;
 	res = ft_strdup("");
@@ -74,24 +76,26 @@ char *expand_var_instr(char *input, t_env *env)
 void	expand_tokens(t_token *tokens, t_env *env)
 {
 	char	*expanded_value;
-    t_token *current;
+	t_token	*current;
 
-    current = tokens;
+	current = tokens;
 	while (current)
 	{
-        if (current->type == TOKEN_SINGLE_QUOTE && current->value)
-        {
-            current = current->next;
-            continue ;
+		if (current->type == TOKEN_SINGLE_QUOTE && current->value)
+		{
+			current = current->next;
+			continue ;
 		}
-		else if (current->value && (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD))
+		else if (current->value
+			&& (current->type == TOKEN_DOUBLE_QUOTE
+				|| current->type == TOKEN_WORD))
 		{
 			expanded_value = expand_var_instr(current->value, env);
-            if (expanded_value)
-            {
-                free(current->value);
-                current->value = expanded_value;
-            }
+			if (expanded_value)
+			{
+				free(current->value);
+				current->value = expanded_value;
+			}
 		}
 		current = current->next;
 	}

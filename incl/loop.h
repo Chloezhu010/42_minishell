@@ -45,6 +45,7 @@ typedef struct s_cmd {
 }				t_cmd;
 
 t_token	*tokenize(char *input);
+void	extract_redirect_filename(char *input, int *i, t_token **tokens);
 
 void		free_cmds(t_cmd *cmds);
 t_cmd	*create_new_cmd(void);
@@ -55,13 +56,18 @@ void	check_format_command(t_token *tokens);
 
 /* redirect */
 t_redir *create_new_redir(char *file, int type);
+void	update_cmd_files(t_cmd *cmd, char *file, int type);
 void add_redir(t_cmd *cmd, char *file, int type);
 void free_redir(t_redir *redir);
 
-/* tokenize_utils */
+/* tokenize_utils1 */
 int			ft_isspace(char a);
 int			is_special_char(char c);
 int			is_quote(char c);
+void    tokenize_util1(t_token **tokens, int *i, char *input);
+void    tokenize_util2(t_token **tokens, int *i, char *input);
+int     tokenize_util3(t_token **tokens, int *i, char *input);
+void	tokenize_util4(t_token **tokens, int *i, char *input);
 
 /* token_utils_1 */
 void		add_token(t_token **head, t_token *new_token);
@@ -74,5 +80,18 @@ void		free_tokens(t_token *tokens);
 int			check_format_of_pipe(t_token *tokens);
 int			check_format_of_redirect(t_token *tokens);
 int			validate_tokens(t_token *tokens);
+
+/* parse_tokens_utils*/
+t_cmd	*create_new_command(t_cmd **cmd_head);
+void	process_token_word(t_cmd *current_cmd, t_token *tokens);
+void	process_redirection(t_cmd *current_cmd, t_token **tokens, int type);
+void	process_heredoc(t_cmd *current_cmd, t_token **tokens);
+
+/* extract_quoted_utils*/
+char	*extract_single_quoted(char *input, int *i, char quote);
+char	*process_diff_quote(char *input, int *i, char quote, char *current);
+char	*handle_consecutive_quote(char *input,
+			int *i, char quote, char *current);
+char	*process_additional_quotes(char *input, int *i, char *quoted);
 
 #endif

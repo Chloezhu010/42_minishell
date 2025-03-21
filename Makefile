@@ -11,6 +11,7 @@ SRC_DIR = src
 EXEC_DIR = $(SRC_DIR)/execution
 BUILTIN_DIR = $(SRC_DIR)/builtin
 MAIN_DIR = $(SRC_DIR)/main
+UTILS_DIR = $(SRC_DIR)/utils
 SIG_DIR = $(SRC_DIR)/signal
 PIPE_DIR = $(SRC_DIR)/pipe
 EXPAND_DIR = $(SRC_DIR)/expander
@@ -24,11 +25,17 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_exit.c \
 		$(BUILTIN_DIR)/ft_export.c \
 		$(BUILTIN_DIR)/ft_unset.c \
-		$(MAIN_DIR)/shell_loop_utils.c \
-		$(MAIN_DIR)/loop_util1.c \
-		$(MAIN_DIR)/token_utils_1.c \
-		$(MAIN_DIR)/token_utils_2.c \
-		$(MAIN_DIR)/tokenize_utils.c \
+		$(UTILS_DIR)/shell_loop_utils.c \
+		$(UTILS_DIR)/loop_util1.c \
+		$(UTILS_DIR)/redir_utils.c \
+		$(UTILS_DIR)/cmd_utils.c \
+		$(UTILS_DIR)/parse_tokens_utils.c \
+		$(UTILS_DIR)/token_utils_1.c \
+		$(UTILS_DIR)/token_utils_2.c \
+		$(UTILS_DIR)/tokenize_utils3.c \
+		$(UTILS_DIR)/tokenize_utils1.c \
+		$(UTILS_DIR)/tokenize_utils2.c \
+		$(UTILS_DIR)/extract_quoted_utils.c \
 		$(MAIN_DIR)/shell_loop.c \
 		$(SIG_DIR)/signal.c \
 		$(EXEC_DIR)/execute_path.c \

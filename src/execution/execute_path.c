@@ -64,18 +64,18 @@ char	*find_path(char *cmd)
 	- if the cmd name contains absolute path, then copy the path
 	- if not, find_path
 */
-char *get_cmd_path(t_cmd *cmd)
+char	*get_cmd_path(t_cmd *cmd)
 {
-	char *path;
+	char	*path;
 
 	path = NULL;
 	if (cmd->args && cmd->args[0])
-    {
-        if (ft_strchr(cmd->args[0], '/'))
-            path = ft_strdup(cmd->args[0]);
-        else
-            path = find_path(cmd->args[0]);
-    }
+	{
+		if (ft_strchr(cmd->args[0], '/'))
+			path = ft_strdup(cmd->args[0]);
+		else
+			path = find_path(cmd->args[0]);
+	}
 	return (path);
 }
 
