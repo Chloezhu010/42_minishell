@@ -6,7 +6,7 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:01:10 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:01:11 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/21 19:00:35 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	execute_external(t_cmd *cmd, t_env *env)
 		free(path);
 	}
 	if (cmd->args && cmd->args[0])
-		perror("command not found");
+		ft_putstr_fd(" command not found", 2);
 	exit(127);
 }
 
