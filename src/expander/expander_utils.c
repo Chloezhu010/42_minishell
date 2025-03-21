@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/21 17:57:10 by auzou             #+#    #+#             */
+/*   Updated: 2025/03/21 17:57:41 by auzou            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../incl/minishell.h"
 
 /* helper function to handle regular char in expand_var_instr
@@ -31,7 +43,6 @@ char	*handle_regular_char(char *res, char current_char)
 			- skip the $ char
 			- search the parameter in env_var
 */
-
 
 static char	*expand_variable(const char *str, t_env *enve)
 {

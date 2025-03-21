@@ -35,15 +35,22 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(UTILS_DIR)/tokenize_utils3.c \
 		$(UTILS_DIR)/tokenize_utils1.c \
 		$(UTILS_DIR)/tokenize_utils2.c \
+		$(UTILS_DIR)/execute_shell_utils.c \
 		$(UTILS_DIR)/extract_quoted_utils.c \
 		$(MAIN_DIR)/shell_loop.c \
+		$(MAIN_DIR)/main.c \
 		$(SIG_DIR)/signal.c \
 		$(EXEC_DIR)/execute_path.c \
 		$(EXEC_DIR)/execute_utils.c \
 		$(EXPAND_DIR)/expander.c \
 		$(EXPAND_DIR)/expander_utils.c \
 		$(PIPE_DIR)/pipe.c \
-		$(REDIRECT_DIR)/redirect.c
+		$(PIPE_DIR)/pipe_utils1.c \
+		$(PIPE_DIR)/pipe_utils2.c \
+		$(PIPE_DIR)/pipe_utils3.c \
+		$(REDIRECT_DIR)/redirect.c \
+		$(REDIRECT_DIR)/redirect_utils1.c \
+		$(REDIRECT_DIR)/redirect_utils2.c 
 
 OBJ = $(SRC:.c=.o)
 

@@ -27,4 +27,20 @@ typedef struct s_child_pipe
 
 void execute_pipeline(t_cmd *cmds, t_env *env);
 
+void	ft_pipe(int pipefd[2]);
+int	check_input_file(t_cmd *cmd, t_env *env);
+int	create_output_file(t_cmd *cmd, t_env *env);
+void	init_pipe(t_pipe *context);
+void	mark_pipeline_cmd(t_cmd *cmd);
+int	create_cmd_pipe(t_pipe *ctx, t_env *env);
+void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error);
+void	handle_stderr_redirect(t_cmd *cmd);
+int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env);
+int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env);
+int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env);
+void	execute_pipe_child(t_cmd *current,
+		t_pipe *ctx, t_env *env, int redirect_error);
+void	execute_parent_process(t_pipe *ctx, t_cmd *cmd, pid_t pid);
+void	restore_std_fd(t_pipe *ctx);
+void	wait_for_child(t_pipe *ctx, t_env *env);
 #endif

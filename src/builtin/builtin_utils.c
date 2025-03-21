@@ -99,7 +99,7 @@ void	update_env(char *key, char *value, t_env *env)
 	while (env->env_var[i])
 	{
 		if (ft_strncmp(env->env_var[i], key, key_len) == 0
-				&& env->env_var[i][key_len] == '=')
+			&& env->env_var[i][key_len] == '=')
 		{
 			free(env->env_var[i]);
 			env->env_var[i] = new_entry;

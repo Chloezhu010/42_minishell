@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/21 17:57:23 by auzou             #+#    #+#             */
+/*   Updated: 2025/03/21 17:57:56 by auzou            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../incl/minishell.h"
 
 /* extract the var name from a double quoted str
@@ -27,7 +39,7 @@ char	*extract_var_name(char *str)
 		}
 		if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_')
 		{
-			while ((*var_end >= 'A' && *var_end <= 'Z') 
+			while ((*var_end >= 'A' && *var_end <= 'Z')
 				|| *var_end == '_' || (*var_end >= '0' && *var_end <= '9'))
 				var_end++;
 			break ;

@@ -46,7 +46,6 @@ static char	*resolve_directory(char **args, t_env *env)
 	}
 	else
 		dir = args[1];
-
 	return (dir);
 }
 
@@ -77,7 +76,6 @@ void	ft_cd(char **args, t_env *env)
 
 	if (!env)
 		return ;
-
 	dir = resolve_directory(args, env);
 	execute_cd(dir, env);
 }

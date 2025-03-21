@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenize_utils3.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/21 17:59:13 by auzou             #+#    #+#             */
+/*   Updated: 2025/03/21 17:59:14 by auzou            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../incl/loop.h"
 
 static int	tokenize_util4_util1(char *input, int *start, char **word, int *i)
@@ -40,7 +52,7 @@ static int	tokenize_util4_append_word(char *input, int *i, char **word)
 	else
 	{
 		start = *i;
-		while (input[*i] && !ft_isspace(input[*i]) 
+		while (input[*i] && !ft_isspace(input[*i])
 			&& !is_special_char(input[*i]) && !is_quote(input[*i]))
 			(*i)++;
 		*word = ft_strjoin(*word, strndup(&input[start], (*i) - start));

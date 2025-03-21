@@ -1,196 +1,52 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirect.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/21 18:21:07 by auzou             #+#    #+#             */
+/*   Updated: 2025/03/21 18:38:52 by auzou            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../incl/minishell.h"
 
-/*
-    - create a temp file to store input line
-        - write only
-        - if not exits, create one
-        - if the file exists, content will be erased
-    - read user input until the delimiter
-        - input lines are read & written to the temp file
-        - close and reopen with read-only mode
-    - reopen the file and return fd
-*/
-int handle_heredoc(char *delimiter, t_env *env)
+int	handle_output_redirect_result(t_cmd *cmd, t_env *env, int result)
 {
-    char *line;
-    int fd;
-    
-    fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1)
-    {
-        perror("open");
-        env->exit_status = 1;
-        return (-1);
-    }
-    while (1)
-    {
-        line = readline("heredoc> ");
-        if (!line || ft_strcmp(line, delimiter) == 0)
-            break ;
-        write(fd, line, ft_strlen(line));
-        write(fd, "\n", 1);
-        free(line);
-    }
-    close(fd);
-    fd = open("/tmp/minishell_heredoc", O_RDONLY);
-    return (fd);
+	if (result == 1)
+	{
+		if (!cmd->in_pipe)
+			env->exit_status = 1;
+		return (1);
+	}
+	return (0);
 }
 
-/* handle input redirect
-    - return -1 for error, 0 for success
-*/
-int handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
+int	process_redirect(t_cmd *cmd, t_env *env)
 {
-    int fd;
-    
-    if (!cmd->heredoc && !cmd->infile)
-    {
-        *stdin_backup = -1;
-        return (0);
-    }
-    *stdin_backup = dup(STDIN_FILENO);
-    if (*stdin_backup == -1)
-    {
-        perror("dup");
-        env->exit_status = 1;
-        return (-1);
-    }
-    /* handle heredoc */
-    if (cmd->heredoc && cmd->fd_in > 0)
-    {
-        if (dup2(cmd->fd_in, STDIN_FILENO) == -1)
-        {
-            perror("dup2");
-            close(*stdin_backup);
-            env->exit_status = 1;
-            return (-1);
-        }
-        close(cmd->fd_in);
-    }
-    /* handle other input redirect */
-    else if (cmd->infile)
-    {
-        fd = open(cmd->infile, O_RDONLY);
-        if (fd == -1)
-        {
-            perror("minishell");
-            close(*stdin_backup);
-            env->exit_status = 1;
-            return (-1);
-        }
-        /* redirect stdin to the input file */
-        if (dup2(fd, STDIN_FILENO) == -1)
-        {
-            perror("dup2");
-            close(fd);
-            close(*stdin_backup);
-            env->exit_status = 1;
-            return (-1);
-        }
-        close(fd);
-    }
-    return (0);
-}
+	t_redir	*redir;
+	int		result;
 
-/* handle output redirect TODO */
-int handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env)
-{
-    int fd;
-    
-    if (!cmd->outfile)
-    {
-        *stdout_backup = -1;
-        return (0);
-    }
-    *stdout_backup = dup(STDOUT_FILENO);
-    if (*stdout_backup == -1)
-    {
-        perror("dup");
-        env->exit_status = 1;
-        return (-1);
-    }
-    if (cmd->append)
-        fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    else
-        fd = open(cmd->outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1)
-    {
-        perror("minishell");
-        close(*stdout_backup);
-        env->exit_status = 1;
-        return (-1);
-    }
-    if (dup2(fd, STDOUT_FILENO) == -1)
-    {
-        perror("minishell");
-        close(fd);
-        close(*stdout_backup);
-        env->exit_status = 1;
-        return (-1);
-    }
-    close(fd);
-    return (0);
-}
-
-/* restore std input after execution */
-void restore_io(int stdin_backup, int stdout_backup)
-{
-    if (stdin_backup != -1)
-    {
-        dup2(stdin_backup, STDIN_FILENO);
-        close(stdin_backup);
-    }
-    if (stdout_backup != -1)
-    {
-        dup2(stdout_backup, STDOUT_FILENO);
-        close(stdout_backup);
-    }
-}
-
-/* process all redirect in order (from left to right) 
-    - check if files exist/ can be created, and handle permissions
-    - return 0 on success, 1 on error
-*/
-int process_redirect(t_cmd *cmd, t_env *env)
-{
-    t_redir *redir;
-    int fd;
-
-    redir = cmd->redirects;
-    while (redir)
-    {
-        if (redir->type == TOKEN_REDIRECT_IN)
-        {
-            fd = open(redir->file, O_RDONLY);
-            if (fd == -1)
-            {
-                perror("minishell");
-                /* only set the exit status if it's not in a pipe */
-                if (!cmd->in_pipe)
-                    env->exit_status = 1;
-                return (1);
-            }
-            close(fd);
-        }
-        else if (redir->type == TOKEN_REDIRECT_APPEND || redir->type == TOKEN_REDIRECT_OUT)
-        {
-            if (redir->type == TOKEN_REDIRECT_APPEND)
-                fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-            else
-                fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            if (fd == -1)
-            {
-                perror("minishell");
-                /* only set the exit status if it's not in a pipe */
-                if (!cmd->in_pipe)
-                    env->exit_status = 1;
-                return (1);
-            }
-            close(fd);
-        }
-        redir = redir->next;
-    }
-    return (0);
+	redir = cmd->redirects;
+	while (redir)
+	{
+		if (redir->type == TOKEN_REDIRECT_IN)
+		{
+			result = handle_input_redirect1(redir);
+			if (handle_output_redirect_result(cmd, env, result) == 1)
+				return (1);
+		}
+		else if (redir->type == TOKEN_REDIRECT_APPEND
+			|| redir->type == TOKEN_REDIRECT_OUT)
+		{
+			result = handle_output_redirect1(redir);
+			if (handle_output_redirect_result(cmd, env, result) == 1)
+				return (1);
+		}
+		redir = redir->next;
+	}
+	return (0);
 }
 
 // // === test redirect ===

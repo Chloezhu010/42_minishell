@@ -6,7 +6,7 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 13:57:37 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/12 16:32:06 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/21 18:47:44 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,5 +217,3 @@ t_cmd	*parse_tokens(t_token *tokens)
 //     // test_tokenize("echo 'Hello World' > output.txt | cat");
 //     return 0;
 // }
-
-
