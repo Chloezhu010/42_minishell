@@ -83,15 +83,12 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 	}
 	else if (ctx->prev_pipe_read != -1)
 	{
-		// *stdin_backup = dup(STDIN_FILENO);
-		// if (*stdin_backup == -1)
-		// {
-		// 	perror("dup");
-		// 	return (1);
-		// }
-
-		printf("DEBUG: Redirecting stdin from fd %d for cmd: %s\n", 
-           ctx->prev_pipe_read, cmd->args[0]); 
+		*stdin_backup = dup(STDIN_FILENO);
+		if (*stdin_backup == -1)
+		{
+			perror("dup");
+			return (1);
+		}
 		if (dup2(ctx->prev_pipe_read, STDIN_FILENO) == -1)
 		{
 			perror("dup2");
@@ -99,6 +96,7 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 			return (1);
 		}
 		close(ctx->prev_pipe_read);
+		ctx->prev_pipe_read = -1;
 	}
 	return (0);
 }

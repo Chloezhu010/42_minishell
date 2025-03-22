@@ -21,7 +21,7 @@ void	execute_pipe_child(t_cmd *current,
 
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
-	printf("DEBUG: Child - cmd: %s, setting up stdin/stdout\n", current->args[0]);
+	// printf("DEBUG: Child - cmd: %s, setting up stdin/stdout\n", current->args[0]);
 
 	handle_redirect_error(current, ctx, redirect_error);
 	handle_stderr_redirect(current);
@@ -30,11 +30,11 @@ void	execute_pipe_child(t_cmd *current,
 	if (setup_pipe_output(current, ctx, &stdout_backup_child, env))
 		exit(1);
 
-	printf("DEBUG: Child - before execute_cmd: %s\n", current->args[0]); 
+	// printf("DEBUG: Child - before execute_cmd: %s\n", current->args[0]); 
 	execute_cmd(current, env);
-	printf("DEBUG: Child - after execute_cmd: %s\n", current->args[0]);
+	// printf("DEBUG: Child - after execute_cmd: %s\n", current->args[0]);
 	
-	restore_io(stdin_backup_child, stdout_backup_child);
+	// restore_io(stdin_backup_child, stdout_backup_child);
 	exit(env->exit_status);
 }
 
@@ -47,13 +47,16 @@ void	execute_parent_process(t_pipe *ctx, t_cmd *cmd, pid_t pid)
 {
 	ctx->pids[ctx->pid_count++] = pid;
 	if (ctx->prev_pipe_read != -1)
+	{
 		close(ctx->prev_pipe_read);
+		ctx->prev_pipe_read = -1;
+	}
 	if (cmd->next)
 	{
 		close(ctx->pipefd[1]);
 		ctx->prev_pipe_read = ctx->pipefd[0];
 
-		printf("DEBUG: Parent - prev_pipe_read set to %d\n", ctx->prev_pipe_read);
+		// printf("DEBUG: Parent - prev_pipe_read set to %d\n", ctx->prev_pipe_read);
 	}
 	if (!cmd->next)
 		ctx->last_pid = pid;

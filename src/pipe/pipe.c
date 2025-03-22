@@ -30,7 +30,7 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	{
 		if (create_cmd_pipe(ctx, env))
 			return ;
-        printf("DEBUG: Created pipe for cmd: %s\n", current->args[0]);
+        // printf("DEBUG: Created pipe for cmd: %s\n", current->args[0]);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -47,12 +47,12 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	else
     {
 		execute_parent_process(ctx, current, pid);
-        /* new add */
-        if (ctx->prev_pipe_read != -1)
-        {
-            close(ctx->prev_pipe_read);
-            ctx->prev_pipe_read = -1;
-        }
+        // /* new add */
+        // if (ctx->prev_pipe_read != -1)
+        // {
+        //     close(ctx->prev_pipe_read);
+        //     ctx->prev_pipe_read = -1;
+        // }
     }
     
 }
