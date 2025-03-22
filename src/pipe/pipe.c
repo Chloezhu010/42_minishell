@@ -30,6 +30,7 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	{
 		if (create_cmd_pipe(ctx, env))
 			return ;
+        printf("DEBUG: Created pipe for cmd: %s\n", current->args[0]);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -39,9 +40,21 @@ static void	fork_and_execute_pipe(t_cmd *current,
 		return ;
 	}
 	if (pid == CHILD_PROCESS)
-		execute_pipe_child(current, ctx, env, redirect_error);
+    {
+		// debug_print_cmd(current); //debug
+        execute_pipe_child(current, ctx, env, redirect_error);
+    }
 	else
+    {
 		execute_parent_process(ctx, current, pid);
+        /* new add */
+        if (ctx->prev_pipe_read != -1)
+        {
+            close(ctx->prev_pipe_read);
+            ctx->prev_pipe_read = -1;
+        }
+    }
+    
 }
 
 void	execute_pipeline(t_cmd *cmd, t_env *env)
@@ -61,4 +74,15 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	}
 	restore_std_fd(&ctx);
 	wait_for_child(&ctx, env);
+}
+
+/* debug */
+void debug_print_cmd(t_cmd *cmd)
+{
+    fprintf(stderr, "Command: ");
+    for (int i = 0; cmd->args && cmd->args[i]; i++)
+    {
+        fprintf(stderr, "[%s] ", cmd->args[i]);
+    }
+    fprintf(stderr, "\n");
 }

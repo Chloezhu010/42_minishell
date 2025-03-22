@@ -104,12 +104,17 @@ t_cmd	*parse_tokens(t_token *tokens)
 			process_redirection(current_cmd, &tokens, TOKEN_REDIRECT_IN);
 		else if (tokens->type == TOKEN_PIPE)
 		{
-			if (tokens->next && (tokens->next->type == TOKEN_COMMAND
-					|| tokens->next->type == TOKEN_SINGLE_QUOTE))
+			if (tokens->next)
 			{
 				current_cmd->next = create_new_cmd();
 				current_cmd = current_cmd->next;
 			}
+			// if (tokens->next && (tokens->next->type == TOKEN_COMMAND
+			// 		|| tokens->next->type == TOKEN_SINGLE_QUOTE))
+			// {
+			// 	current_cmd->next = create_new_cmd();
+			// 	current_cmd = current_cmd->next;
+			// }
 		}
 		else if (tokens->type == TOKEN_HEREDOC)
 			process_heredoc(current_cmd, &tokens);

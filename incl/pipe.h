@@ -43,4 +43,6 @@ void	execute_pipe_child(t_cmd *current,
 void	execute_parent_process(t_pipe *ctx, t_cmd *cmd, pid_t pid);
 void	restore_std_fd(t_pipe *ctx);
 void	wait_for_child(t_pipe *ctx, t_env *env);
+
+void debug_print_cmd(t_cmd *cmd);
 #endif

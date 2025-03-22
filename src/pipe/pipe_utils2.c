@@ -83,7 +83,21 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 	}
 	else if (ctx->prev_pipe_read != -1)
 	{
-		dup2(ctx->prev_pipe_read, STDIN_FILENO);
+		// *stdin_backup = dup(STDIN_FILENO);
+		// if (*stdin_backup == -1)
+		// {
+		// 	perror("dup");
+		// 	return (1);
+		// }
+
+		printf("DEBUG: Redirecting stdin from fd %d for cmd: %s\n", 
+           ctx->prev_pipe_read, cmd->args[0]); 
+		if (dup2(ctx->prev_pipe_read, STDIN_FILENO) == -1)
+		{
+			perror("dup2");
+			close(*stdin_backup);
+			return (1);
+		}
 		close(ctx->prev_pipe_read);
 	}
 	return (0);
@@ -101,7 +115,18 @@ int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
 {
 	if (cmd->next)
 	{
-		dup2(ctx->pipefd[1], STDOUT_FILENO);
+		*stdout_backup = dup(STDOUT_FILENO);
+		if (*stdout_backup == -1)
+		{
+			perror("dup");
+			return (1);
+		}
+		if (dup2(ctx->pipefd[1], STDOUT_FILENO) == -1)
+		{
+			perror("dup2");
+			close(*stdout_backup);
+			return (1);
+		}
 		close(ctx->pipefd[0]);
 		close(ctx->pipefd[1]);
 	}
