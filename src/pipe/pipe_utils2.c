@@ -6,23 +6,11 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:14:04 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/23 12:51:08 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/23 14:17:58 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../incl/pipe.h"
-
-/* create pipe and handle error */
-int	create_cmd_pipe(t_pipe *ctx, t_env *env)
-{
-	if (pipe(ctx->pipefd) == -1)
-	{
-		perror("pipe");
-		env->exit_status = 1;
-		return (1);
-	}
-	return (0);
-}
 
 /* handle redirect error
     - if there is a next cmd
@@ -83,18 +71,10 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 	}
 	else if (ctx->prev_pipe_read != -1)
 	{
-		*stdin_backup = dup(STDIN_FILENO);
-		if (*stdin_backup == -1)
-		{
-			perror("dup");
+		if (ft_dup(STDIN_FILENO, stdin_backup, "dup"))
 			return (1);
-		}
-		if (dup2(ctx->prev_pipe_read, STDIN_FILENO) == -1)
-		{
-			perror("dup2");
-			close(*stdin_backup);
+		if (ft_dup2(ctx->prev_pipe_read, STDIN_FILENO, *stdin_backup, "dup2"))
 			return (1);
-		}
 		close(ctx->prev_pipe_read);
 		ctx->prev_pipe_read = -1;
 	}
@@ -113,20 +93,11 @@ int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
 {
 	if (cmd->next)
 	{
-		*stdout_backup = dup(STDOUT_FILENO);
-		if (*stdout_backup == -1)
-		{
-			perror("dup");
+		if (ft_dup(STDOUT_FILENO, stdout_backup, "dup"))
 			return (1);
-		}
-		if (dup2(ctx->pipefd[1], STDOUT_FILENO) == -1)
-		{
-			perror("dup2");
-			close(*stdout_backup);
+		if (ft_dup2(ctx->pipefd[1], STDOUT_FILENO, *stdout_backup, "dup2"))
 			return (1);
-		}
 		close(ctx->pipefd[0]);
-		// close(ctx->pipefd[1]);
 	}
 	if (cmd->outfile)
 	{

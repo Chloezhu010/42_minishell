@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:01:41 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/23 12:50:21 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/23 14:20:56 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	{
 		if (create_cmd_pipe(ctx, env))
 			return ;
-        // printf("DEBUG: Created pipe for cmd: %s\n", current->args[0]);
 	}
 	pid = fork();
 	if (pid == -1)
@@ -40,9 +39,9 @@ static void	fork_and_execute_pipe(t_cmd *current,
 		return ;
 	}
 	if (pid == CHILD_PROCESS)
-        execute_pipe_child(current, ctx, env, redirect_error);
+		execute_pipe_child(current, ctx, env, redirect_error);
 	else
-		execute_parent_process(ctx, current, pid);    
+		execute_parent_process(ctx, current, pid);
 }
 
 void	execute_pipeline(t_cmd *cmd, t_env *env)
@@ -62,15 +61,4 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	}
 	restore_std_fd(&ctx);
 	wait_for_child(&ctx, env);
-}
-
-/* debug */
-void debug_print_cmd(t_cmd *cmd)
-{
-    fprintf(stderr, "Command: ");
-    for (int i = 0; cmd->args && cmd->args[i]; i++)
-    {
-        fprintf(stderr, "[%s] ", cmd->args[i]);
-    }
-    fprintf(stderr, "\n");
 }

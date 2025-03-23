@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   loop_util1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 13:57:37 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:47:44 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 13:52:53 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,12 +109,6 @@ t_cmd	*parse_tokens(t_token *tokens)
 				current_cmd->next = create_new_cmd();
 				current_cmd = current_cmd->next;
 			}
-			// if (tokens->next && (tokens->next->type == TOKEN_COMMAND
-			// 		|| tokens->next->type == TOKEN_SINGLE_QUOTE))
-			// {
-			// 	current_cmd->next = create_new_cmd();
-			// 	current_cmd = current_cmd->next;
-			// }
 		}
 		else if (tokens->type == TOKEN_HEREDOC)
 			process_heredoc(current_cmd, &tokens);

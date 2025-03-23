@@ -3,81 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils1.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:12:57 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:20:12 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 14:17:37 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../incl/pipe.h"
-
-/* pipe function wrapper */
-void	ft_pipe(int pipefd[2])
-{
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return ;
-	}
-}
-
-/* helper function: check if input files exist for a cmd
-    - return 1 for error
-    - return 0 for success
-*/
-int	check_input_file(t_cmd *cmd, t_env *env)
-{
-	t_redir	*redir;
-	int		fd;
-
-	redir = cmd->redirects;
-	while (redir)
-	{
-		if (redir->type == TOKEN_REDIRECT_IN)
-		{
-			fd = open(redir->file, O_RDONLY);
-			if (fd == -1)
-			{
-				perror("minishell");
-				env->exit_status = 1;
-				return (1);
-			}
-			close(fd);
-		}
-		redir = redir->next;
-	}
-	return (0);
-}
-
-/* helper function: create output files for a cmd */
-int	create_output_file(t_cmd *cmd, t_env *env)
-{
-	t_redir	*redir;
-	int		fd;
-
-	redir = cmd->redirects;
-	while (redir)
-	{
-		if (redir->type == TOKEN_REDIRECT_OUT
-			|| redir->type == TOKEN_REDIRECT_APPEND)
-		{
-			if (redir->type == TOKEN_REDIRECT_APPEND)
-				fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-			else
-				fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (fd == -1)
-			{
-				perror("minishell");
-				env->exit_status = 1;
-				return (1);
-			}
-			close(fd);
-		}
-		redir = redir->next;
-	}
-	return (0);
-}
 
 /* init the pipe struct */
 void	init_pipe(t_pipe *context)
@@ -100,4 +33,40 @@ void	mark_pipeline_cmd(t_cmd *cmd)
 		current->in_pipe = 1;
 		current = current->next;
 	}
+}
+
+/* create pipe and handle error */
+int	create_cmd_pipe(t_pipe *ctx, t_env *env)
+{
+	if (pipe(ctx->pipefd) == -1)
+	{
+		perror("pipe");
+		env->exit_status = 1;
+		return (1);
+	}
+	return (0);
+}
+
+/* wrapper function of dup and handle error */
+int	ft_dup(int fd, int *backup_ptr, char *name)
+{
+	*backup_ptr = dup(fd);
+	if (*backup_ptr == -1)
+	{
+		perror(name);
+		return (1);
+	}
+	return (0);
+}
+
+/* wrapper function of dup2 and handle error */
+int	ft_dup2(int oldfd, int newfd, int backup, char *name)
+{
+	if (dup2(oldfd, newfd) == -1)
+	{
+		perror(name);
+		close(backup);
+		return (1);
+	}
+	return (0);
 }
