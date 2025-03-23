@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:14:04 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:20:28 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 12:51:08 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
 			return (1);
 		}
 		close(ctx->pipefd[0]);
-		close(ctx->pipefd[1]);
+		// close(ctx->pipefd[1]);
 	}
 	if (cmd->outfile)
 	{

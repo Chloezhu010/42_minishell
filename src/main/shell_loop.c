@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_loop.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:58:16 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 17:58:18 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/21 18:57:33 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,6 @@ void	execute_shell(t_cmd *cmd, t_env *env)
 	restore_io(stdin_backup, stdout_backup);
 }
 
-/* shell loop
-    - setup signal handler
-    - read line from the command
-        - add non-empty line to history
-    - parse the args
-    - execute the args
-    - cleanup before exit
-*/
-
 t_token	*process_command_line(char *line, t_env *env)
 {
 	t_token	*tokens;
@@ -82,6 +73,14 @@ t_token	*process_command_line(char *line, t_env *env)
 	return (tokens);
 }
 
+/* shell loop
+    - setup signal handler
+    - read line from the command
+        - add non-empty line to history
+    - parse the args
+    - execute the args
+    - cleanup before exit
+*/
 void	shell_loop(t_env *env)
 {
 	char	*line;

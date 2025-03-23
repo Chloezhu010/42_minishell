@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:01:41 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:19:15 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 12:50:21 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,21 +40,9 @@ static void	fork_and_execute_pipe(t_cmd *current,
 		return ;
 	}
 	if (pid == CHILD_PROCESS)
-    {
-		// debug_print_cmd(current); //debug
         execute_pipe_child(current, ctx, env, redirect_error);
-    }
 	else
-    {
-		execute_parent_process(ctx, current, pid);
-        // /* new add */
-        // if (ctx->prev_pipe_read != -1)
-        // {
-        //     close(ctx->prev_pipe_read);
-        //     ctx->prev_pipe_read = -1;
-        // }
-    }
-    
+		execute_parent_process(ctx, current, pid);    
 }
 
 void	execute_pipeline(t_cmd *cmd, t_env *env)
