@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:58:16 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:57:33 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/23 14:33:32 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,9 @@ void	shell_loop(t_env *env)
 	setup_signal(env);
 	while (1)
 	{
+		env->at_prompt = 1; //add
 		line = get_command_line();
+		env->at_prompt = 0; //add
 		if (line == NULL)
 			break ;
 		tokens = process_command_line(line, env);

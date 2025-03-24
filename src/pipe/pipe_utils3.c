@@ -12,15 +12,16 @@
 
 #include "../../incl/pipe.h"
 
-/* execute the child process in pipe
-	- dont need to restore here
-*/
+/* execute the child process in pipe */
 void	execute_pipe_child(t_cmd *current,
 	t_pipe *ctx, t_env *env, int redirect_error)
 {
 	int	stdin_backup_child;
 	int	stdout_backup_child;
 
+	setpgid(0, ctx->pids[0]);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
 	handle_redirect_error(current, ctx, redirect_error);
@@ -77,13 +78,16 @@ void	wait_for_child(t_pipe *ctx, t_env *env)
 	while (i < ctx->pid_count)
 	{
 		waitpid(ctx->pids[i], &status, 0);
-		if (ctx->pids[i] == ctx->last_pid && WIFEXITED(status))
+		if (ctx->pids[i] == ctx->last_pid)
 		{
-			exit_code = WEXITSTATUS(status);
-			if (exit_code == 2)
-				env->exit_status = 1;
-			else
-				env->exit_status = exit_code;
+			if ((status & 0x7F) == 0)
+			{
+				exit_code = (status >> 8) & 0xFF;
+				if (exit_code == 2)
+					env->exit_status = 1;
+				else
+					env->exit_status = exit_code;
+			}
 		}
 		i++;
 	}
