@@ -6,7 +6,7 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:10:36 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/12 15:07:32 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/24 23:14:27 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ void	free_env(t_env *env)
 		i++;
 	}
 	free(env->env_var);
+	if (env->exported)
+		free(env->exported);
 }
 
 /* count the nbr of env_var */
