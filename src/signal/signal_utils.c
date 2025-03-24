@@ -45,6 +45,30 @@ void	enable_echo(void)
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
+/* new add */
+void reset_input_state(void)
+{
+	int fd;
+	struct termios term;
+
+	/* reset terminal attributes */
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag |= (ICANON | ECHO);
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+	/* ensure stdin i properly setup */
+	if (isatty(STDIN_FILENO))
+	{
+		fd = open("/dev/tty", O_RDONLY);
+		if (fd != STDIN_FILENO && fd > 0)
+		{
+			dup2(fd, STDIN_FILENO);
+			close(fd);
+		}
+	}
+}
+
 /* Ctrl C handler
     - print a new line
     - tell readline to move to a new line
@@ -55,12 +79,14 @@ void	enable_echo(void)
 void	sigint_handler(int sig)
 {
 	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	if (g_env)
-		g_env->exit_status = 130;
+
+	if (g_env && g_env->at_prompt) {
+        write(STDOUT_FILENO, "\n", 1);
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+        g_env->exit_status = 130;
+    }
 }
 
 /* Ctrl \ handler */

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_utils1.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:36:51 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:41:59 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 16:50:41 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 int	handle_heredoc(char *delimiter, t_env *env)
 {
 	char	*line;
+	char	*expanded_line;
 	int		fd;
 
 	fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -39,12 +40,12 @@ int	handle_heredoc(char *delimiter, t_env *env)
 		line = readline("heredoc> ");
 		if (!line || ft_strcmp(line, delimiter) == 0)
 			break ;
-		write(fd, line, ft_strlen(line));
+		expanded_line = expand_var_instr(line, env);
+		write(fd, expanded_line, ft_strlen(expanded_line));
 		write(fd, "\n", 1);
+		free(expanded_line);
 		free(line);
 	}
-	close(fd);
-	fd = open("/tmp/minishell_heredoc", O_RDONLY);
 	return (fd);
 }
 

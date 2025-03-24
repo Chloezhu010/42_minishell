@@ -7,6 +7,7 @@ typedef struct s_env
     char		**env_var;
     int				*exported;
 	int			exit_status;
+	int			at_prompt;//add
 }		t_env;
 
 typedef struct s_builtin

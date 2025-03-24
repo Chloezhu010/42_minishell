@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:57:10 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 17:57:41 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/23 16:53:00 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,11 @@ char	*handle_regular_char(char *res, char current_char)
 			- skip the $ char
 			- search the parameter in env_var
 */
-
-static char	*expand_variable(const char *str, t_env *enve)
+static char	*expand_variable(const char *str, t_env *env)
 {
-	const char	*env;
+	int i;
+	int key_len;
+	char *varname;
 
 	if (!str || str[0] == '\0')
 		return (ft_strdup(""));
@@ -55,12 +56,38 @@ static char	*expand_variable(const char *str, t_env *enve)
 	if (str[0] != '$')
 		return (ft_strdup(str));
 	if (ft_strcmp(str, "$?") == 0)
-		return (ft_itoa(enve->exit_status));
-	env = getenv(str + 1);
-	if (!env)
-		return (ft_strdup(""));
-	return (ft_strdup(env));
+		return (ft_itoa(env->exit_status));
+	/* skip the '$' sign */
+	varname = (char *)str + 1;
+	key_len = ft_strlen(varname);
+	i = 0;
+	while (env->env_var && env->env_var[i])
+	{
+		if (ft_strncmp(env->env_var[i], varname, key_len) == 0
+			&& env->env_var[i][key_len] == '=')
+			return (ft_strdup(env->env_var[i] + key_len + 1));
+		i++;
+	}
+	return (ft_strdup(""));
 }
+// static char	*expand_variable(const char *str, t_env *enve)
+// {
+// 	const char	*env;
+
+// 	if (!str || str[0] == '\0')
+// 		return (ft_strdup(""));
+// 	if (str[0] == '$' && str[1] == '\0')
+// 		return (ft_strdup("$"));
+// 	if (str[0] != '$')
+// 		return (ft_strdup(str));
+// 	if (ft_strcmp(str, "$?") == 0)
+// 		return (ft_itoa(enve->exit_status));
+// 	/* the problem, should search in my own env struct */
+// 	env = getenv(str + 1);
+// 	if (!env)
+// 		return (ft_strdup(""));
+// 	return (ft_strdup(env));
+// }
 
 /* helper function to handle var expansion in expand_var_instr
     - extract the var name

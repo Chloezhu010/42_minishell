@@ -64,6 +64,7 @@ void	init_env(t_env *env, char **envp)
 	}
 	env->env_var[i] = NULL;
 	env->exit_status = 0;
+	env->at_prompt = 0; //add
 }
 
 /* printout the env variables */
