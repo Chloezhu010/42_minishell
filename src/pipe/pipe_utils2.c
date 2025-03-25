@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: chloe <chloe@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:14:04 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/25 12:13:43 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 23:10:44 by chloe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 /* handle redirect error
     - if there is a next cmd
         - close the read & write end of the pipe
-        - exit 1
+    - if there is a prev_pipe_read, close it too
+    - exit 1
 */
 void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error)
 {
@@ -25,6 +26,11 @@ void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error)
 		{
 			close(ctx->pipefd[0]);
 			close(ctx->pipefd[1]);
+		}
+		if (ctx->prev_pipe_read != -1) //add
+		{
+			close(ctx->prev_pipe_read);
+			ctx->prev_pipe_read = -1;
 		}
 		exit(1);
 	}
@@ -66,15 +72,38 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 				close(ctx->pipefd[0]);
 				close(ctx->pipefd[1]);
 			}
+			if (ctx->prev_pipe_read != -1) //add
+			{
+				close(ctx->prev_pipe_read);
+				ctx->prev_pipe_read = -1;
+			}
 			return (1);
 		}
 	}
 	else if (ctx->prev_pipe_read != -1)
 	{
 		if (ft_dup(STDIN_FILENO, stdin_backup, "dup"))
+		{
+			close(ctx->prev_pipe_read);
+			ctx->prev_pipe_read = -1;
+			if (cmd->next)
+			{
+				close(ctx->pipefd[0]);
+				close(ctx->pipefd[1]);
+			}
 			return (1);
+		}
 		if (ft_dup2(ctx->prev_pipe_read, STDIN_FILENO, *stdin_backup, "dup2"))
+		{
+			close(ctx->prev_pipe_read);
+			ctx->prev_pipe_read = -1;
+			if (cmd->next)
+			{
+				close(ctx->pipefd[0]);
+				close(ctx->pipefd[1]);
+			}
 			return (1);
+		}
 		close(ctx->prev_pipe_read);
 		ctx->prev_pipe_read = -1;
 	}
@@ -94,15 +123,31 @@ int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
 	if (cmd->next)
 	{
 		if (ft_dup(STDOUT_FILENO, stdout_backup, "dup"))
+		{
+			close(ctx->pipefd[0]); //add
+			close(ctx->pipefd[1]); //add
 			return (1);
+		}
 		if (ft_dup2(ctx->pipefd[1], STDOUT_FILENO, *stdout_backup, "dup2"))
+		{
+			close(ctx->pipefd[0]); //add
+			close(ctx->pipefd[1]); //add
 			return (1);
+		}
 		close(ctx->pipefd[0]);
+		// Close original pipe[1] after duplicating to stdout
+		close(ctx->pipefd[1]); //add
 	}
 	if (cmd->outfile)
 	{
 		if (handle_output_redirect(cmd, stdout_backup, env) == -1)
+		{
+			if (cmd->next && ctx->pipefd[1] != -1) //add
+			{
+				close(ctx->pipefd[1]);
+			}
 			return (1);
+		}
 	}
 	return (0);
 }

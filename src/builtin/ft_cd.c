@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: chloe <chloe@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:41:16 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/02 13:15:57 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 23:17:23 by chloe            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static char	*resolve_directory(char **args, t_env *env)
 {
 	char	*dir;
 
+	(void)env;
 	if (!args[1])
 	{
 		dir = getenv("HOME");
@@ -38,14 +39,10 @@ static char	*resolve_directory(char **args, t_env *env)
 			return (NULL);
 		}
 	}
-	else if (args[1] && args[2])
-	{
-		ft_putstr_fd("cd: too many arguments\n", 2);
-		env->exit_status = 1;
-		return (NULL);
-	}
 	else
+	{
 		dir = args[1];
+	}
 	return (dir);
 }
 
