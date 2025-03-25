@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_tokens_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:59:56 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 17:59:58 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 14:09:05 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ void	process_token_word(t_cmd *current_cmd, t_token *tokens)
 	{
 		while (current_cmd->args[i])
 			i++;
-		current_cmd->args[i] = strdup(tokens->value);
+		current_cmd->args[i] = ft_strdup(tokens->value);
+		current_cmd->args[i + 1] = NULL; //add null terminator
 	}
 }
 

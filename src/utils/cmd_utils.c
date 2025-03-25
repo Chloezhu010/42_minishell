@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:00:41 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/25 12:44:04 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 14:09:58 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void	free_cmds(t_cmd *cmds)
 		cmds = cmds->next;
 		free(tmp);
 	}
+	free(cmds);
 }
 
 void	check_format_command(t_token *tokens)
