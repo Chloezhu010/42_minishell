@@ -21,7 +21,6 @@ void	execute_pipe_child(t_cmd *current,
 	int	stdin_backup_child;
 	int	stdout_backup_child;
 
-	setpgid(0, ctx->pids[0]); //add
 	signal(SIGINT, SIG_DFL); //adds
 	signal(SIGQUIT, SIG_DFL); //add
 	stdin_backup_child = -1;

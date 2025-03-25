@@ -108,18 +108,18 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	mark_pipeline_cmd(cmd);
 	redirect_error = 0;
 	current = cmd;
-	save_signal_handlers(&old_int, &old_quit);//add
-	set_parent_signals_for_pipeline(); //add
-	env->at_prompt = 0; //add
+	save_signal_handlers(&old_int, &old_quit);
+	set_parent_signals_for_pipeline();
+	env->at_prompt = 0;
 	while (current)
 	{
 		fork_and_execute_pipe(current, &ctx, env, redirect_error);
 		current = current->next;
 	}
-	close_all_pipe_fds(&ctx); //add
+	close_all_pipe_fds(&ctx);
 	restore_std_fd(&ctx);
 	wait_for_child(&ctx, env);
-	reset_input_state(); //add
-	restore_signal_handlers(&old_int, &old_quit); //add
-	env->at_prompt = 1; //add
+	reset_input_state();
+	restore_signal_handlers(&old_int, &old_quit);
+	env->at_prompt = 1;
 }
