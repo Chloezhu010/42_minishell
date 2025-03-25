@@ -6,7 +6,7 @@
 /*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:58:13 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 17:58:20 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 17:10:43 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	main(int ac, char **av, char **envp)
 
 	(void)ac;
 	(void)av;
+	env.exit_requested = 0;
 	init_env(&env, envp);
 	shell_loop(&env);
 	free_env(&env);

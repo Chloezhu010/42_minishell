@@ -8,6 +8,7 @@ typedef struct s_env
     int				*exported;
 	int			exit_status;
 	int			at_prompt; //add
+	int			exit_requested;
 }		t_env;
 
 typedef struct s_builtin

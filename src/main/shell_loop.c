@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_loop.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:58:16 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/25 14:10:13 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 17:09:45 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,5 +108,7 @@ void	shell_loop(t_env *env)
 			free_tokens(tokens);
 		}
 		free(line);
+		if (env->exit_requested)
+			break ;
 	}
 }

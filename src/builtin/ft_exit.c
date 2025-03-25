@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_exit.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 16:56:07 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/02 13:05:33 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 17:10:29 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	ft_exit(char **args, t_env *env)
 {
 	int	exit_status;
 
-	(void)env;
+	ft_putstr_fd("exit\n", 1);
 	exit_status = 0;
 	if (args[1] != NULL && args[2] != NULL)
 	{
@@ -56,11 +56,15 @@ void	ft_exit(char **args, t_env *env)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
 			env->exit_status = 2;
-			return ;
+			exit_status = 2;
 		}
-		exit_status = ft_atoi(args[1]);
+		else
+		{
+			exit_status = ft_atoi(args[1]);
+		}
 	}
-	exit(exit_status);
+	env->exit_status = exit_status;
+	env->exit_requested = 1; // 设置退出标志，而不是直接调用 exit()
 }
 /*
 // === testing exit ===
