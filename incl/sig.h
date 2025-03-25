@@ -8,5 +8,6 @@ void	enable_echo(void);
 void	sigint_handler(int sig);
 void	sigquit_handler(int sig);
 void	setup_signal(t_env *env);
+void	reset_input_state(void);//add
 
 #endif

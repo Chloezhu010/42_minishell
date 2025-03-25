@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:14:44 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/23 14:19:29 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 12:08:20 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ void	execute_pipe_child(t_cmd *current,
 	int	stdin_backup_child;
 	int	stdout_backup_child;
 
+	setpgid(0, ctx->pids[0]); //add
+	signal(SIGINT, SIG_DFL); //adds
+	signal(SIGQUIT, SIG_DFL); //add
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
 	handle_redirect_error(current, ctx, redirect_error);
@@ -77,13 +80,16 @@ void	wait_for_child(t_pipe *ctx, t_env *env)
 	while (i < ctx->pid_count)
 	{
 		waitpid(ctx->pids[i], &status, 0);
-		if (ctx->pids[i] == ctx->last_pid && WIFEXITED(status))
+		if (ctx->pids[i] == ctx->last_pid)
 		{
-			exit_code = WEXITSTATUS(status);
-			if (exit_code == 2)
-				env->exit_status = 1;
-			else
-				env->exit_status = exit_code;
+			if ((status & 0x7F) == 0)
+			{
+				exit_code = (status >> 8) & 0xFF;
+				if (exit_code == 2)
+					env->exit_status = 1;
+				else
+					env->exit_status = exit_code;
+			}
 		}
 		i++;
 	}

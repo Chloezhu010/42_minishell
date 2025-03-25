@@ -3,14 +3,37 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils3.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:59:13 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 17:59:14 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:00:37 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../incl/loop.h"
+
+/* helper function of strndup */
+char *ft_strndup(char *str, size_t n)
+{
+	size_t len;
+	size_t i;
+	char *dup;
+
+	len = 0;
+	i = 0;
+	while (str[len] && len < n)
+		len++;
+	dup = (char *)malloc(len + 1);
+	if (!dup)
+		return (NULL);
+	while(i < len)
+	{
+		dup[i] = str[i];
+		i++;
+	}
+	dup[i]='\0';
+	return (dup);
+}
 
 static int	tokenize_util4_util1(char *input, int *start, char **word, int *i)
 {
@@ -29,7 +52,7 @@ static int	tokenize_util4_util1(char *input, int *start, char **word, int *i)
 			printf("quote need be closed");
 			return (-1);
 		}
-		new_part = strndup(&input[*start], (*i) - (*start));
+		new_part = ft_strndup(&input[*start], (*i) - (*start));
 		temp = ft_strjoin(*word, new_part);
 		free(new_part);
 		free(*word);
@@ -55,7 +78,7 @@ static int	tokenize_util4_append_word(char *input, int *i, char **word)
 		while (input[*i] && !ft_isspace(input[*i])
 			&& !is_special_char(input[*i]) && !is_quote(input[*i]))
 			(*i)++;
-		*word = ft_strjoin(*word, strndup(&input[start], (*i) - start));
+		*word = ft_strjoin(*word, ft_strndup(&input[start], (*i) - start));
 	}
 	return (0);
 }
@@ -69,7 +92,7 @@ static int	tokenize_util4_parse_word(char *input, int *i, char **word)
 		&& !is_special_char(input[*i]) && !is_quote(input[*i]))
 		(*i)++;
 	if (*i > start)
-		*word = strndup(&input[start], (*i) - start);
+		*word = ft_strndup(&input[start], (*i) - start);
 	else
 		return (0);
 	while (input[*i] && (!ft_isspace(input[*i]) && !is_special_char(input[*i])))

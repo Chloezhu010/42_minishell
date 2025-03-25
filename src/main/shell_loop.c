@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_loop.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:58:16 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/24 23:13:06 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:28:15 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,9 @@ void	shell_loop(t_env *env)
 	setup_signal(env);
 	while (1)
 	{
+		env->at_prompt = 1; //add
 		line = get_command_line();
+		env->at_prompt = 0; //add
 		if (line == NULL)
 			break ;
 		tokens = process_command_line(line, env);

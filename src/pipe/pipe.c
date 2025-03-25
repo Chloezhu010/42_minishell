@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:01:41 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/23 14:20:56 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 12:13:36 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,26 +39,87 @@ static void	fork_and_execute_pipe(t_cmd *current,
 		return ;
 	}
 	if (pid == CHILD_PROCESS)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		execute_pipe_child(current, ctx, env, redirect_error);
+	}
 	else
 		execute_parent_process(ctx, current, pid);
 }
 
+/* Helper function to clean up all pipe file descriptors */
+static void	close_all_pipe_fds(t_pipe *ctx)
+{
+	if (ctx->prev_pipe_read != -1)
+	{
+		close(ctx->prev_pipe_read);
+		ctx->prev_pipe_read = -1;
+	}
+	if (ctx->pipefd[0] != -1)
+	{
+		close(ctx->pipefd[0]);
+		ctx->pipefd[0] = -1;
+	}
+	if (ctx->pipefd[1] != -1)
+	{
+		close(ctx->pipefd[1]);
+		ctx->pipefd[1] = -1;
+	}
+}
+
+/* Save the original signal handlers before changing them */
+static void	save_signal_handlers(struct sigaction *old_int,
+			struct sigaction *old_quit)
+{
+	sigaction(SIGINT, NULL, old_int);
+	sigaction(SIGQUIT, NULL, old_quit);
+}
+
+/* Set parent process signal handling during pipeline execution */
+static void	set_parent_signals_for_pipeline(void)
+{
+	struct sigaction	sa;
+
+	sigemptyset(&sa.sa_mask);
+	sa.sa_handler = SIG_IGN;
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+/* Restore original signal handlers */
+static void	restore_signal_handlers(struct sigaction *old_int,
+			struct sigaction *old_quit)
+{
+	sigaction(SIGINT, old_int, NULL);
+	sigaction(SIGQUIT, old_quit, NULL);
+}
+
 void	execute_pipeline(t_cmd *cmd, t_env *env)
 {
-	t_cmd	*current;
-	t_pipe	ctx;
-	int		redirect_error;
+	t_cmd				*current;
+	t_pipe				ctx;
+	int					redirect_error;
+	struct sigaction	old_int;
+	struct sigaction	old_quit;
 
 	init_pipe(&ctx);
 	mark_pipeline_cmd(cmd);
 	redirect_error = 0;
 	current = cmd;
+	save_signal_handlers(&old_int, &old_quit);//add
+	set_parent_signals_for_pipeline(); //add
+	env->at_prompt = 0; //add
 	while (current)
 	{
 		fork_and_execute_pipe(current, &ctx, env, redirect_error);
 		current = current->next;
 	}
+	close_all_pipe_fds(&ctx); //add
 	restore_std_fd(&ctx);
 	wait_for_child(&ctx, env);
+	reset_input_state(); //add
+	restore_signal_handlers(&old_int, &old_quit); //add
+	env->at_prompt = 1; //add
 }

@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:14:04 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/23 14:17:58 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 12:13:43 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,17 @@ void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error)
 /* handle redirect stderr to /dev/null for non-last cmd */
 void	handle_stderr_redirect(t_cmd *cmd)
 {
-	int	null_fd;
-
-	if (cmd->next)
-	{
-		null_fd = open("/dev/null", O_WRONLY);
-		if (null_fd != -1)
-		{
-			dup2(null_fd, STDERR_FILENO);
-			close(null_fd);
-		}
-	}
+	(void)cmd;
+	// int	null_fd;
+	// if (cmd->next)
+	// {
+	// 	null_fd = open("/dev/null", O_WRONLY);
+	// 	if (null_fd != -1)
+	// 	{
+	// 		dup2(null_fd, STDERR_FILENO);
+	// 		close(null_fd);
+	// 	}
+	// }
 }
 
 /* setup pipe input

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:10:36 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/24 23:14:27 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:31:44 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void	init_env(t_env *env, char **envp)
 	}
 	env->env_var[i] = NULL;
 	env->exit_status = 0;
+	env->at_prompt = 0; //add
 }
 
 /* printout the env variables */
