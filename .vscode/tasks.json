@@ -1,0 +1,12 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Run Valgrind with output to leak.txt",
+        "type": "shell",
+        "command": "valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell 2>&1 | tee leak_0325.txt",
+        "problemMatcher": []
+      }
+    ]
+  }
+  

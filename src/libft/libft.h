@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 11:19:11 by czhu              #+#    #+#             */
-/*   Updated: 2024/12/26 12:43:48 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 12:54:41 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ int		print_string(char *str);
 int		ft_printf(const char *format, ...);
 /* get_next_line */
 char	*get_next_line(int fd);
-char	*ft_strjoin(char const *old, char const *new);
-char	*ft_strchr(const char *s, int c);
-void	ft_bzero(void *s, size_t n);
-void	*ft_calloc(size_t elementCount, size_t elementSize);
-size_t	ft_strlen(const char *s);
+// char	*ft_strjoin(char const *old, char const *new);
+// char	*ft_strchr(const char *s, int c);
+// void	ft_bzero(void *s, size_t n);
+// void	*ft_calloc(size_t elementCount, size_t elementSize);
+// size_t	ft_strlen(const char *s);
 #endif

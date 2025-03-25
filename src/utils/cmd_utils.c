@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:00:41 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/21 18:00:44 by auzou            ###   ########.fr       */
+/*   Updated: 2025/03/25 12:44:04 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ t_cmd	*create_new_cmd(void)
 {
 	t_cmd	*cmd;
 
-	cmd = calloc(1, sizeof(t_cmd));
+	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	cmd->args = calloc(64, sizeof(char *));
+	cmd->args = ft_calloc(64, sizeof(char *));
 	if (!cmd->args)
 	{
 		free(cmd);

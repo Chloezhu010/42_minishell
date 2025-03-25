@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:59:13 by auzou             #+#    #+#             */
-/*   Updated: 2025/03/25 12:00:37 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 12:48:10 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ static int	tokenize_util4_util1(char *input, int *start, char **word, int *i)
 static int	tokenize_util4_append_word(char *input, int *i, char **word)
 {
 	int	start;
+	char *temp_str;
+	char *result;
 
 	if (is_quote(input[*i]))
 	{
@@ -78,7 +80,14 @@ static int	tokenize_util4_append_word(char *input, int *i, char **word)
 		while (input[*i] && !ft_isspace(input[*i])
 			&& !is_special_char(input[*i]) && !is_quote(input[*i]))
 			(*i)++;
-		*word = ft_strjoin(*word, ft_strndup(&input[start], (*i) - start));
+		// *word = ft_strjoin(*word, ft_strndup(&input[start], (*i) - start));
+		temp_str = ft_strndup(&input[start], (*i) - start);
+		if (!temp_str)
+			return (-1);
+		result = ft_strjoin(*word, temp_str);
+		free(temp_str);
+		free(*word);
+		*word = result;
 	}
 	return (0);
 }
