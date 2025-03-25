@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/02 13:10:36 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/25 12:31:44 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/25 14:31:33 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,19 @@ t_builtin	*init_builtin(void)
 	return (builtin_in);
 }
 
+/* count the nbr of env var */
+int count_envp(char **envp)
+{
+	int count;
+
+	count = 0;
+	if (!envp)
+		return (0);
+	while (envp[count])
+		count++;
+	return (count);
+}
+
 /* init the env from envp
     - count the env variables
     - malloc for env variables
@@ -42,27 +55,29 @@ void	init_env(t_env *env, char **envp)
 	int	i;
 	int	count;
 
-	i = 0;
-	count = 0;
 	if (!envp)
 	{
 		env->env_var = NULL;
+		env->exported = NULL;
+		env->exit_status = 0;
+		env->at_prompt = 0;
 		return ;
 	}
-	while (envp[count])
-		count++;
-	env->env_var = (char **)malloc((count + 1) * sizeof(char *));
-	if (!env->env_var)
-	{
-		perror("malloc");
-		exit (1);
-	}
+	i = 0;
+	count = count_envp(envp);
+	env->env_var = (char **)ft_malloc((count + 1) * sizeof(char *));
+	// if (!env->env_var)
+	// {
+	// 	perror("malloc");
+	// 	exit (1);
+	// }
 	while (envp[i])
 	{
 		env->env_var[i] = ft_strdup(envp[i]);
 		i++;
 	}
 	env->env_var[i] = NULL;
+	env->exported = NULL;
 	env->exit_status = 0;
 	env->at_prompt = 0; //add
 }
