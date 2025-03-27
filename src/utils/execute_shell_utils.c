@@ -24,7 +24,7 @@ void	execute_builtin(t_cmd *cmd, t_env *env)
 		if (cmd->args && ft_strcmp(cmd->args[0], builtins[i].builtin_name) == 0)
 		{
 			builtins[i].func(cmd->args, env);
-			exit(env->exit_status);
+			return ;
 		}
 		i++;
 	}
@@ -42,7 +42,8 @@ void	execute_external(t_cmd *cmd, t_env *env)
 	}
 	if (cmd->args && cmd->args[0])
 		ft_putstr_fd(" command not found\n", 2);
-	exit(127);
+	env->exit_status = 127;
+	return ;
 }
 
 void	execute_cmd(t_cmd *cmd, t_env *env)
