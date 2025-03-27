@@ -38,11 +38,6 @@ void	process_token_word(t_cmd *current_cmd, t_token *tokens)
 	{
 		while (current_cmd->args && current_cmd->args[i])
 			i++;
-		/* resize args array */
-		char **new_args = realloc(current_cmd->args, (i + 2) * sizeof(char *)); //todo
-		if (!new_args)
-			return ;
-		current_cmd->args = new_args;
 		current_cmd->args[i] = ft_strdup(tokens->value);
 		if (!current_cmd->args[i])
 			return ;
