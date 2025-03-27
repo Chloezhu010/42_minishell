@@ -82,103 +82,103 @@ t_token	*process_command_line(char *line, t_env *env)
     - cleanup before exit
 */
 
-/* 打印令牌链表的内容 */
-void    print_tokens(t_token *tokens)
-{
-    t_token *current;
-    char    *type_str;
+// /* 打印令牌链表的内容 */
+// void    print_tokens(t_token *tokens)
+// {
+//     t_token *current;
+//     char    *type_str;
 
-    current = tokens;
-    printf("\n===== TOKENS =====\n");
-    while (current)
-    {
-        switch (current->type)
-        {
-            case TOKEN_WORD: type_str = "WORD"; break;
-            case TOKEN_PIPE: type_str = "PIPE"; break;
-            case TOKEN_OR: type_str = "OR"; break;
-            case TOKEN_REDIRECT_IN: type_str = "REDIR_IN"; break;
-            case TOKEN_REDIRECT_OUT: type_str = "REDIR_OUT"; break;
-            case TOKEN_REDIRECT_APPEND: type_str = "REDIR_APPEND"; break;
-            case TOKEN_HEREDOC: type_str = "HEREDOC"; break;
-            case TOKEN_SINGLE_QUOTE: type_str = "SINGLE_QUOTE"; break;
-            case TOKEN_DOUBLE_QUOTE: type_str = "DOUBLE_QUOTE"; break;
-            case TOKEN_AND: type_str = "AND"; break;
-            case TOKEN_AND_SINGLE: type_str = "AND_SINGLE"; break;
-            case TOKEN_COMMAND: type_str = "COMMAND"; break;
-            default: type_str = "UNKNOWN"; break;
-        }
-        printf("Token: [%s] \tType: %s\n", current->value, type_str);
-        current = current->next;
-    }
-    printf("=================\n\n");
-}
+//     current = tokens;
+//     printf("\n===== TOKENS =====\n");
+//     while (current)
+//     {
+//         switch (current->type)
+//         {
+//             case TOKEN_WORD: type_str = "WORD"; break;
+//             case TOKEN_PIPE: type_str = "PIPE"; break;
+//             case TOKEN_OR: type_str = "OR"; break;
+//             case TOKEN_REDIRECT_IN: type_str = "REDIR_IN"; break;
+//             case TOKEN_REDIRECT_OUT: type_str = "REDIR_OUT"; break;
+//             case TOKEN_REDIRECT_APPEND: type_str = "REDIR_APPEND"; break;
+//             case TOKEN_HEREDOC: type_str = "HEREDOC"; break;
+//             case TOKEN_SINGLE_QUOTE: type_str = "SINGLE_QUOTE"; break;
+//             case TOKEN_DOUBLE_QUOTE: type_str = "DOUBLE_QUOTE"; break;
+//             case TOKEN_AND: type_str = "AND"; break;
+//             case TOKEN_AND_SINGLE: type_str = "AND_SINGLE"; break;
+//             case TOKEN_COMMAND: type_str = "COMMAND"; break;
+//             default: type_str = "UNKNOWN"; break;
+//         }
+//         printf("Token: [%s] \tType: %s\n", current->value, type_str);
+//         current = current->next;
+//     }
+//     printf("=================\n\n");
+// }
 
-/* 打印命令链表的内容 */
-void    print_cmds(t_cmd *cmd)
-{
-    int     i;
-    t_cmd   *current;
-    t_redir *redir;
+// /* 打印命令链表的内容 */
+// void    print_cmds(t_cmd *cmd)
+// {
+//     int     i;
+//     t_cmd   *current;
+//     t_redir *redir;
 
-    current = cmd;
-    printf("\n===== COMMANDS =====\n");
-    while (current)
-    {
-        printf("Command: ");
-        i = 0;
-        if (current->args)
-        {
-            while (current->args[i])
-            {
-                printf("[%s] ", current->args[i]);
-                i++;
-            }
-        }
-        else
-            printf("(no args)");
-        printf("\n");
+//     current = cmd;
+//     printf("\n===== COMMANDS =====\n");
+//     while (current)
+//     {
+//         printf("Command: ");
+//         i = 0;
+//         if (current->args)
+//         {
+//             while (current->args[i])
+//             {
+//                 printf("[%s] ", current->args[i]);
+//                 i++;
+//             }
+//         }
+//         else
+//             printf("(no args)");
+//         printf("\n");
 
-        if (current->infile)
-            printf("Infile: %s\n", current->infile);
-        if (current->outfile)
-            printf("Outfile: %s (append: %d)\n", current->outfile, current->append);
-        if (current->heredoc)
-            printf("Heredoc with delimiter: %s (fd: %d)\n", current->delimiter, current->fd_in);
+//         if (current->infile)
+//             printf("Infile: %s\n", current->infile);
+//         if (current->outfile)
+//             printf("Outfile: %s (append: %d)\n", current->outfile, current->append);
+//         if (current->heredoc)
+//             printf("Heredoc with delimiter: %s (fd: %d)\n", current->delimiter, current->fd_in);
         
-        printf("In pipe: %d\n", current->in_pipe);
+//         printf("In pipe: %d\n", current->in_pipe);
         
-        /* 打印所有重定向 */
-        if (current->redirects)
-        {
-            printf("Redirections:\n");
-            redir = current->redirects;
-            while (redir)
-            {
-                switch (redir->type)
-                {
-                    case TOKEN_REDIRECT_IN: 
-                        printf("  < %s\n", redir->file);
-                        break;
-                    case TOKEN_REDIRECT_OUT: 
-                        printf("  > %s\n", redir->file);
-                        break;
-                    case TOKEN_REDIRECT_APPEND: 
-                        printf("  >> %s\n", redir->file);
-                        break;
-                    case TOKEN_HEREDOC: 
-                        printf("  << %s\n", redir->file);
-                        break;
-                }
-                redir = redir->next;
-            }
-        }
+//         /* 打印所有重定向 */
+//         if (current->redirects)
+//         {
+//             printf("Redirections:\n");
+//             redir = current->redirects;
+//             while (redir)
+//             {
+//                 switch (redir->type)
+//                 {
+//                     case TOKEN_REDIRECT_IN: 
+//                         printf("  < %s\n", redir->file);
+//                         break;
+//                     case TOKEN_REDIRECT_OUT: 
+//                         printf("  > %s\n", redir->file);
+//                         break;
+//                     case TOKEN_REDIRECT_APPEND: 
+//                         printf("  >> %s\n", redir->file);
+//                         break;
+//                     case TOKEN_HEREDOC: 
+//                         printf("  << %s\n", redir->file);
+//                         break;
+//                 }
+//                 redir = redir->next;
+//             }
+//         }
         
-        printf("-------------------\n");
-        current = current->next;
-    }
-    printf("====================\n\n");
-}
+//         printf("-------------------\n");
+//         current = current->next;
+//     }
+//     printf("====================\n\n");
+// }
 
 void	shell_loop(t_env *env)
 {
@@ -202,10 +202,10 @@ void	shell_loop(t_env *env)
 			{
 				process_heredocs(cmds, env);
 				execute_commands(cmds, env);
-				print_cmds(cmds);
+				// print_cmds(cmds);
 				free_cmds(cmds);
 			}
-			print_tokens(tokens);
+			// print_tokens(tokens);
 			free_tokens(tokens);
 		}
 		free(line);

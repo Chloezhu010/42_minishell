@@ -64,10 +64,12 @@ void	add_redir(t_cmd *cmd, char *file, int type)
 	t_redir	*new_redir;
 	t_redir	*temp;
 
+	if (!cmd || !file)
+		return ;
+	update_cmd_files(cmd, file, type);
 	new_redir = create_new_redir(file, type);
 	if (!new_redir)
 		return ;
-	update_cmd_files(cmd, file, type);
 	if (!cmd->redirects)
 		cmd->redirects = new_redir;
 	else
