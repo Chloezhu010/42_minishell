@@ -27,15 +27,25 @@ void	process_token_word(t_cmd *current_cmd, t_token *tokens)
 {
 	int	i;
 
+	/* add input check */
+	if (!current_cmd || !tokens || !tokens->value)
+		return ;
 	i = 0;
 	if ((i == 0 || !tokens->next || (tokens->next->type != TOKEN_REDIRECT_IN
 				&& tokens->next->type != TOKEN_REDIRECT_OUT
 				&& tokens->next->type != TOKEN_REDIRECT_APPEND))
 		&& tokens->value[0] != '\0')
 	{
-		while (current_cmd->args[i])
+		while (current_cmd->args && current_cmd->args[i])
 			i++;
+		/* resize args array */
+		char **new_args = realloc(current_cmd->args, (i + 2) * sizeof(char *)); //todo
+		if (!new_args)
+			return ;
+		current_cmd->args = new_args;
 		current_cmd->args[i] = ft_strdup(tokens->value);
+		if (!current_cmd->args[i])
+			return ;
 		current_cmd->args[i + 1] = NULL; //add null terminator
 	}
 }
