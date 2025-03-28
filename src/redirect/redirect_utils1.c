@@ -22,33 +22,46 @@
         - close and reopen with read-only mode
     - reopen the file and return fd
 */
-int	handle_heredoc(char *delimiter, t_env *env)
+int handle_heredoc(char *delimiter, t_env *env)
 {
-	char	*line;
-	char	*expanded_line;
-	int		fd;
+    char *line;
+    char *expanded_line;
+    int fd;
 
-	fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-	{
-		perror("open");
-		env->exit_status = 1;
-		return (-1);
-	}
-	while (1)
-	{
-		line = readline("heredoc> ");
-		if (!line || ft_strcmp(line, delimiter) == 0)
-			break ;
-		expanded_line = expand_var_instr(line, env);
-		write(fd, expanded_line, ft_strlen(expanded_line));
-		write(fd, "\n", 1);
-		free(expanded_line);
-		free(line);
-	}
-	return (fd);
+    fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd == -1)
+    {
+        perror("open");
+        env->exit_status = 1;
+        return (-1);
+    }
+    
+    /* 写入heredoc内容 */
+    while (1)
+    {
+        line = readline("heredoc> ");
+        if (!line || ft_strcmp(line, delimiter) == 0)
+            break;
+        expanded_line = expand_var_instr(line, env);
+        write(fd, expanded_line, ft_strlen(expanded_line));
+        write(fd, "\n", 1);
+        free(expanded_line);
+        free(line);
+    }
+    
+    close(fd);  // 关闭写模式的文件描述符
+    
+    // 以读取模式重新打开文件
+    fd = open("/tmp/minishell_heredoc", O_RDONLY);
+    if (fd == -1)
+    {
+        perror("open");
+        env->exit_status = 1;
+        return (-1);
+    }
+    
+    return (fd);  // 返回读模式的文件描述符
 }
-
 int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 {
 	if (dup2(cmd->fd_in, STDIN_FILENO) == -1)
