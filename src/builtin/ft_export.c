@@ -57,6 +57,8 @@ void	split_key_value(char *arg, char **key, char **value)
 	if (equal == NULL)
 	{
 		*key = ft_strdup(arg);
+		if (!*key)
+			return ;
 		*value = NULL;
 	}
 	else
@@ -69,6 +71,7 @@ void	split_key_value(char *arg, char **key, char **value)
 		if (!*value)
 		{
 			free(*key);
+			*key = NULL;
 			return ;
 		}
 	}
@@ -106,15 +109,24 @@ void	ft_export(char **args, t_env *env)
 	if (!env)
 		return ;
 	if (args[1] == NULL)
+	{
 		print_env(env);
+		return ;
+	}
+	
 	i = 1;
 	while (args[i])
 	{
+		key = NULL;
+		value = NULL;
 		split_key_value(args[i], &key, &value);
-		if (check_valid_name(key) == 0)
+
+		if (!key || check_valid_name(key) == 0)
 		{
 			ft_putstr_fd(" not a valid identifier\n", 2);
 			env->exit_status = 1;
+			free(key);
+			free(value);
 			i++;
 			continue ;
 		}
@@ -122,38 +134,9 @@ void	ft_export(char **args, t_env *env)
 			update_env(key, "''", env);
 		else
 			update_env(key, value, env);
+
+		free(key);
+		free(value);
 		i++;
 	}
 }
-/*
-// // === test is_valid_name ===
-// int main(int ac, char **av)
-// {
-//     (void)ac;
-//     printf("%d\n", is_valid_name(av[1]));
-// }
-// // === test split_key_value ===
-// int main(int ac, char **av)
-// {
-//     char *key;
-//     char *value;
-
-//     (void)ac;
-//     split_key_value(av[1], &key, &value);
-//     printf("key: %s, value: %s\n", key, value);
-// }
-// === test ft_export ===
-int main(int ac, char **av, char **envp)
-{
-    t_env env;
-    
-    (void)ac;
-    init_env(&env, envp);
-    printf("env before export: \n\n");
-    print_env(&env);
-
-    ft_export(av, &env, envp);
-
-    printf("env after export: \n\n");
-    print_env(&env);
-}*/

@@ -27,7 +27,10 @@ char	*create_env_entry(char *key, char *value)
 	value_len = ft_strlen(value);
 	new_entry = (char *)malloc(key_len + value_len + 2);
 	if (!new_entry)
+	{
 		perror("malloc");
+		return (NULL);
+	}
 	ft_memcpy(new_entry, key, key_len);
 	new_entry[key_len] = '=';
 	ft_memcpy(new_entry + key_len + 1, value, value_len);
@@ -73,16 +76,29 @@ void	add_env(char *key, char *value, t_env *env)
 {
 	int		count;
 	char	**new_env;
+	char	*new_entry;
+
+	if (!key || !env)
+		return ;
+	new_entry = create_env_entry(key, value);
+	if (!new_entry)
+		return ;
 
 	count = count_env(env);
 	new_env = env_realloc(env->env_var, (count + 2) * sizeof(char *));
+	if (!new_env)
+	{
+		free(new_entry);
+		return ;
+	}
+
 	env->env_var = new_env;
-	env->env_var[count] = create_env_entry(key, value);
+	env->env_var[count] = new_entry;
 	env->env_var[count + 1] = NULL;
 }
 
 /* update the env var after calling ft_cd
-    - malloc for the new entry
+    - malloc for thes new entry
     - loop through the env array
         - if find key matches, update the old entry with new entry
         - if not, add the new entry at the end, null terminated
@@ -93,8 +109,12 @@ void	update_env(char *key, char *value, t_env *env)
 	int		key_len;
 	char	*new_entry;
 
+	if (!key || !env || !env->env_var)
+		return ;
 	key_len = ft_strlen(key);
 	new_entry = create_env_entry(key, value);
+	if (!new_entry)
+		return ;
 	i = 0;
 	while (env->env_var[i])
 	{
@@ -108,4 +128,5 @@ void	update_env(char *key, char *value, t_env *env)
 		i++;
 	}
 	add_env(key, value, env);
+	free(new_entry);
 }

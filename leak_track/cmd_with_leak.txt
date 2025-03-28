@@ -7,6 +7,9 @@ env | grep HOME
 env | grep PWD
 echo hello > file.txt | cat file.txt
 
+
+
+
 [not ok]
 cat < nonexist | grep oi
 

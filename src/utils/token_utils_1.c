@@ -79,11 +79,17 @@ void	free_tokens(t_token *tokens)
 {
 	t_token	*tmp;
 
+	// printf("[db] start free_tokens\n");
+
 	while (tokens)
 	{
 		tmp = tokens;
+
+		// printf("[db] free token value at %p\n", tokens->value);
 		free(tokens->value);
 		tokens = tokens->next;
+
+		// printf("[db] free temp struct at %p\n", tmp);
 		free(tmp);
 	}
 }
