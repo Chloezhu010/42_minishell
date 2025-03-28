@@ -5,13 +5,83 @@ missingcmd
 $
 env | grep HOME
 env | grep PWD
+echo hello > file.txt | cat file.txt
 
 [not ok]
 cat < nonexist | grep oi
-cat < missing | cat <"./incl/minishell.h"
-export HOME=123 | env | grep HOME
 
-echo hello > file.txt | cat file.txt
+cat < missing | cat <"./incl/minishell.h"
+==341998== 8 bytes in 2 blocks are still reachable in loss record 3 of 77
+==341998==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341998==    by 0x4077F5: ft_strdup (in /home/czhu/Mini/minishell)
+==341998==    by 0x403359: process_token_word (parse_tokens_utils.c:41)
+==341998==    by 0x402B17: parse_tokens (loop_util1.c:100)
+==341998==    by 0x405018: shell_loop (shell_loop.c:200)
+==341998==    by 0x4050B6: main (main.c:23)
+==341998== 48 bytes in 2 blocks are still reachable in loss record 23 of 77
+==341998==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341998==    by 0x402C60: create_new_redir (redir_utils.c:22)
+==341998==    by 0x4029F9: add_redir (loop_util1.c:70)
+==341998==    by 0x40342B: process_redirection (parse_tokens_utils.c:54)
+==341998==    by 0x402B86: parse_tokens (loop_util1.c:106)
+==341998==    by 0x405018: shell_loop (shell_loop.c:200)
+==341998==    by 0x4050B6: main (main.c:23)
+==341998== 
+==341998== 72 bytes in 1 blocks are still reachable in loss record 24 of 77
+==341998==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341998==    by 0x407785: ft_calloc (in /home/czhu/Mini/minishell)
+==341998==    by 0x402E36: create_new_cmd (cmd_utils.c:20)
+==341998==    by 0x403230: create_new_command (parse_tokens_utils.c:20)
+==341998==    by 0x402ACE: parse_tokens (loop_util1.c:96)
+==341998==    by 0x405018: shell_loop (shell_loop.c:200)
+==341998==    by 0x4050B6: main (main.c:23)
+==341998== 512 bytes in 1 blocks are still reachable in loss record 34 of 77
+==341998==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341998==    by 0x407785: ft_calloc (in /home/czhu/Mini/minishell)
+==341998==    by 0x402E61: create_new_cmd (cmd_utils.c:23)
+==341998==    by 0x403230: create_new_command (parse_tokens_utils.c:20)
+==341998==    by 0x402ACE: parse_tokens (loop_util1.c:96)
+==341998==    by 0x405018: shell_loop (shell_loop.c:200)
+==341998==    by 0x4050B6: main (main.c:23)
+==341998== 
+==341998== 512 bytes in 1 blocks are still reachable in loss record 35 of 77
+==341998==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341998==    by 0x407785: ft_calloc (in /home/czhu/Mini/minishell)
+==341998==    by 0x402E61: create_new_cmd (cmd_utils.c:23)
+==341998==    by 0x402BAD: parse_tokens (loop_util1.c:111)
+==341998==    by 0x405018: shell_loop (shell_loop.c:200)
+==341998==    by 0x4050B6: main (main.c:23)
+
+
+export HOME=123 | env | grep HOME
+==341795== 17 bytes in 2 blocks are still reachable in loss record 11 of 70
+==341795==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341795==    by 0x4077F5: ft_strdup (in /home/czhu/Mini/minishell)
+==341795==    by 0x403359: process_token_word (parse_tokens_utils.c:41)
+==341795==    by 0x402B17: parse_tokens (loop_util1.c:100)
+==341795==    by 0x405018: shell_loop (shell_loop.c:200)
+==341795==    by 0x4050B6: main (main.c:23)
+==341795== 72 bytes in 1 blocks are still reachable in loss record 21 of 70
+==341795==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341795==    by 0x407785: ft_calloc (in /home/czhu/Mini/minishell)
+==341795==    by 0x402E36: create_new_cmd (cmd_utils.c:20)
+==341795==    by 0x403230: create_new_command (parse_tokens_utils.c:20)
+==341795==    by 0x402ACE: parse_tokens (loop_util1.c:96)
+==341795==    by 0x405018: shell_loop (shell_loop.c:200)
+==341795==    by 0x4050B6: main (main.c:23)
+==341795== 512 bytes in 1 blocks are still reachable in loss record 29 of 70
+==341795==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==341795==    by 0x407785: ft_calloc (in /home/czhu/Mini/minishell)
+==341795==    by 0x402E61: create_new_cmd (cmd_utils.c:23)
+==341795==    by 0x403230: create_new_command (parse_tokens_utils.c:20)
+==341795==    by 0x402ACE: parse_tokens (loop_util1.c:96)
+==341795==    by 0x405018: shell_loop (shell_loop.c:200)
+==341795==    by 0x4050B6: main (main.c:23)
+
+
+
+
+
 | echo oi
 ./missingout
 ./src

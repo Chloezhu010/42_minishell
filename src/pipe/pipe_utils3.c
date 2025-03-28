@@ -51,7 +51,14 @@ void	execute_pipe_child(t_cmd *current,
 	// printf("[DEBUG] Command executed, exiting with status: %d\n", env->exit_status);
 
 	/* add free_env, free_cmds before exit */
-	if (current->args[0] && ft_strcmp(current->args[0], "env") == 0)
+	if (current->args[0] && ((ft_strcmp(current->args[0], "env") == 0
+			|| ft_strcmp(current->args[0], "echo") == 0
+			|| ft_strcmp(current->args[0], "cat") == 0
+			|| ft_strcmp(current->args[0], "unset") == 0
+			|| ft_strcmp(current->args[0], "export") == 0
+			|| ft_strcmp(current->args[0], "unset") == 0
+			|| ft_strcmp(current->args[0], "cd") == 0
+			|| ft_strcmp(current->args[0], "pwd") == 0)))
 		free_env(env);
 	if (current)
 		free_cmds(current);
