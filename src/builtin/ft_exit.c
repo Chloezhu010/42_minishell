@@ -55,8 +55,8 @@ void	ft_exit(char **args, t_env *env)
 		if (is_digit(args[1]) == 0)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
-			env->exit_status = 255;
-			exit_status = 255;
+			env->exit_status = 2;
+			return ;
 		}
 		else
 		{

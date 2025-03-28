@@ -39,10 +39,14 @@ static char	*resolve_directory(char **args, t_env *env)
 			return (NULL);
 		}
 	}
-	else
+	else if (args[1] && args[2])
 	{
-		dir = args[1];
+		env->exit_status = 1;
+		ft_putstr_fd(" too many arguments", 2);
+		return (NULL);
 	}
+	else
+		dir = args[1];
 	return (dir);
 }
 

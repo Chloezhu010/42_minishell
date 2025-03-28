@@ -46,6 +46,8 @@ void	execute_external(t_cmd *cmd, t_env *env)
 		ft_execve(path, cmd->args, env);
 		// printf("[DEBUG] Freeing command path\n");
 		free(path);
+		if (env->exit_status != 0)
+			return ;
 	}
 	if (cmd->args && cmd->args[0])
 	{
