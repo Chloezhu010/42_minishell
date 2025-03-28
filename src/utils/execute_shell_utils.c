@@ -34,28 +34,29 @@ void	execute_builtin(t_cmd *cmd, t_env *env)
 	// printf("[DEBUG] No matching builtin found\n");
 }
 
-void	execute_external(t_cmd *cmd, t_env *env)
+void execute_external(t_cmd *cmd, t_env *env)
 {
-	char	*path;
-
-	// printf("[DEBUG] execute_external called for: %s\n", cmd->args[0]);
-	path = get_cmd_path(cmd);
-	if (path)
-	{
-		// printf("[DEBUG] Found path for external command: %s\n", path);
-		ft_execve(path, cmd->args, env);
-		// printf("[DEBUG] Freeing command path\n");
-		free(path);
-		if (env->exit_status != 0)
-			return ;
-	}
-	if (cmd->args && cmd->args[0])
-	{
-		// printf("[DEBUG] Command not found\n");
-		ft_putstr_fd(" command not found\n", 2);
-	}
-	env->exit_status = 127;
-	return ;
+    char *path;
+    path = get_cmd_path(cmd);
+    if (path)
+    {
+        ft_execve(path, cmd->args, env);
+        free(path);
+        if (env->exit_status != 0)
+		{
+			free_cmds(cmd);
+			free_env(env);
+			exit(env->exit_status);
+		}
+    }
+    if (cmd->args && cmd->args[0])
+    {
+        ft_putstr_fd(" command not found\n", 2);
+    }
+    env->exit_status = 127;
+	free_cmds(cmd);
+	free_env(env);
+    exit(env->exit_status); // 使用 exit() 退出子进程
 }
 
 int is_builtin(char *cmd)
