@@ -55,6 +55,7 @@ void	init_env(t_env *env, char **envp)
 	int	i;
 	int	count;
 
+	printf("[debug] start init_env\n");
 	if (!envp)
 	{
 		env->env_var = NULL;
@@ -66,13 +67,11 @@ void	init_env(t_env *env, char **envp)
 	i = 0;
 	count = count_envp(envp);
 	env->env_var = (char **)ft_malloc((count + 1) * sizeof(char *));
-	// if (!env->env_var)
-	// {
-	// 	perror("malloc");
-	// 	exit (1);
-	// }
+	printf("[debug] ft_malloc env->env_var at %p\n", env->env_var);
+
 	while (envp[i])
 	{
+		printf("[debug] start process env_var of %s\n", envp[i]);		
 		env->env_var[i] = ft_strdup(envp[i]);
 		i++;
 	}
@@ -100,14 +99,19 @@ void	free_env(t_env *env)
 {
 	int	i;
 
+	printf("[free] start free_env process\n");
+	
 	i = 0;
 	if (!env || !env->env_var)
 		return ;
 	while (env->env_var[i])
 	{
+		printf("[free] free env_var at %p\n", env->env_var[i]);
+
 		free(env->env_var[i]);
 		i++;
 	}
+	printf("[free] free the env_var struct at %p\n", env->env_var);
 	free(env->env_var);
 	if (env->exported)
 		free(env->exported);

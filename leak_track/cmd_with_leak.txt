@@ -1,14 +1,17 @@
+[ok]
+echo $?
+$?
+missingcmd
+$
+
+[not ok]
 cat < nonexist | grep oi
 cat < missing | cat <"./incl/minishell.h"
 export HOME=123 | env | grep HOME
 env | grep HOME
 env | grep PWD
 echo hello > file.txt | cat file.txt
-echo $?
 | echo oi
-
-$PWD
 ./missingout
 ./src
-$
-$?
+$PWD
