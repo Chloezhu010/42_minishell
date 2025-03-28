@@ -50,10 +50,13 @@ void	execute_pipe_child(t_cmd *current,
 	execute_cmd(current, env);
 	// printf("[DEBUG] Command executed, exiting with status: %d\n", env->exit_status);
 
-	/* add free_env before exit */
+	/* add free_env, free_cmds before exit */
 	if (current->args[0] && ft_strcmp(current->args[0], "env") == 0)
 		free_env(env);
+	if (current)
+		free_cmds(current);
 
+	/* cleanup stdin & stdout backup */
 	if (stdin_backup_child != -1)
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)

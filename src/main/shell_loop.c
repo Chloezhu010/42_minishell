@@ -198,6 +198,7 @@ void	shell_loop(t_env *env)
 		if (tokens)
 		{
 			cmds = parse_tokens(tokens);
+			free_tokens(tokens);
 			if (cmds)
 			{
 				process_heredocs(cmds, env);
@@ -206,7 +207,7 @@ void	shell_loop(t_env *env)
 				free_cmds(cmds);
 			}
 			// print_tokens(tokens);
-			free_tokens(tokens);
+			
 		}
 		free(line);
 		if (env->exit_requested)
