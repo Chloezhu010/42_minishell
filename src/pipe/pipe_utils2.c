@@ -18,7 +18,7 @@
     - if there is a prev_pipe_read, close it too
     - exit 1
 */
-void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error)
+void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error, t_env *env)
 {
 	if (redirect_error)
 	{
@@ -27,11 +27,14 @@ void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error)
 			close(ctx->pipefd[0]);
 			close(ctx->pipefd[1]);
 		}
-		if (ctx->prev_pipe_read != -1) //add
+		if (ctx->prev_pipe_read != -1)
 		{
 			close(ctx->prev_pipe_read);
 			ctx->prev_pipe_read = -1;
 		}
+		// 在退出前释放内存，防止内存泄漏
+		free_cmds(cmd);
+		free_env(env);
 		exit(1);
 	}
 }

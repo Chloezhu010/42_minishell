@@ -27,7 +27,7 @@ void	execute_pipe_child(t_cmd *current,
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
 
-	handle_redirect_error(current, ctx, redirect_error);
+	handle_redirect_error(current, ctx, redirect_error, env);
 	handle_stderr_redirect(current);
 	if (setup_pipe_input(current, ctx, &stdin_backup_child, env))
 	{
@@ -36,7 +36,9 @@ void	execute_pipe_child(t_cmd *current,
 			close(stdin_backup_child);
 		if (stdout_backup_child != -1)
 			close(stdout_backup_child);
-		// exit(1);
+		// 在所有错误情况下都释放内存
+		free_cmds(current);
+		free_env(env);
 		exit(env->exit_status);
 	}
 	if (setup_pipe_output(current, ctx, &stdout_backup_child, env))
@@ -46,7 +48,9 @@ void	execute_pipe_child(t_cmd *current,
 			close(stdin_backup_child);
 		if (stdout_backup_child != -1)
 			close(stdout_backup_child);
-		// exit(1);
+		// 在所有错误情况下都释放内存
+		free_cmds(current);
+		free_env(env);
 		exit(env->exit_status);
 	}
 	// printf("[DEBUG] About to execute command: %s\n", current->args[0]);
