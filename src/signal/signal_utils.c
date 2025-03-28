@@ -90,16 +90,22 @@ void	sigint_handler(int sig)
 }
 
 /* Ctrl \ handler */
-void sigquit_handler(int sig)
+void	sigquit_handler(int sig)
 {
-    (void)sig;
-    if (g_env && g_env->at_prompt)
-    {
-        write(STDOUT_FILENO, "\n", 1);
+	(void)sig;
+
+	if (g_env && g_env->at_prompt)
+	{
+		rl_on_new_line();
+		rl_redisplay();
+		g_env->exit_status = 131;
+		return ;
+	}
+	else if (g_env)
+	{
+		write(STDOUT_FILENO, "\n", 1);
         rl_on_new_line();
         rl_replace_line("", 0);
-        rl_redisplay();
-    }
-    if (g_env)
-        g_env->exit_status = 131;
+		g_env->exit_status = 131;
+	}
 }
