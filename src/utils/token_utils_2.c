@@ -79,6 +79,11 @@ int	validate_tokens(t_token *tokens)
 {
 	if (!tokens)
 		return (0);
+	if (tokens->type == TOKEN_PIPE)
+	{
+		printf("bash: syntax error near unexpected token '|'\n");
+		return (0);
+	}
 	while (tokens)
 	{
 		if (tokens->type == TOKEN_OR)
