@@ -41,19 +41,19 @@ static int	check_execve_errors(char *path, t_env * env)
 	if (dir != NULL)
 	{
 		closedir(dir);
-		write(2, "execve failed: Is a directory\n", 29);
+		write(2, "execve failed: Is a directory\n", 31);
 		env->exit_status = 126;
 		return 0;
 	}
 	if (stat(path, &path_stat) == -1)
 	{
-		write(2, "execve failed: No such file or directory\n", 40);
+		write(2, "execve failed: No such file or directory\n", 42);
 		env->exit_status = 127;
 		return 0;
 	}
 	if (access(path, X_OK) == -1)
 	{
-		write(2, "execve failed: Permission denied\n", 32);
+		write(2, "execve failed: Permission denied\n", 34);
 		env->exit_status = 126;
 		return 0;
 	}
@@ -93,8 +93,22 @@ pid_t	ft_wait(int *status)
 		printf("wait: status arg required\n");
 		return (-1);
 	}
-	result = wait(status);
-	if (result == -1)
-		perror("wait failed");
+	while (1)
+    {
+        result = wait(status);
+        if (result == -1)
+        {
+            if (errno == EINTR)
+                continue;  // If interrupted by a signal, try again
+            else
+                perror("wait failed");  // Only report other errors
+        }
+        break;
+    }
+    
+    // return (result);
+	// result = wait(status);
+	// if (result == -1)
+	// 	perror("wait failed");
 	return (result);
 }
