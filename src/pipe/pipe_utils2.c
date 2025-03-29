@@ -16,9 +16,11 @@
     - if there is a next cmd
         - close the read & write end of the pipe
     - if there is a prev_pipe_read, close it too
+	- free cmds and env
     - exit 1
 */
-void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error, t_env *env)
+void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx,
+		int redirect_error, t_env *env)
 {
 	if (redirect_error)
 	{
@@ -32,27 +34,41 @@ void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error, t_env *e
 			close(ctx->prev_pipe_read);
 			ctx->prev_pipe_read = -1;
 		}
-		// 在退出前释放内存，防止内存泄漏
 		free_cmds(cmd);
 		free_env(env);
 		exit(1);
 	}
 }
 
-/* handle redirect stderr to /dev/null for non-last cmd */
-void	handle_stderr_redirect(t_cmd *cmd)
+/* helper function for setup_pipe_input */
+static int	cleanup_error(t_cmd *cmd, t_pipe *ctx, int *stdin_backup)
 {
-	(void)cmd;
-	// int	null_fd;
-	// if (cmd->next)
-	// {
-	// 	null_fd = open("/dev/null", O_WRONLY);
-	// 	if (null_fd != -1)
-	// 	{
-	// 		dup2(null_fd, STDERR_FILENO);
-	// 		close(null_fd);
-	// 	}
-	// }
+	if (*stdin_backup != -1)
+		close(*stdin_backup);
+	if (cmd->next)
+	{
+		close(ctx->pipefd[0]);
+		close(ctx->pipefd[1]);
+	}
+	if (ctx->prev_pipe_read != -1)
+	{
+		close(ctx->prev_pipe_read);
+		ctx->prev_pipe_read = -1;
+	}
+	return (1);
+}
+
+/* helper function for setup_pipe_input */
+static int	handle_pipe_dup_error(t_cmd *cmd, t_pipe *ctx)
+{
+	close(ctx->prev_pipe_read);
+	ctx->prev_pipe_read = -1;
+	if (cmd->next)
+	{
+		close(ctx->pipefd[0]);
+		close(ctx->pipefd[1]);
+	}
+	return (1);
 }
 
 /* setup pipe input
@@ -66,115 +82,22 @@ void	handle_stderr_redirect(t_cmd *cmd)
 */
 int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 {
-	// printf("[DEBUG] Setting up /pipe input for: %s\n", cmd->args[0]);
 	if (cmd->infile || (cmd->heredoc && cmd->fd_in > 0))
 	{
-		// printf("[DEBUG] Handling input redirect\n");
 		if (handle_input_redirect(cmd, stdin_backup, env) == -1)
-		{
-			// printf("[DEBUG] Input redirect failed\n");
-			if (*stdin_backup != -1)
-				close(*stdin_backup);
-			if (cmd->next)
-			{
-				// printf("[DEBUG] Closing pipe fds after input redirect failure\n");
-				close(ctx->pipefd[0]);
-				close(ctx->pipefd[1]);
-			}
-			if (ctx->prev_pipe_read != -1)
-			{
-				// printf("[DEBUG] Closing prev_pipe_read after input redirect failure\n");
-				close(ctx->prev_pipe_read);
-				ctx->prev_pipe_read = -1;
-			}
-			return (1);
-		}
+			cleanup_error(cmd, ctx, stdin_backup);
 	}
 	else if (ctx->prev_pipe_read != -1)
 	{
-		// printf("[DEBUG] Setting up pipe input from previous command\n");
 		if (ft_dup(STDIN_FILENO, stdin_backup, "dup"))
-		{
-			// printf("[DEBUG] Failed to dup stdin\n");
-			close(ctx->prev_pipe_read);
-			ctx->prev_pipe_read = -1;
-			if (cmd->next)
-			{
-				// printf("[DEBUG] Closing pipe fds after dup failure\n");
-				close(ctx->pipefd[0]);
-				close(ctx->pipefd[1]);
-			}
-			return (1);
-		}
+			handle_pipe_dup_error(cmd, ctx);
 		if (ft_dup2(ctx->prev_pipe_read, STDIN_FILENO, *stdin_backup, "dup2"))
 		{
-			// printf("[DEBUG] Failed to dup2 stdin\n");
 			close(*stdin_backup);
-			close(ctx->prev_pipe_read);
-			ctx->prev_pipe_read = -1;
-			if (cmd->next)
-			{
-				// printf("[DEBUG] Closing pipe fds after dup2 failure\n");
-				close(ctx->pipefd[0]);
-				close(ctx->pipefd[1]);
-			}
-			return (1);
+			handle_pipe_dup_error(cmd, ctx);
 		}
-		// printf("[DEBUG] Closing prev_pipe_read after successful setup\n");
 		close(ctx->prev_pipe_read);
 		ctx->prev_pipe_read = -1;
-	}
-	return (0);
-}
-
-/* setup pipe output
-    - handle output for pipeline
-        - if there is a next cmd
-        - redirect the stdout to the write end of the pipe
-        - close both end of the pipe
-    - handle output redirect
-    - return 1 on error, 0 on success
-*/
-int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
-{
-	// printf("[DEBUG] Setting up pipe output for: %s\n", cmd->args[0]);
-	if (cmd->next)
-	{
-		// printf("[DEBUG] Setting up pipe output to next command\n");
-		if (ft_dup(STDOUT_FILENO, stdout_backup, "dup"))
-		{
-			// printf("[DEBUG] Failed to dup stdout\n");
-			close(ctx->pipefd[0]);
-			close(ctx->pipefd[1]);
-			return (1);
-		}
-		if (ft_dup2(ctx->pipefd[1], STDOUT_FILENO, *stdout_backup, "dup2"))
-		{
-			// printf("[DEBUG] Failed to dup2 stdout\n");
-			close(*stdout_backup);
-			close(ctx->pipefd[0]);
-			close(ctx->pipefd[1]);
-			return (1);
-		}
-		// printf("[DEBUG] Closing pipe fds after successful setup\n");
-		close(ctx->pipefd[0]);
-		close(ctx->pipefd[1]);
-	}
-	if (cmd->outfile)
-	{
-		// printf("[DEBUG] Handling output redirect\n");
-		if (handle_output_redirect(cmd, stdout_backup, env) == -1)
-		{
-			// printf("[DEBUG] Output redirect failed\n");
-			if (*stdout_backup != -1)
-				close(*stdout_backup);
-			if (cmd->next && ctx->pipefd[1] != -1)
-			{
-				// printf("[DEBUG] Closing pipefd[1] after output redirect failure\n");
-				close(ctx->pipefd[1]);
-			}
-			return (1);
-		}
 	}
 	return (0);
 }

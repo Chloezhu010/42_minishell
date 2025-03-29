@@ -24,24 +24,29 @@ typedef struct s_child_pipe
     int *pipefd;
 } t_child_pipe;
 
-
+/* pipe.c */
 void execute_pipeline(t_cmd *cmds, t_env *env);
 
+/* pipe utils1 */
 void	init_pipe(t_pipe *context);
 void	mark_pipeline_cmd(t_cmd *cmd);
 int	create_cmd_pipe(t_pipe *ctx, t_env *env);
 int	ft_dup(int fd, int *backup_ptr, char *name);
 int ft_dup2(int oldfd, int newfd, int backup, char *name);
+
+/* pipe utils2 */
 void	handle_redirect_error(t_cmd *cmd, t_pipe *ctx, int redirect_error, t_env *env);
-void	handle_stderr_redirect(t_cmd *cmd);
 int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env);
+
+/* pipe utils3 */
 int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env);
-int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env);
+void	restore_std_fd(t_pipe *ctx);
+void	wait_for_child(t_pipe *ctx, t_env *env);
+void	close_all_pipe_fds(t_pipe *ctx);
+
+/* pipe utils4 */
 void	execute_pipe_child(t_cmd *current,
 		t_pipe *ctx, t_env *env, int redirect_error);
 void	execute_parent_process(t_pipe *ctx, t_cmd *cmd, pid_t pid);
-void	restore_std_fd(t_pipe *ctx);
-void	wait_for_child(t_pipe *ctx, t_env *env);
 
-void debug_print_cmd(t_cmd *cmd);
 #endif

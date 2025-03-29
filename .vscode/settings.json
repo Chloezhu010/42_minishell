@@ -3,6 +3,7 @@
         "minishell.h": "c",
         "stdio.h": "c",
         "readline.h": "c",
-        "sig.h": "c"
+        "sig.h": "c",
+        "pipe_utils3.C": "cpp"
     }
 }

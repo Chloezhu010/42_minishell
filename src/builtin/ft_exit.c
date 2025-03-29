@@ -64,7 +64,7 @@ void	ft_exit(char **args, t_env *env)
 		}
 	}
 	env->exit_status = exit_status;
-	env->exit_requested = 1; // 设置退出标志，而不是直接调用 exit()
+	env->exit_requested = 1;
 }
 /*
 // === testing exit ===

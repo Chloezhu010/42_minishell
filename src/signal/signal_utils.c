@@ -13,7 +13,6 @@
 #include "../../incl/sig.h"
 
 static t_env	*g_env = NULL;
-/* set global env pointer */
 
 void	set_signal_env(t_env *env)
 {
@@ -45,19 +44,19 @@ void	enable_echo(void)
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
 }
 
-/* reset stdin state */
+/* reset stdin state
+	- reset terminal attributes
+	- ensure stdin i properly setup
+*/
 void reset_input_state(void)
 {
 	int fd;
 	struct termios term;
 
-	/* reset terminal attributes */
 	tcgetattr(STDIN_FILENO, &term);
 	term.c_lflag |= (ICANON | ECHO);
 	term.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
-
-	/* ensure stdin i properly setup */
 	if (isatty(STDIN_FILENO))
 	{
 		fd = open("/dev/tty", O_RDONLY);

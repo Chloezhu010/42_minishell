@@ -78,7 +78,6 @@ char	*get_cmd_path(t_cmd *cmd)
 	}
 	return (path);
 }
-
 // // ==== test find_path ===
 // int main(int ac, char **av)
 // {

@@ -48,26 +48,6 @@ static void	fork_and_execute_pipe(t_cmd *current,
 		execute_parent_process(ctx, current, pid);
 }
 
-/* Helper function to clean up all pipe file descriptors */
-static void	close_all_pipe_fds(t_pipe *ctx)
-{
-	if (ctx->prev_pipe_read != -1)
-	{
-		close(ctx->prev_pipe_read);
-		ctx->prev_pipe_read = -1;
-	}
-	if (ctx->pipefd[0] != -1)
-	{
-		close(ctx->pipefd[0]);
-		ctx->pipefd[0] = -1;
-	}
-	if (ctx->pipefd[1] != -1)
-	{
-		close(ctx->pipefd[1]);
-		ctx->pipefd[1] = -1;
-	}
-}
-
 /* Save the original signal handlers before changing them */
 static void	save_signal_handlers(struct sigaction *old_int,
 			struct sigaction *old_quit)

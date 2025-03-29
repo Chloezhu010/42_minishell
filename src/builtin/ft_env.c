@@ -28,14 +28,4 @@ void	ft_env(char **args, t_env *env)
 	}
 	print_env(env);
 }
-/*
-// === test env ===
-int main(int ac, char **av, char **envp)
-{
-    t_env env;
-    
-    (void)ac;
-    (void)av;
-    ft_env(&env, envp);
-    return (0);
-}*/
+

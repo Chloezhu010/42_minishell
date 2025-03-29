@@ -80,35 +80,4 @@ void	ft_cd(char **args, t_env *env)
 	dir = resolve_directory(args, env);
 	execute_cd(dir, env);
 }
-/*
-// // === test create_env_entry ===
-// int main()
-// {
-//     char *key = "PWD";
-//     char *value = "/home/user";
-//     char *new_entry = create_env_entry(key, value);
-//     printf("%s\n", new_entry);
-// }
 
-// === test cd ===
-int main(int ac, char **av, char **envp)
-{    
-    t_env env;
-    env.env_var = NULL;
-    
-    (void)ac;
-    ft_cd(av, &env, envp);
-
-    // char cwd[1024];
-    // if (getcwd(cwd, sizeof(cwd)) != NULL)
-    //     printf("current dir: %s\n\n", cwd);
-    // else
-    //     perror("cd");
-    // === check env status ===
-    printf("=== print out env to check ===\n");
-    print_env(&env);
-
-    // free up memory
-    free_env(&env);
-    return (0);
-}*/

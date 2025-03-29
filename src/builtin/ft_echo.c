@@ -46,10 +46,4 @@ void	ft_echo(char **args, t_env *env)
 	if (new_line == 1)
 		printf("\n");
 }
-/*
-// === testing echo ===
-int main(int ac, char **av)
-{
-    (void)ac;
-    ft_echo(av);
-}*/
+

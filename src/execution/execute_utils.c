@@ -26,16 +26,10 @@ pid_t	ft_fork(void)
 	return (pid);
 }
 
-/* execve function wrapper
-    - check input: path, av
-    - check env init
-    - use execve to execute the cmd
-        - if execve fails (returns -1), print error and exit
-*/
-static int	check_execve_errors(char *path, t_env * env)
+/* helper function for check_execve_errors */
+static int	check_dir_error(char *path, t_env *env)
 {
-	DIR			*dir;
-	struct stat	path_stat;
+	DIR	*dir;
 
 	dir = opendir(path);
 	if (dir != NULL)
@@ -43,8 +37,23 @@ static int	check_execve_errors(char *path, t_env * env)
 		closedir(dir);
 		write(2, "execve failed: Is a directory\n", 31);
 		env->exit_status = 126;
-		return 0;
+		return (0);
 	}
+	return (1);
+}
+
+/* execve function wrapper
+    - check input: path, av
+    - check env init
+    - use execve to execute the cmd
+        - if execve fails (returns -1), print error and exit
+*/
+static int	check_execve_errors(char *path, t_env *env)
+{
+	struct stat	path_stat;
+
+	if (!check_dir_error(path, env))
+		return (0);
 	if (stat(path, &path_stat) == -1)
 	{
 		write(2, "execve failed: No such file or directory\n", 42);
@@ -82,7 +91,9 @@ void	ft_execve(char *path, char **av, t_env *env)
 
 /* wait function wrapper
     - check status
-    - if wait fails, print error and return result
+    - if wait fails
+		- If interrupted by a signal, try again
+		- print error and return result
 */
 pid_t	ft_wait(int *status)
 {
@@ -99,16 +110,11 @@ pid_t	ft_wait(int *status)
         if (result == -1)
         {
             if (errno == EINTR)
-                continue;  // If interrupted by a signal, try again
+                continue;
             else
-                perror("wait failed");  // Only report other errors
+                perror("wait failed");
         }
         break;
     }
-    
-    // return (result);
-	// result = wait(status);
-	// if (result == -1)
-	// 	perror("wait failed");
 	return (result);
 }
