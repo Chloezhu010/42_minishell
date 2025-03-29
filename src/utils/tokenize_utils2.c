@@ -33,7 +33,7 @@ int tokenize_util3(t_token **tokens, int *i, char *input)
     quoted = extract_quoted(input, i, quote);
     if (!quoted)
         return (1);
-    if (input[*i] && is_quote(input[*i]))
+    if (input[*i] && (is_quote(input[*i]) || ft_isalpha(input[*i]) || ft_isdigit(input[*i])))
     {
         is_consecutive = 1; // 标记为连续引号
     }

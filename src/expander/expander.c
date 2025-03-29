@@ -101,11 +101,6 @@ void merge_consecutive_tokens(t_token *tokens)
         if (current->consecutive_quote)
         {
             next = current->next;
-            
-            // 调试输出
-            printf("合并tokens: [%s] 和 [%s]\n", current->value, next->value);
-            
-            // 合并两个token的内容
             combined = ft_strjoin(current->value, next->value);
             if (combined)
             {
