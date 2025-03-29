@@ -138,35 +138,20 @@ void expand_tokens(t_token *tokens, t_env *env)
     current = tokens;
     while (current)
     {
-        // 调试输出
-        printf("处理token: [%s], 类型: %d\n", current->value, current->type);
-        
-        // 只对双引号和普通词token进行变量扩展
         if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
         {
             char *expanded = expand_var_instr(current->value, env);
             if (expanded)
             {
-                printf("扩展前: [%s], 扩展后: [%s]\n", current->value, expanded);
                 free(current->value);
                 current->value = expanded;
             }
         }
-        // 单引号token保持原样，不进行变量扩展
-        else if (current->type == TOKEN_SINGLE_QUOTE)
-        {
-            printf("单引号内容不扩展: [%s]\n", current->value);
-        }
-        
         current = current->next;
     }
-    
-    // 调试：打印最终token状态
-    printf("\n扩展后的所有token:\n");
     current = tokens;
     while (current)
     {
-        printf("Token: [%s], 类型: %d\n", current->value, current->type);
         current = current->next;
     }
 }

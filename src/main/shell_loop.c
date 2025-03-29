@@ -12,38 +12,6 @@
 
 #include "../../incl/minishell.h"
 
-/* 打印令牌链表的内容 */
-void    print_tokens(t_token *tokens)
-{
-    t_token *current;
-    char    *type_str;
-
-    current = tokens;
-    printf("\n===== TOKENS =====\n");
-    while (current)
-    {
-        switch (current->type)
-        {
-            case TOKEN_WORD: type_str = "WORD"; break;
-            case TOKEN_PIPE: type_str = "PIPE"; break;
-            case TOKEN_OR: type_str = "OR"; break;
-            case TOKEN_REDIRECT_IN: type_str = "REDIR_IN"; break;
-            case TOKEN_REDIRECT_OUT: type_str = "REDIR_OUT"; break;
-            case TOKEN_REDIRECT_APPEND: type_str = "REDIR_APPEND"; break;
-            case TOKEN_HEREDOC: type_str = "HEREDOC"; break;
-            case TOKEN_SINGLE_QUOTE: type_str = "SINGLE_QUOTE"; break;
-            case TOKEN_DOUBLE_QUOTE: type_str = "DOUBLE_QUOTE"; break;
-            case TOKEN_AND: type_str = "AND"; break;
-            case TOKEN_AND_SINGLE: type_str = "AND_SINGLE"; break;
-            case TOKEN_COMMAND: type_str = "COMMAND"; break;
-            default: type_str = "UNKNOWN"; break;
-        }
-        printf("Token: [%s] \tType: %s\n", current->value, type_str);
-        current = current->next;
-    }
-    printf("=================\n\n");
-}
-
 char	*read_line(void)
 {
 	char	*buf;
@@ -100,7 +68,6 @@ t_token *process_command_line(char *line, t_env *env)
     tokens = tokenize(line);
     if (!tokens)
         return (NULL);
-    print_tokens(tokens);
     expand_tokens(tokens, env);
     merge_consecutive_tokens(tokens); // 新添加的函数调用
     check_format_command(tokens);
