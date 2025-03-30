@@ -1,2 +1,8 @@
-hello
-world
+file.txt
+incl
+leak_track
+Makefile
+minishell
+README.md
+src
+test_code

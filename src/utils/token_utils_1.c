@@ -36,8 +36,8 @@ char	*extract_quoted(char *input, int *i, char quote)
 	quoted = extract_single_quoted(input, i, quote);
 	if (!quoted)
 		return (NULL);
-	if (is_quote(input[*i]))
-		quoted = process_additional_quotes(input, i, quoted);
+	// if (is_quote(input[*i]))
+	// 	quoted = process_additional_quotes(input, i, quoted);
 	return (quoted);
 }
 
@@ -50,6 +50,7 @@ t_token	*create_token(char *value, int type)
 		return (NULL);
 	token->value = strdup(value);
 	token->type = type;
+	token->consecutive_quote = 0;
 	token->next = NULL;
 	return (token);
 }

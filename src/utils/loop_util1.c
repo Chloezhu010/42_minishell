@@ -42,6 +42,11 @@ t_token	*tokenize(char *input)
 	{
 		while (ft_isspace(input[i]))
 			i++;
+		if (is_quote(input[i]) && input[i] == input[i+1])
+		{
+			i += 2;
+		}
+			
 		if (is_special_char(input[i]))
 			tokenize_util1(&tokens, &i, input);
 		else if (input[i] == '|')

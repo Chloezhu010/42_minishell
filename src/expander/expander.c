@@ -85,32 +85,70 @@ char	*expand_var_instr(char *input, t_env *env)
 			- update with the expanded value
 		- move to the next token
 */
-void	expand_tokens(t_token *tokens, t_env *env)
+void merge_consecutive_tokens(t_token *tokens)
 {
-	char	*expanded_value;
-	t_token	*current;
+    t_token *current;
+    t_token *next;
+    char *combined;
 
-	current = tokens;
-	while (current)
-	{
-		if (current->type == TOKEN_SINGLE_QUOTE && current->value)
-		{
-			current = current->next;
-			continue ;
-		}
-		else if (current->value
-			&& (current->type == TOKEN_DOUBLE_QUOTE
-				|| current->type == TOKEN_WORD))
-		{
-			expanded_value = expand_var_instr(current->value, env);
-			if (expanded_value)
-			{
-				free(current->value);
-				current->value = expanded_value;
-			}
-		}
-		current = current->next;
-	}
+    if (!tokens)
+        return;
+
+    current = tokens;
+    while (current && current->next)
+    {
+        // 如果当前token标记为连续
+        if (current->consecutive_quote)
+        {
+            next = current->next;
+            combined = ft_strjoin(current->value, next->value);
+            if (combined)
+            {
+                // 更新当前token的值
+                free(current->value);
+                current->value = combined;
+                
+                // 继承下一个token的连续标记，确保可以处理多个连续token
+                current->consecutive_quote = next->consecutive_quote;
+                
+                // 从链表中移除下一个token
+                current->next = next->next;
+                free(next->value);
+                free(next);
+                
+                // 不前进到下一个token，保持在当前位置
+                // 这样可以处理多个连续token（例如：123"abc"'def'"ghi"）
+                continue;
+            }
+        }
+        
+        current = current->next;
+    }
+}
+
+void expand_tokens(t_token *tokens, t_env *env)
+{
+    t_token *current;
+
+    current = tokens;
+    while (current)
+    {
+        if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
+        {
+            char *expanded = expand_var_instr(current->value, env);
+            if (expanded)
+            {
+                free(current->value);
+                current->value = expanded;
+            }
+        }
+        current = current->next;
+    }
+    current = tokens;
+    while (current)
+    {
+        current = current->next;
+    }
 }
 // //===test extract_var_name ===
 // int main()

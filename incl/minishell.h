@@ -88,4 +88,5 @@ int	handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env);
 void	restore_io(int stdin_backup, int stdout_backup);
 int	handle_input_redirect1(t_redir *redir);
 int	handle_output_redirect1(t_redir *redir);
+void merge_consecutive_tokens(t_token *tokens);
 #endif
