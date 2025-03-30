@@ -76,11 +76,11 @@ int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (-1);
 	}
 	close(cmd->fd_in);
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }
 
@@ -105,11 +105,11 @@ int	handle_file_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (-1);
 	}
 	close(fd);
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }
 
@@ -131,10 +131,10 @@ int	handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (handle_heredoc_redirect(cmd, stdin_backup, env));
 	if (cmd->infile)
 		return (handle_file_input_redirect(cmd, stdin_backup, env));
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }
