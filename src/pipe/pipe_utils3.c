@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 12:25:48 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/30 14:43:25 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/30 14:54:07 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,13 @@ void	restore_std_fd(t_pipe *ctx)
 	}
 	if (ctx->stdout_backup != -1)
 	{
-		dup2(ctx->stdout_backup, STDIN_FILENO);
+		dup2(ctx->stdout_backup, STDOUT_FILENO);
 		close(ctx->stdout_backup);
 		ctx->stdout_backup = -1;
 	}
 	if (ctx->stderr_backup != -1)
 	{
-		dup2(ctx->stderr_backup, STDIN_FILENO);
+		dup2(ctx->stderr_backup, STDERR_FILENO);
 		close(ctx->stderr_backup);
 		ctx->stderr_backup = -1;
 	}

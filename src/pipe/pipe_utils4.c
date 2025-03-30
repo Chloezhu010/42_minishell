@@ -74,11 +74,11 @@ void	execute_pipe_child(t_cmd *current,
 		cleanup_input_output(current, env,
 			stdin_backup_child, stdout_backup_child);
 	execute_cmd(current, env);
-	/* cleanup child fd */
-	if (stdin_backup_child != -1)
-		close(stdin_backup_child);
-	if (stdout_backup_child != -1)
-		close(stdout_backup_child);
+	// /* cleanup child fd */
+	// if (stdin_backup_child != -1)
+	// 	close(stdin_backup_child);
+	// if (stdout_backup_child != -1)
+	// 	close(stdout_backup_child);
 
 	cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
 }
