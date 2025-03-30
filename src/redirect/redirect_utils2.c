@@ -59,7 +59,7 @@ int	handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env)
 	// 	close(*stdout_backup);
 	// 	*stdout_backup = -1;
 	// }
-	// return (0);
+	return (0);
 }
 
 /* restore std input after execution */
