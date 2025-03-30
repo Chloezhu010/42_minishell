@@ -21,6 +21,8 @@ void	init_pipe(t_pipe *context)
 	context->stdin_backup = dup(STDIN_FILENO);
 	context->stdout_backup = dup(STDOUT_FILENO);
 	context->stderr_backup = dup(STDERR_FILENO);
+	context->pipefd[0] = -1;
+	context->pipefd[1] = -1;
 }
 
 void	mark_pipeline_cmd(t_cmd *cmd)

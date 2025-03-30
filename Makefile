@@ -6,6 +6,8 @@ CC = cc
 # TODO clear up debugger
 CFLAGS = -g -Wall -Wextra -Werror
 
+VAL_FLAGS = --leak-check=full --show-leak-kinds=all --track-origins=yes --track-fds=yes --suppressions=supp.supp
+
 # main src files
 SRC_DIR = src
 EXEC_DIR = $(SRC_DIR)/execution
@@ -89,6 +91,9 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 	make -C $(LIBFT_DIR) fclean
+
+valgrind: $(NAME)
+	@valgrind $(VAL_FLAGS) ./$(NAME)
 
 re: fclean all
 

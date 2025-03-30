@@ -94,6 +94,7 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 		if (ft_dup2(ctx->prev_pipe_read, STDIN_FILENO, *stdin_backup, "dup2"))
 		{
 			close(*stdin_backup);
+			*stdin_backup = -1;
 			handle_pipe_dup_error(cmd, ctx);
 		}
 		close(ctx->prev_pipe_read);
