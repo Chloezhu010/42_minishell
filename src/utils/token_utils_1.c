@@ -36,8 +36,6 @@ char	*extract_quoted(char *input, int *i, char quote)
 	quoted = extract_single_quoted(input, i, quote);
 	if (!quoted)
 		return (NULL);
-	// if (is_quote(input[*i]))
-	// 	quoted = process_additional_quotes(input, i, quoted);
 	return (quoted);
 }
 
@@ -80,17 +78,11 @@ void	free_tokens(t_token *tokens)
 {
 	t_token	*tmp;
 
-	// printf("[db] start free_tokens\n");
-
 	while (tokens)
 	{
 		tmp = tokens;
-
-		// printf("[db] free token value at %p\n", tokens->value);
 		free(tokens->value);
 		tokens = tokens->next;
-
-		// printf("[db] free temp struct at %p\n", tmp);
 		free(tmp);
 	}
 }

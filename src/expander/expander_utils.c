@@ -46,9 +46,9 @@ char	*handle_regular_char(char *res, char current_char)
 
 static char	*expand_variable(const char *str, t_env *env)
 {
-	int i;
-	int key_len;
-	char *varname;
+	int		i;
+	int		key_len;
+	char	*varname;
 
 	if (!str || str[0] == '\0')
 		return (ft_strdup(""));
@@ -99,4 +99,30 @@ char	*handle_var_expansion(char *res, char **ptr, t_env *env)
 	*ptr += ft_strlen(var_name);
 	free(var_name);
 	return (res);
+}
+
+void	expand_tokens(t_token *tokens, t_env *env)
+{
+	t_token	*current;
+	char	*expanded;
+
+	current = tokens;
+	while (current)
+	{
+		if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
+		{
+			expanded = expand_var_instr(current->value, env);
+			if (expanded)
+			{
+				free(current->value);
+				current->value = expanded;
+			}
+		}
+		current = current->next;
+	}
+	current = tokens;
+	while (current)
+	{
+		current = current->next;
+	}
 }

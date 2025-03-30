@@ -27,6 +27,7 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_unset.c \
 		$(UTILS_DIR)/shell_loop_utils.c \
 		$(UTILS_DIR)/loop_util1.c \
+		$(UTILS_DIR)/loop_util2.c \
 		$(UTILS_DIR)/redir_utils.c \
 		$(UTILS_DIR)/cmd_utils.c \
 		$(UTILS_DIR)/parse_tokens_utils.c \

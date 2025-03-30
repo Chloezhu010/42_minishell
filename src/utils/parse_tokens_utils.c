@@ -27,9 +27,6 @@ void	process_token_word(t_cmd *current_cmd, t_token *tokens)
 {
 	int	i;
 
-	// printf("[db] start process_token\n");
-
-	/* add input check */
 	if (!current_cmd || !tokens || !tokens->value)
 		return ;
 	i = 0;
@@ -40,13 +37,10 @@ void	process_token_word(t_cmd *current_cmd, t_token *tokens)
 	{
 		while (current_cmd->args && current_cmd->args[i])
 			i++;
-
 		current_cmd->args[i] = ft_strdup(tokens->value);
-		// printf("[db] ft_strdup of arg: %s, at %p\n", current_cmd->args[i], tokens->value);
-		
 		if (!current_cmd->args[i])
 			return ;
-		current_cmd->args[i + 1] = NULL; //add null terminator
+		current_cmd->args[i + 1] = NULL;
 	}
 }
 

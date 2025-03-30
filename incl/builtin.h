@@ -1,15 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/29 16:08:52 by czhu              #+#    #+#             */
+/*   Updated: 2025/03/29 16:08:52 by czhu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef BUILTIN_H
 # define BUILTIN_H
 # include "../incl/minishell.h"
 
 typedef struct s_env
 {
-    char		**env_var;
-    int				*exported;
+	char		**env_var;
+	int			*exported;
 	int			exit_status;
-	int			at_prompt; //add
+	int			at_prompt;
 	int			exit_requested;
-}		t_env;
+}	t_env;
 
 typedef struct s_builtin
 {
@@ -48,7 +60,7 @@ void			add_env(char *key, char *value, t_env *env);
 void			update_env(char *key, char *value, t_env *env);
 
 /* init builtin */
-t_builtin	*init_builtin(void);
+t_builtin		*init_builtin(void);
 void			init_env(t_env *env, char **envp);
 void			print_env(t_env *env);
 void			free_env(t_env *env);

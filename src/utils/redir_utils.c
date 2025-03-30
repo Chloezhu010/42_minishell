@@ -35,8 +35,8 @@ t_redir	*create_new_redir(char *file, int type)
 
 void	update_cmd_files(t_cmd *cmd, char *file, int type)
 {
-	char *new_file;
-	
+	char	*new_file;
+
 	if (!cmd || !file)
 		return ;
 	new_file = ft_strdup(file);
@@ -70,4 +70,18 @@ void	free_redir(t_redir *redir)
 		free(redir);
 		redir = temp;
 	}
+}
+
+int	handle_redirect(t_cmd *cmd, int *stdin_backup,
+	int *stdout_backup, t_env *env)
+{
+	if (!cmd->in_pipe && process_redirect(cmd, env))
+		return (1);
+	if (handle_input_redirect(cmd, stdin_backup, env) == -1
+		|| handle_output_redirect(cmd, stdout_backup, env) == -1)
+	{
+		env->exit_status = 1;
+		return (1);
+	}
+	return (0);
 }

@@ -22,30 +22,45 @@ void	tokenize_util2(t_token **tokens, int *i, char *input)
 	(*i)++;
 }
 
-int tokenize_util3(t_token **tokens, int *i, char *input)
+static int	is_consecutive_quote(char *input, int *i)
 {
-    char    quote;
-    char    *quoted;
-    int     type;
-    int     is_consecutive = 0;
+	int	is_consecutive;
 
-    quote = input[(*i)++];
-    quoted = extract_quoted(input, i, quote);
-    if (!quoted)
-        return (1);
-    if (input[*i] && (is_quote(input[*i]) || ft_isalpha(input[*i]) || ft_isdigit(input[*i])))
-    {
-        is_consecutive = 1; // 标记为连续引号
-    }
-    
-    if (quote == '\'')
-        type = TOKEN_SINGLE_QUOTE;
-    else
-        type = TOKEN_DOUBLE_QUOTE;
-        
-    t_token *new_token = create_token(quoted, type);
-    new_token->consecutive_quote = is_consecutive; // 设置连续引号标记
-    add_token(tokens, new_token);
-    free(quoted);
-    return (0);
+	is_consecutive = 0;
+	if (input[*i] && (is_quote(input[*i])
+			|| ft_isalpha(input[*i]) || ft_isdigit(input[*i])))
+	{
+		is_consecutive = 1;
+		if (is_quote(input[*i])
+			&& is_quote(input[*i + 1]) && !isspace(input[*i + 2]))
+			is_consecutive = 0;
+	}
+	return (is_consecutive);
+}
+
+int	tokenize_util3(t_token **tokens, int *i, char *input)
+{
+	char	quote;
+	char	*quoted;
+	int		type;
+	int		is_consecutive;
+	t_token	*new_token;
+
+	is_consecutive = 0;
+	quote = input[(*i)++];
+	quoted = extract_quoted(input, i, quote);
+	if (!quoted)
+	{
+		return (1);
+	}
+	is_consecutive = is_consecutive_quote(input, i);
+	if (quote == '\'')
+		type = TOKEN_SINGLE_QUOTE;
+	else
+		type = TOKEN_DOUBLE_QUOTE;
+	new_token = create_token(quoted, type);
+	new_token->consecutive_quote = is_consecutive;
+	add_token(tokens, new_token);
+	free(quoted);
+	return (0);
 }
