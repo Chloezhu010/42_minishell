@@ -20,10 +20,12 @@ static char	*find_var_end(char *var_start)
 	var_end = var_start + 1;
 	if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')))
 		return (var_end + 1);
-	if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_')
+	if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_'
+		|| (*var_end >= 'a' && *var_end <= 'z'))
 	{
 		while ((*var_end >= 'A' && *var_end <= 'Z')
 			|| *var_end == '_'
+			|| (*var_end >= 'a' && *var_end <= 'z')
 			|| (*var_end >= '0' && *var_end <= '9'))
 			var_end++;
 	}

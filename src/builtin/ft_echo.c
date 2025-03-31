@@ -24,14 +24,26 @@ void	ft_echo(char **args, t_env *env)
 {
 	int	i;
 	int	new_line;
+	int	x;
 
 	(void)env;
 	i = 1;
 	new_line = 1;
 	while (args[i] && args[i][0] == '-')
 	{
-		if (ft_strncmp(args[i], "-n", ft_strlen(args[i])) == 0)
+		if ((ft_strncmp(args[i], "-n", 2) == 0) && (ft_strlen(args[i]) == 2))
 			new_line = 0;
+		else if (ft_strlen(args[i]) > 2)
+		{
+			x = 3;
+			while ((ft_strncmp(args[i], "-n", 2) == 0) && (args[i][x]))
+			{
+				if (args[i][x] == 'n')
+					x++;
+			}
+			if (x == (int)ft_strlen(args[i]))
+				new_line = 0;
+		}
 		else
 			break ;
 		i++;
@@ -43,6 +55,7 @@ void	ft_echo(char **args, t_env *env)
 			printf(" ");
 		i++;
 	}
+	printf("new line = %i", new_line);
 	if (new_line == 1)
 		printf("\n");
 }

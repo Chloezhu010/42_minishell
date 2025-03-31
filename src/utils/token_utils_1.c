@@ -31,7 +31,7 @@ char	*extract_quoted(char *input, int *i, char quote)
 {
 	char	*quoted;
 
-	if (is_quote(input[*i]))
+	if (input[*i] == input[*i - 1])
 		return (NULL);
 	quoted = extract_single_quoted(input, i, quote);
 	if (!quoted)
