@@ -53,7 +53,7 @@ void	handle_redirect_error1(int fd, int *stdout_backup, t_env *env)
 	perror("minishell");
 	close(fd);
 	close(*stdout_backup);
-	env->exit_status = 1;
+	exit_status(env, 1);
 }
 
 int	handle_output_redirect_result(t_cmd *cmd, t_env *env, int result)
@@ -61,7 +61,7 @@ int	handle_output_redirect_result(t_cmd *cmd, t_env *env, int result)
 	if (result == 1)
 	{
 		if (!cmd->in_pipe)
-			env->exit_status = 1;
+			exit_status(env, 1);
 		return (1);
 	}
 	return (0);

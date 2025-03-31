@@ -19,6 +19,7 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	env.exit_requested = 0;
+	env.exit = 0;
 	init_env(&env, envp);
 	add_shlvl(&env);
 	shell_loop(&env);
@@ -36,6 +37,7 @@ void	shell_loop(t_env *env)
 	setup_signal(env);
 	while (1)
 	{
+		env->exit = 0;
 		env->at_prompt = 1;
 		line = get_command_line();
 		env->at_prompt = 0;
@@ -47,5 +49,7 @@ void	shell_loop(t_env *env)
 		free(line);
 		if (env->exit_requested)
 			break ;
+		if (!env->exit)
+			env->exit_status = 0;
 	}
 }

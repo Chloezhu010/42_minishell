@@ -55,7 +55,6 @@ void	ft_echo(char **args, t_env *env)
 			printf(" ");
 		i++;
 	}
-	printf("new line = %i", new_line);
 	if (new_line == 1)
 		printf("\n");
 }

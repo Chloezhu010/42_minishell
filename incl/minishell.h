@@ -102,4 +102,8 @@ int		handle_output_redirect1(t_redir *redir);
 void	merge_consecutive_tokens(t_token *tokens);
 void	process_tokens_and_execute(t_token *tokens, t_env *env);
 t_token	*process_command_line(char *line, t_env *env);
+
+void	print_tokens(t_token *tokens);
+void	print_cmds(t_cmd *cmds);
+void	exit_status(t_env *env, int exit_status);
 #endif

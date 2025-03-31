@@ -48,7 +48,7 @@ void	execute_external(t_cmd *cmd, t_env *env)
 	}
 	if (cmd->args && cmd->args[0])
 		ft_putstr_fd(" command not found\n", 2);
-	env->exit_status = 127;
+	exit_status(env, 127);
 	free_cmds(cmd);
 	free_env(env);
 	exit(env->exit_status);

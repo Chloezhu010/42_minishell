@@ -40,14 +40,14 @@ int	is_digit(char *str)
 */
 void	ft_exit(char **args, t_env *env)
 {
-	int	exit_status;
+	int	exit_status1;
 
 	ft_putstr_fd("exit\n", 1);
-	exit_status = 0;
+	exit_status1 = 0;
 	if (args[1] != NULL && args[2] != NULL)
 	{
 		ft_putstr_fd(" too many arguments\n", 2);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return ;
 	}
 	if (args[1] != NULL)
@@ -55,15 +55,15 @@ void	ft_exit(char **args, t_env *env)
 		if (is_digit(args[1]) == 0)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
-			env->exit_status = 2;
+			exit_status(env, 2);
 			return ;
 		}
 		else
 		{
-			exit_status = ft_atoi(args[1]);
+			exit_status1 = ft_atoi(args[1]);
 		}
 	}
-	env->exit_status = exit_status;
+	exit_status(env, exit_status1);
 	env->exit_requested = 1;
 }
 /*

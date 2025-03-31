@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: auzou <auzou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 12:25:48 by czhu              #+#    #+#             */
-/*   Updated: 2025/03/30 14:54:07 by czhu             ###   ########.fr       */
+/*   Updated: 2025/03/31 19:47:28 by auzou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ void	wait_for_child(t_pipe *ctx, t_env *env)
 			{
 				exit_code = (status >> 8) & 0xFF;
 				if (exit_code == 2)
-					env->exit_status = 1;
+					exit_status(env, 1);
 				else
-					env->exit_status = exit_code;
+					exit_status(env, exit_code);
 			}
 		}
 		i++;

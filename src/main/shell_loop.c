@@ -53,7 +53,7 @@ void	execute_shell(t_cmd *cmd, t_env *env)
 	{
 		ft_wait(&status);
 		if ((status & 0x7F) == 0)
-			env->exit_status = (status >> 8) & 0xFF;
+			exit_status(env, (status >> 8) & 0xFF);
 	}
 	restore_io(stdin_backup, stdout_backup);
 }
@@ -79,6 +79,8 @@ void	process_tokens_and_execute(t_token *tokens, t_env *env)
 	t_cmd	*cmds;
 
 	cmds = parse_tokens(tokens);
+	if (!cmds)
+		exit_status(env, 2);
 	free_tokens(tokens);
 	if (cmds)
 	{

@@ -36,7 +36,7 @@ static int	check_dir_error(char *path, t_env *env)
 	{
 		closedir(dir);
 		write(2, "execve failed: Is a directory\n", 31);
-		env->exit_status = 126;
+		exit_status(env, 126);
 		return (0);
 	}
 	return (1);
@@ -57,17 +57,17 @@ static int	check_execve_errors(char *path, t_env *env)
 	if (stat(path, &path_stat) == -1)
 	{
 		write(2, "execve failed: No such file or directory\n", 42);
-		env->exit_status = 127;
+		exit_status(env, 127);
 		return (0);
 	}
 	if (access(path, X_OK) == -1)
 	{
 		write(2, "execve failed: Permission denied\n", 34);
-		env->exit_status = 126;
+		exit_status(env, 126);
 		return (0);
 	}
 	ft_putstr_fd(" command not found\n", 2);
-	env->exit_status = 127;
+	exit_status(env, 127);
 	return (0);
 }
 
@@ -76,13 +76,13 @@ void	ft_execve(char *path, char **av, t_env *env)
 	if (!path || !av || !av[0])
 	{
 		write(2, "execve: invalid args\n", 21);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return ;
 	}
 	if (!env || !env->env_var)
 	{
 		write(2, "env not initialized\n", 20);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return ;
 	}
 	if (execve(path, av, env->env_var) == -1)

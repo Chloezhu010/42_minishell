@@ -21,7 +21,8 @@ void	extract_redirect_filename(char *input, int *i, t_token **tokens)
 
 	start = *i;
 	while (input[*i] && !ft_isspace(input[*i])
-		&& !is_quote(input[*i]) && input[*i] != '|')
+		&& !is_quote(input[*i]) && input[*i] != '|'
+		&& input[*i] != '>' && input[*i] != '<')
 		(*i)++;
 	if (*i > start)
 	{

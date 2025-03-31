@@ -21,6 +21,7 @@ typedef struct s_env
 	int			exit_status;
 	int			at_prompt;
 	int			exit_requested;
+	int			exit;
 }	t_env;
 
 typedef struct s_builtin
