@@ -20,6 +20,7 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	env.exit_requested = 0;
 	init_env(&env, envp);
+	add_shlvl(&env);
 	shell_loop(&env);
 	free_env(&env);
 	enable_echo();

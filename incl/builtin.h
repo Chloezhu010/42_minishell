@@ -66,4 +66,6 @@ void			print_env(t_env *env);
 void			free_env(t_env *env);
 int				count_env(t_env *env);
 
+void add_shlvl(t_env *env);
+
 #endif
