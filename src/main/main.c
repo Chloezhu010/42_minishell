@@ -44,6 +44,7 @@ void	shell_loop(t_env *env)
 		if (line == NULL)
 			break ;
 		tokens = process_command_line(line, env);
+		print_tokens(tokens);
 		if (tokens)
 			process_tokens_and_execute(tokens, env);
 		free(line);

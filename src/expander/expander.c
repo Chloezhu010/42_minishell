@@ -18,7 +18,11 @@ static char	*find_var_end(char *var_start)
 	char	*var_end;
 
 	var_end = var_start + 1;
-	if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')))
+
+	if (*var_end == '"' && var_end == var_start + 1)
+    	return var_start;
+	if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')
+			|| *var_end == '\'' || *var_end == '"'))
 		return (var_end + 1);
 	if ((*var_end >= 'A' && *var_end <= 'Z') || *var_end == '_'
 		|| (*var_end >= 'a' && *var_end <= 'z'))
@@ -87,6 +91,8 @@ int	merge_token_with_next(t_token *current)
 	char	*combined;
 
 	if (!current->consecutive_quote)
+		return (0);
+	else if (current->consecutive_quote && !ft_strcmp(current->value, "$"))
 		return (0);
 	next = current->next;
 	combined = ft_strjoin(current->value, next->value);

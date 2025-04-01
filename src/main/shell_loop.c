@@ -68,6 +68,7 @@ t_token	*process_command_line(char *line, t_env *env)
 	tokens = tokenize(line);
 	if (!tokens)
 		return (NULL);
+	print_tokens(tokens);
 	expand_tokens(tokens, env);
 	merge_consecutive_tokens(tokens);
 	check_format_command(tokens);

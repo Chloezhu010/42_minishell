@@ -101,14 +101,52 @@ char	*handle_var_expansion(char *res, char **ptr, t_env *env)
 	return (res);
 }
 
+static void free_single_token(t_token **head, t_token *token_to_free)
+{
+    t_token *prev;
+    t_token *current;
+    
+    if (!head || !*head || !token_to_free)
+        return;
+    if (*head == token_to_free)
+    {
+        *head = token_to_free->next;
+        free(token_to_free->value);
+        free(token_to_free);
+        return;
+    }
+    prev = *head;
+    current = prev->next;
+    while (current && current != token_to_free)
+    {
+        prev = current;
+        current = current->next;
+    }
+    if (current)
+    {
+        prev->next = current->next;
+        free(current->value);
+        free(current);
+    }
+}
 void	expand_tokens(t_token *tokens, t_env *env)
 {
 	t_token	*current;
 	char	*expanded;
+	t_token *next;
 
 	current = tokens;
 	while (current)
 	{
+		next = current->next;
+        if (current->next && (current->next->type == TOKEN_DOUBLE_QUOTE
+			|| current->next->type == TOKEN_SINGLE_QUOTE)
+			&& ft_strcmp(current->value, "$") == 0)
+		{
+			free_single_token(&tokens, current);
+			current = next; // 使用保存的下一个节点
+			continue;
+		}
 		if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
 		{
 			expanded = expand_var_instr(current->value, env);
@@ -123,6 +161,6 @@ void	expand_tokens(t_token *tokens, t_env *env)
 	current = tokens;
 	while (current)
 	{
-		current = current->next;
+		current = next;
 	}
 }

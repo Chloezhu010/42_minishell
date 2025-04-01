@@ -51,6 +51,7 @@ int	tokenize_util3(t_token **tokens, int *i, char *input)
 	quoted = extract_quoted(input, i, quote);
 	if (!quoted)
 	{
+		free_tokens(*tokens);
 		return (1);
 	}
 	is_consecutive = is_consecutive_quote(input, i);
