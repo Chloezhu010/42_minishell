@@ -15,10 +15,12 @@
 void	tokenize_util2(t_token **tokens, int *i, char *input)
 {
 	char	op[2];
+	t_token	*new_token;
 
 	op[0] = input[*i];
 	op[1] = 0;
-	add_token(tokens, create_token(op, get_token_type(op)));
+	new_token = create_token(op, get_token_type(op));
+	add_token(tokens, new_token);
 	(*i)++;
 }
 

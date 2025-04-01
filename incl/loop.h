@@ -33,6 +33,7 @@ typedef struct s_env	t_env;
 typedef struct s_token
 {
 	char			*value;
+	// char			*original;// add for original input str
 	int				type;
 	int				consecutive_quote;
 	struct s_token	*next;

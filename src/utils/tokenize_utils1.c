@@ -32,7 +32,10 @@ int	is_quote(char c)
 static void	add_token_and_extract(t_token **tokens,
 	char *input, int *i, char *op)
 {
-	add_token(tokens, create_token(op, get_token_type(op)));
+	t_token	*new_token;
+
+	new_token = create_token(op, get_token_type(op));
+	add_token(tokens, new_token);
 	(*i)++;
 	extract_redirect_filename(input, i, tokens);
 }
@@ -40,10 +43,12 @@ static void	add_token_and_extract(t_token **tokens,
 void	tokenize_util1(t_token **tokens, int *i, char *input)
 {
 	char	op[3];
+	t_token	*new_token;
 
 	op[0] = input[*i];
 	op[1] = 0;
 	op[2] = 0;
+	new_token = NULL;
 	if ((input[*i] == '<' || input[*i] == '>') && input[*i + 1] == input[*i])
 	{
 		op[1] = input[++(*i)];
@@ -55,12 +60,14 @@ void	tokenize_util1(t_token **tokens, int *i, char *input)
 	{
 		op[1] = '&';
 		(*i)++;
-		add_token(tokens, create_token(op, get_token_type(op)));
+		new_token = create_token(op, get_token_type(op));
+		add_token(tokens, new_token);
 		(*i)++;
 	}
 	else
 	{
-		add_token(tokens, create_token(op, get_token_type(op)));
+		new_token = create_token(op, get_token_type(op));
+		add_token(tokens, new_token);
 		(*i)++;
 	}
 }

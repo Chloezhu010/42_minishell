@@ -18,8 +18,10 @@ void	extract_redirect_filename(char *input, int *i, t_token **tokens)
 {
 	int		start;
 	char	*word;
+	t_token	*new_token;
 
 	start = *i;
+	new_token = NULL;
 	while (input[*i] && !ft_isspace(input[*i])
 		&& !is_quote(input[*i]) && input[*i] != '|'
 		&& input[*i] != '>' && input[*i] != '<')
@@ -27,7 +29,8 @@ void	extract_redirect_filename(char *input, int *i, t_token **tokens)
 	if (*i > start)
 	{
 		word = strndup(&input[start], *i - start);
-		add_token(tokens, create_token(word, TOKEN_WORD));
+		new_token = create_token(word, TOKEN_WORD);
+		add_token(tokens, new_token);
 		free(word);
 	}
 }
