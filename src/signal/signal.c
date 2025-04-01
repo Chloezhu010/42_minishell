@@ -22,9 +22,14 @@ void	disable_echo(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		perror("tcgetattr");
+		return ;
+	}
 	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+		perror("tcsetattr");
 }
 
 /* re-enable echo afterwards */
@@ -32,9 +37,16 @@ void	enable_echo(void)
 {
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
+	if (!isatty(STDIN_FILENO))
+		return ;
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		perror("tcgetattr");
+		return ;
+	}
 	term.c_lflag |= ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+		perror("tcsetattr");
 }
 
 /* reset stdin state
@@ -46,10 +58,15 @@ void	reset_input_state(void)
 	int				fd;
 	struct termios	term;
 
-	tcgetattr(STDIN_FILENO, &term);
+	if (tcgetattr(STDIN_FILENO, &term) == -1)
+	{
+		perror("tcgetattr");
+		return ;
+	}
 	term.c_lflag |= (ICANON | ECHO);
 	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &term) == -1)
+		perror("tcsetattr");
 	if (isatty(STDIN_FILENO))
 	{
 		fd = open("/dev/tty", O_RDONLY);

@@ -36,6 +36,8 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	{
 		perror("fork");
 		env->exit_status = 1;
+		close_all_pipe_fds(ctx);
+		restore_std_fd(ctx);
 		return ;
 	}
 	if (pid == CHILD_PROCESS)

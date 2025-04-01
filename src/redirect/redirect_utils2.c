@@ -69,10 +69,12 @@ void	restore_io(int stdin_backup, int stdout_backup)
 	{
 		dup2(stdin_backup, STDIN_FILENO);
 		close(stdin_backup);
+		stdin_backup = -1;
 	}
 	if (stdout_backup != -1)
 	{
 		dup2(stdout_backup, STDOUT_FILENO);
 		close(stdout_backup);
+		stdout_backup = -1;
 	}
 }

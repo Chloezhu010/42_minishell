@@ -55,7 +55,10 @@ int	handle_heredoc(char *delimiter, t_env *env)
 		free(expanded_line);
 		free(line);
 	}
+	//free the last line?
+	free(line);
 	close(fd);
+
 	fd = open("/tmp/minishell_heredoc", O_RDONLY);
 	if (fd == -1)
 	{
@@ -76,11 +79,12 @@ int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (-1);
 	}
 	close(cmd->fd_in);
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	/* don't need to close here, otherwise heredoc broken */
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }
 
