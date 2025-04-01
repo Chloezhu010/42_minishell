@@ -1,17 +1,22 @@
+fix:
 echo -nnnnn "test"
 echo "'test'"
 echo "'$USER'"
-heredoc + signal
-heredoc + expander: << $HOME 
-
 export test1=$HOME
 export test2=$test1
+
+fix output put leak:
+echo "'
+'"
+
+no fix:
+heredoc + signal
+heredoc + expander: << $HOME 
 
 $HOME leak
 echo $$
 fd not closed
-echo "'
-'"
+
 whilespace
 export ????
 exit 100000000000000000000000000000000000000000 should return 2

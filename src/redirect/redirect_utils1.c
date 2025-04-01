@@ -21,7 +21,7 @@ static int	create_heredoc_file(t_env *env)
 	if (fd == -1)
 	{
 		perror("open");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	return (fd);
@@ -63,7 +63,7 @@ int	handle_heredoc(char *delimiter, t_env *env)
 	if (fd == -1)
 	{
 		perror("open");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	return (fd);
@@ -75,7 +75,7 @@ int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 	{
 		perror("dup2");
 		close(*stdin_backup);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	close(cmd->fd_in);
@@ -97,7 +97,7 @@ int	handle_file_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 	{
 		perror("minishell");
 		close(*stdin_backup);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
@@ -105,15 +105,15 @@ int	handle_file_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		perror("dup2");
 		close(fd);
 		close(*stdin_backup);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	close(fd);
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }
 
@@ -128,17 +128,17 @@ int	handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 	if (*stdin_backup == -1)
 	{
 		perror("dup");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	if (cmd->heredoc && cmd->fd_in > 0)
 		return (handle_heredoc_redirect(cmd, stdin_backup, env));
 	if (cmd->infile)
 		return (handle_file_input_redirect(cmd, stdin_backup, env));
-	if (*stdin_backup != -1)
-	{
-		close(*stdin_backup);
-		*stdin_backup = -1;
-	}
+	// if (*stdin_backup != -1)
+	// {
+	// 	close(*stdin_backup);
+	// 	*stdin_backup = -1;
+	// }
 	return (0);
 }

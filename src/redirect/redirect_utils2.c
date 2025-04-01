@@ -24,7 +24,7 @@ int	open_output_file(t_cmd *cmd, t_env *env)
 	if (fd == -1)
 	{
 		perror("minishell");
-		env->exit_status = 1;
+		exit_status(env, 1);
 	}
 	return (fd);
 }
@@ -42,7 +42,7 @@ int	handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env)
 	if (*stdout_backup == -1)
 	{
 		perror("dup");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (-1);
 	}
 	fd = open_output_file(cmd, env);
@@ -54,11 +54,11 @@ int	handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env)
 		return (-1);
 	}
 	close(fd);
-	if (*stdout_backup != -1)
-	{
-		close(*stdout_backup);
-		*stdout_backup = -1;
-	}
+	// if (*stdout_backup != -1)
+	// {
+	// 	close(*stdout_backup);
+	// 	*stdout_backup = -1;
+	// }
 	return (0);
 }
 

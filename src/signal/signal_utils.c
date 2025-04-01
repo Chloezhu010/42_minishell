@@ -35,7 +35,7 @@ void	sigint_handler(int sig)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		g_env->exit_status = 130;
+		exit_status(g_env, 130);
 	}
 }
 
@@ -47,7 +47,7 @@ void	sigquit_handler(int sig)
 	{
 		rl_on_new_line();
 		rl_redisplay();
-		g_env->exit_status = 131;
+		exit_status(g_env, 130);
 		return ;
 	}
 	else if (g_env)
@@ -55,6 +55,6 @@ void	sigquit_handler(int sig)
 		write(STDOUT_FILENO, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
-		g_env->exit_status = 131;
+		exit_status(g_env, 131);
 	}
 }

@@ -35,7 +35,7 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	if (pid == -1)
 	{
 		perror("fork");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		close_all_pipe_fds(ctx);
 		restore_std_fd(ctx);
 		return ;

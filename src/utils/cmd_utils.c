@@ -17,7 +17,6 @@ t_cmd	*create_new_cmd(void)
 {
 	t_cmd	*cmd;
 
-	printf("");
 	cmd = ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);

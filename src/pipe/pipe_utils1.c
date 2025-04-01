@@ -43,7 +43,7 @@ int	create_cmd_pipe(t_pipe *ctx, t_env *env)
 	if (pipe(ctx->pipefd) == -1)
 	{
 		perror("pipe");
-		env->exit_status = 1;
+		exit_status(env, 1);
 		close_all_pipe_fds(ctx);
 		restore_std_fd(ctx);
 		return (1);

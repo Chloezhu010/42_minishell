@@ -41,7 +41,7 @@ static char	*resolve_directory(char **args, t_env *env)
 	}
 	else if (args[1] && args[2])
 	{
-		env->exit_status = 1;
+		exit_status(env, 1);
 		ft_putstr_fd(" too many arguments\n", 2);
 		return (NULL);
 	}
@@ -60,7 +60,7 @@ static void	execute_cd(char *dir, t_env *env)
 		perror("getcwd");
 	if (chdir(dir) != 0)
 	{
-		env->exit_status = 1;
+		exit_status(env, 1);
 		perror("cd");
 	}
 	else

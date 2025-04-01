@@ -89,7 +89,7 @@ static void	process_single_export_arg(char *arg, t_env *env)
 	if (!key || check_valid_name(key) == 0)
 	{
 		ft_putstr_fd(" not a valid identifier\n", 2);
-		env->exit_status = 1;
+		exit_status(env, 1);
 		free(key);
 		free(value);
 		return ;

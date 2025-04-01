@@ -80,7 +80,7 @@ int	handle_redirect(t_cmd *cmd, int *stdin_backup,
 	if (handle_input_redirect(cmd, stdin_backup, env) == -1
 		|| handle_output_redirect(cmd, stdout_backup, env) == -1)
 	{
-		env->exit_status = 1;
+		exit_status(env, 1);
 		return (1);
 	}
 	return (0);

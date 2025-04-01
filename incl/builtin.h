@@ -21,6 +21,7 @@ typedef struct s_env
 	int			exit_status;
 	int			at_prompt;
 	int			exit_requested;
+	int			exit;
 }	t_env;
 
 typedef struct s_builtin
@@ -65,5 +66,7 @@ void			init_env(t_env *env, char **envp);
 void			print_env(t_env *env);
 void			free_env(t_env *env);
 int				count_env(t_env *env);
+
+void add_shlvl(t_env *env);
 
 #endif
