@@ -43,23 +43,77 @@ t_cmd	*create_new_cmd(void)
 void	free_cmds(t_cmd *cmds)
 {
 	t_cmd	*tmp;
+	t_cmd	*next;
 	int		i;
-
-	while (cmds)
+	
+	printf("[DEBUG] free_cmds called: %p\n", (void*)cmds);
+	if (!cmds)
+		return ;
+	tmp = cmds;
+	while (tmp)
 	{
-		tmp = cmds;
+		next = tmp->next;
 		i = 0;
-		while (cmds->args && cmds->args[i])
-			free(cmds->args[i++]);
-		free(cmds->args);
-		free(cmds->infile);
-		free(cmds->outfile);
-		free(cmds->delimiter);
-		free_redir(cmds->redirects);
-		cmds = cmds->next;
+		if (tmp->args)
+		{
+			while (tmp->args[i])
+			{
+				printf("[DEBUG] free the arg: %s\n", tmp->args[i]);
+				free(tmp->args[i]);
+				tmp->args[i] = NULL;
+				i++;
+			}
+			free(tmp->args);
+			tmp->args = NULL;
+		}
+		if (tmp->infile)
+        {
+            free(tmp->infile);
+            tmp->infile = NULL;
+        }
+        
+        if (tmp->outfile)
+        {
+            free(tmp->outfile);
+            tmp->outfile = NULL;
+        }
+        
+        if (tmp->delimiter)
+        {
+            free(tmp->delimiter);
+            tmp->delimiter = NULL;
+        }
+        free_redir(tmp->redirects);
+        tmp->redirects = NULL;
+		tmp->next = NULL;
+		printf("[DEBUG] free the command structure: %p\n", (void*)tmp);
 		free(tmp);
+		tmp = next;
 	}
-	free(cmds);
+	// while (cmds)
+	// {
+	// 	tmp = cmds;
+	// 	printf("[DEBUG] Freeing cmd at %p\n", (void*)cmds);
+	// 	i = 0;
+	// 	if (cmds->args) {
+    //         printf("[DEBUG] Freeing args array at %p\n", (void*)cmds->args);
+    //         while (cmds->args[i]) {
+    //             printf("[DEBUG] Freeing arg[%d] = \"%s\" at %p\n", i, cmds->args[i], (void*)cmds->args[i]);
+    //             free(cmds->args[i++]);
+    //         }
+    //         free(cmds->args);
+    //     }
+	// 	// while (cmds->args && cmds->args[i])
+	// 	// 	free(cmds->args[i++]);
+	// 	free(cmds->args);
+	// 	free(cmds->infile);
+	// 	free(cmds->outfile);
+	// 	free(cmds->delimiter);
+	// 	free_redir(cmds->redirects);
+	// 	cmds = cmds->next;
+	// 	free(tmp);
+	// }
+	// free(cmds);
 }
 
 void	check_format_command(t_token *tokens)

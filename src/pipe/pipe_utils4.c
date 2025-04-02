@@ -47,8 +47,9 @@ static void	cleanup_and_exit(t_cmd *current, t_env *env,
 {
 	// if (current->args[0] && is_builtin_command(current->args[0]))
 	// 	free_env(env);
-	if (current)
-		free_cmds(current);
+	// if (current)
+	// 	free_cmds(current);
+	(void)current;
 	if (stdin_backup_child != -1)
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
@@ -80,11 +81,25 @@ void	execute_pipe_child(t_cmd *current,
 	if (current->args && current->args[0] && ft_strcmp(current->args[0], "exit") == 0)
 	{
 		ft_exit(current->args, env);
+		// //add cleanup
+		// if (stdin_backup_child != -1)
+        //     close(stdin_backup_child);
+        // if (stdout_backup_child != -1)
+        //     close(stdout_backup_child);
+        // free_env(env);
+        // exit(env->exit_status);
 		cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
 	}
 
 	execute_cmd(current, env);
+	printf("[DEBUG] After execute_cmds: cmd = %p\n", (void*)current);
 	// printf("[db] execute_pipe_child: exit_requested %d\n", env->exit_requested);
+	// if (stdin_backup_child != -1)
+    //         close(stdin_backup_child);
+	// if (stdout_backup_child != -1)
+	// 	close(stdout_backup_child);
+	// free_env(env);
+	// exit(env->exit_status);
 	cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
 }
 

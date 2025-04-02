@@ -61,6 +61,8 @@ void	execute_commands(t_cmd *cmds, t_env *env)
 
 	if (!cmds)
 		return ;
+	
+	printf("[DEBUG] execute_commands: pipeline=%d\n", cmds->next != NULL);
 	if (cmds->next)
 	{
 		cmd_temp = cmds;

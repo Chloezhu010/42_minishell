@@ -93,6 +93,8 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	save_signal_handlers(&old_int, &old_quit);
 	set_parent_signals_for_pipeline();
 	env->at_prompt = 0;
+
+	printf("[DEBUG] execute_pipeline: cmd = %p\n", (void*)cmd);
 	while (current)
 	{
 		// chec if current cmd is "exit"
@@ -113,7 +115,7 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 		// check if exit requested during pipe execution
 		if (env->exit_requested)
 		{
-			// printf("[db] execute_pipeline: exit_requested %d\n", env->exit_requested);
+			// printf("[db] execute_pipeline: exit_requested %d\n, cleanup cmd", env->exit_requested);
 			close_all_pipe_fds(&ctx);
 			restore_std_fd(&ctx);
 			free_cmds(cmd); //add cleanup
@@ -125,7 +127,10 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	restore_std_fd(&ctx);
 	// only wait for child if haven't requrested an exit
 	if (!env->exit_requested)
+	{
 		wait_for_child(&ctx, env);
+		// free_cmds(cmd);// add
+	}
 	// printf("[db] execute_pipeline: exit_requested %d\n", env->exit_requested);//debug
 	reset_input_state();
 	restore_signal_handlers(&old_int, &old_quit);
