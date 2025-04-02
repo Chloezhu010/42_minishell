@@ -57,6 +57,7 @@ void	ft_exit(char **args, t_env *env)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
 			exit_status(env, 2);
+			env->exit_requested = 1; // set as 1 even on error
 			return ;
 		}
 		else
@@ -74,6 +75,7 @@ void	ft_exit(char **args, t_env *env)
 
 	exit_status(env, exit_status1);
 	env->exit_requested = 1;
+	// printf("[db] ft_exit: exit_requested value %d\n", env->exit_requested);
 }
 /*
 // === testing exit ===

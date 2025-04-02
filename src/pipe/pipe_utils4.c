@@ -75,7 +75,16 @@ void	execute_pipe_child(t_cmd *current,
 	if (setup_pipe_output(current, ctx, &stdout_backup_child, env))
 		cleanup_input_output(current, env,
 			stdin_backup_child, stdout_backup_child);
+	
+	// special handling for exit cmd in pipe
+	if (current->args && current->args[0] && ft_strcmp(current->args[0], "exit") == 0)
+	{
+		ft_exit(current->args, env);
+		cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
+	}
+
 	execute_cmd(current, env);
+	// printf("[db] execute_pipe_child: exit_requested %d\n", env->exit_requested);
 	cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
 }
 

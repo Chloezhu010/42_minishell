@@ -95,15 +95,30 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	env->at_prompt = 0;
 	while (current)
 	{
+		// chec if current cmd is "exit"
+		if (current->args && current->args[0] && ft_strcmp(current->args[0], "exit") == 0)
+		{
+			// if exit is the last cmd, directly execute exit
+			if (!current->next)
+			{
+				ft_exit(current->args, env);
+				break ;
+			}
+			// if exit in the middle of pipe, set flag and break
+			env->exit_requested = 1;
+			break ;
+		}
+		
 		fork_and_execute_pipe(current, &ctx, env, redirect_error);
 		// check if exit requested during pipe execution
 		if (env->exit_requested)
 		{
+			// printf("[db] execute_pipeline: exit_requested %d\n", env->exit_requested);
 			close_all_pipe_fds(&ctx);
 			restore_std_fd(&ctx);
+			free_cmds(cmd); //add cleanup
 			break ;
 		}
-
 		current = current->next;
 	}
 	close_all_pipe_fds(&ctx);
@@ -111,7 +126,7 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	// only wait for child if haven't requrested an exit
 	if (!env->exit_requested)
 		wait_for_child(&ctx, env);
-	
+	// printf("[db] execute_pipeline: exit_requested %d\n", env->exit_requested);//debug
 	reset_input_state();
 	restore_signal_handlers(&old_int, &old_quit);
 	env->at_prompt = 1;
