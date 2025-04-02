@@ -37,7 +37,7 @@ static int	create_heredoc_file(t_env *env)
         - close and reopen with read-only mode
     - reopen the file and return fd
 */
-int	handle_heredoc(char *delimiter, t_env *env)
+int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 {
 	char	*line;
 	char	*expanded_line;
@@ -49,14 +49,19 @@ int	handle_heredoc(char *delimiter, t_env *env)
 		line = readline("heredoc> ");
 		if (!line || ft_strcmp(line, delimiter) == 0)
 			break ;
-		expanded_line = expand_var_instr(line, env);
+
+		if (expand_var)
+			expanded_line = expand_var_instr(line, env);
+		else
+			expanded_line = ft_strdup(line);
+
 		write(fd, expanded_line, ft_strlen(expanded_line));
 		write(fd, "\n", 1);
 		free(expanded_line);
 		free(line);
 	}
-	//free the last line?
-	free(line);
+	// //free the last line?
+	// free(line);
 	close(fd);
 
 	fd = open("/tmp/minishell_heredoc", O_RDONLY);

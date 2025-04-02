@@ -47,13 +47,6 @@ t_token	*create_token(char *value, int type)
 	if (!token)
 		return (NULL);
 	token->value = ft_strdup(value);
-
-	// //add
-	// if (original)
-	// 	token->original = ft_strdup(original);
-	// else
-	// 	token->original = ft_strdup(value);
-	
 	token->type = type;
 	token->consecutive_quote = 0;
 	token->next = NULL;
@@ -89,7 +82,6 @@ void	free_tokens(t_token *tokens)
 	{
 		tmp = tokens;
 		free(tokens->value);
-		// free(tokens->original);
 		tokens = tokens->next;
 		free(tmp);
 	}

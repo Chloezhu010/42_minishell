@@ -35,6 +35,7 @@ t_cmd	*create_new_cmd(void)
 	cmd->fd_in = 0;
 	cmd->redirects = NULL;
 	cmd->in_pipe = 0;
+	cmd->expand_heredoc = 1; //default to expand var in heredoc
 	cmd->next = NULL;
 	return (cmd);
 }

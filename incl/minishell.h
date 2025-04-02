@@ -57,7 +57,6 @@ char	*handle_var_expansion(char *res, char **ptr, t_env *env);
 
 /* redirect */
 void	restore_io(int stdin_backup, int stdout_backup);
-int		handle_heredoc(char *delimiter, t_env *env);
 int		handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int		handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env);
 int		process_redirect(t_cmd *cmd, t_env *env);
@@ -89,7 +88,7 @@ char	*get_command_line(void);
 void	process_heredocs(t_cmd *cmds, t_env *env);
 
 /* redirect_utils*/
-int		handle_heredoc(char *delimiter, t_env *env);
+int		handle_heredoc(char *delimiter, t_env *env, int expand_var);
 int		handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int		handle_file_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int		handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);

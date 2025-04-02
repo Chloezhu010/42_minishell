@@ -47,7 +47,7 @@ void	process_heredocs(t_cmd *cmds, t_env *env)
 	{
 		if (cmd_temp->heredoc && cmd_temp->delimiter)
 		{
-			fd = handle_heredoc(cmd_temp->delimiter, env);
+			fd = handle_heredoc(cmd_temp->delimiter, env, cmd_temp->expand_heredoc);
 			if (fd != -1)
 				cmd_temp->fd_in = fd;
 		}
