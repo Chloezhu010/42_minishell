@@ -60,8 +60,7 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 		free(expanded_line);
 		free(line);
 	}
-	// //free the last line?
-	// free(line);
+	free(line); //free the last line
 	close(fd);
 
 	fd = open("/tmp/minishell_heredoc", O_RDONLY);
