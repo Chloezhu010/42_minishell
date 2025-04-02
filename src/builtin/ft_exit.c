@@ -41,6 +41,7 @@ int	is_digit(char *str)
 void	ft_exit(char **args, t_env *env)
 {
 	int	exit_status1;
+	int	fd;
 
 	ft_putstr_fd("exit\n", 1);
 	exit_status1 = 0;
@@ -63,6 +64,14 @@ void	ft_exit(char **args, t_env *env)
 			exit_status1 = ft_atoi(args[1]);
 		}
 	}
+	// clean up open fd
+	fd = 3;
+	while (fd < 10)
+	{
+		close(fd);
+		fd++;
+	}
+
 	exit_status(env, exit_status1);
 	env->exit_requested = 1;
 }

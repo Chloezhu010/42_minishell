@@ -55,6 +55,7 @@ void    add_shlvl(t_env *env)
 {
     int     i;
     int     level;
+    int     shlvl_index = -1;
     char    *shlvl_str;
     char    *new_value;
     char    *new_shlvl;
@@ -67,6 +68,8 @@ void    add_shlvl(t_env *env)
         if (ft_strncmp(env->env_var[i], "SHLVL=", 6) == 0)
         {
             shlvl_str = env->env_var[i] + 6;
+            shlvl_index = i; // store the index to find shlvl
+            // printf("[db]: shlvl found at index %d\n", shlvl_index);
             break;
         }
         i++;
@@ -106,8 +109,13 @@ void    add_shlvl(t_env *env)
         {
             // 非数字，设置为1
             new_shlvl = ft_strdup("SHLVL=1");
-            free(env->env_var[i]);
-            env->env_var[i] = new_shlvl;
+            if (shlvl_index >= 0)
+            {
+                free(env->env_var[shlvl_index]);
+                env->env_var[shlvl_index] = new_shlvl;
+            }
+            // free(env->env_var[i]);
+            // env->env_var[i] = new_shlvl;
             return;
         }
         i++;
@@ -129,17 +137,23 @@ void    add_shlvl(t_env *env)
     free(new_value);
     
     // 更新环境变量
-    i = 0;
-    while (env->env_var && env->env_var[i])
+    if (shlvl_index >= 0)
     {
-        if (ft_strncmp(env->env_var[i], "SHLVL=", 6) == 0)
-        {
-            free(env->env_var[i]);
-            env->env_var[i] = new_shlvl;
-            break;
-        }
-        i++;
+        free(env->env_var[shlvl_index]);
+        env->env_var[shlvl_index] = new_shlvl;
     }
+    
+    // i = 0;
+    // while (env->env_var && env->env_var[i])
+    // {
+    //     if (ft_strncmp(env->env_var[i], "SHLVL=", 6) == 0)
+    //     {
+    //         free(env->env_var[i]);
+    //         env->env_var[i] = new_shlvl;
+    //         break;
+    //     }
+    //     i++;
+    // }
 }
 
 void	init_env(t_env *env, char **envp)

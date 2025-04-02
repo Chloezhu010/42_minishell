@@ -25,33 +25,35 @@ static void	cleanup_input_output(t_cmd *current, t_env *env,
 	exit(env->exit_status);
 }
 
-/* helper function for execute_pipe_child */
-static int	is_builtin_command(char *cmd_name)
-{
-	return (cmd_name && (
-			ft_strcmp(cmd_name, "env") == 0
-			|| ft_strcmp(cmd_name, "echo") == 0
-			|| ft_strcmp(cmd_name, "cat") == 0
-			|| ft_strcmp(cmd_name, "unset") == 0
-			|| ft_strcmp(cmd_name, "export") == 0
-			|| ft_strcmp(cmd_name, "unset") == 0
-			|| ft_strcmp(cmd_name, "cd") == 0
-			|| ft_strcmp(cmd_name, "pwd") == 0
-			|| ft_strcmp(cmd_name, "grep") == 0));
-}
+// /* helper function for execute_pipe_child */
+// static int	is_builtin_command(char *cmd_name)
+// {
+// 	return (cmd_name && (
+// 			ft_strcmp(cmd_name, "env") == 0
+// 			|| ft_strcmp(cmd_name, "exit") == 0
+// 			|| ft_strcmp(cmd_name, "echo") == 0
+// 			|| ft_strcmp(cmd_name, "cat") == 0
+// 			|| ft_strcmp(cmd_name, "unset") == 0
+// 			|| ft_strcmp(cmd_name, "export") == 0
+// 			|| ft_strcmp(cmd_name, "unset") == 0
+// 			|| ft_strcmp(cmd_name, "cd") == 0
+// 			|| ft_strcmp(cmd_name, "pwd") == 0
+// 			|| ft_strcmp(cmd_name, "grep") == 0));
+// }
 
 /* helper function for execute_pipe_child */
 static void	cleanup_and_exit(t_cmd *current, t_env *env,
 		int stdin_backup_child, int stdout_backup_child)
 {
-	if (current->args[0] && is_builtin_command(current->args[0]))
-		free_env(env);
+	// if (current->args[0] && is_builtin_command(current->args[0]))
+	// 	free_env(env);
 	if (current)
 		free_cmds(current);
 	if (stdin_backup_child != -1)
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
 		close(stdout_backup_child);
+	free_env(env);// add
 	exit(env->exit_status);
 }
 

@@ -96,11 +96,22 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 	while (current)
 	{
 		fork_and_execute_pipe(current, &ctx, env, redirect_error);
+		// check if exit requested during pipe execution
+		if (env->exit_requested)
+		{
+			close_all_pipe_fds(&ctx);
+			restore_std_fd(&ctx);
+			break ;
+		}
+
 		current = current->next;
 	}
 	close_all_pipe_fds(&ctx);
 	restore_std_fd(&ctx);
-	wait_for_child(&ctx, env);
+	// only wait for child if haven't requrested an exit
+	if (!env->exit_requested)
+		wait_for_child(&ctx, env);
+	
 	reset_input_state();
 	restore_signal_handlers(&old_int, &old_quit);
 	env->at_prompt = 1;
