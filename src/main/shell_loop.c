@@ -49,8 +49,8 @@ void	execute_shell(t_cmd *cmd, t_env *env)
 	pid = ft_fork();
 	if (pid == CHILD_PROCESS)
 	{
-		execute_cmd(cmd, env);
-		printf("[DEBUG] After execute_cmds: cmd = %p\n", (void*)cmd);
+		execute_cmd(cmd, cmd, env);
+		// printf("[DEBUG] After execute_cmds: cmd = %p\n", (void*)cmd);
 	}
 	else
 	{
@@ -88,15 +88,11 @@ void	process_tokens_and_execute(t_token *tokens, t_env *env)
 	free_tokens(tokens);
 	if (cmds)
 	{
-		// int is_pipeline = cmds->next != NULL;
+		int pipeline_executed;
 
 		process_heredocs(cmds, env);
-		execute_commands(cmds, env);
-		free_cmds(cmds);
-		// if (!is_pipeline)
-		// {
-		// 	printf("[DEBUG] Freeing single command in process_tokens_and_execute\n");
-		// 	free_cmds(cmds);
-		// }
+		pipeline_executed = execute_commands(cmds, env);
+		if (!pipeline_executed)
+			free_cmds(cmds);
 	}
 }

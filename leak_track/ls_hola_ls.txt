@@ -1,0 +1,71 @@
+minishell $>ls | hola
+
+--- Tokens ---
+[0] Type: WORD            Value: "ls"
+[1] Type: PIPE            Value: "|"
+[2] Type: WORD            Value: "hola"
+-------------
+
+
+--- Tokens ---
+[0] Type: COMMAND         Value: "ls"
+[1] Type: PIPE            Value: "|"
+[2] Type: WORD            Value: "hola"
+-------------
+
+[DEBUG] execute_commands: pipeline=1
+[DEBUG] execute_pipeline: cmd = 0x4b55fb0
+ command not found
+[DEBUG] free_cmds called: 0x4b562d0
+[DEBUG] free the arg: hola
+[DEBUG] free the command structure: 0x4b562d0
+==3116==
+==3116==
+==3116== HEAP SUMMARY:
+==3116==     in use at exit: 208,767 bytes in 233 blocks
+==3116==   total heap usage: 628 allocs, 395 frees, 244,910 bytes allocated
+==3116==
+==3116== 3 bytes in 1 blocks are still reachable in loss record 1 of 68
+==3116==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3116==    by 0x111CE0: ft_strdup (in /mnt/c/Users/Yuntian/Documents/minishell/minishell)
+==3116==    by 0x10D47B: process_token_word (parse_tokens_utils.c:40)
+==3116==    by 0x10C3A7: process_word_token (loop_util2.c:23)
+==3116==    by 0x10C515: parse_tokens (loop_util2.c:60)
+==3116==    by 0x10ECE2: process_tokens_and_execute (shell_loop.c:85)
+==3116==    by 0x10EE67: shell_loop (main.c:49)
+==3116==    by 0x10EDAE: main (main.c:25)
+==3116==
+==3116== 72 bytes in 1 blocks are still reachable in loss record 19 of 68
+==3116==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3116==    by 0x111C86: ft_calloc (in /mnt/c/Users/Yuntian/Documents/minishell/minishell)
+==3116==    by 0x10CE2A: create_new_cmd (cmd_utils.c:20)
+==3116==    by 0x10D366: create_new_command (parse_tokens_utils.c:20)
+==3116==    by 0x10C4FE: parse_tokens (loop_util2.c:59)
+==3116==    by 0x10ECE2: process_tokens_and_execute (shell_loop.c:85)
+==3116==    by 0x10EE67: shell_loop (main.c:49)
+==3116==    by 0x10EDAE: main (main.c:25)
+==3116==
+==3116== 512 bytes in 1 blocks are still reachable in loss record 27 of 68
+==3116==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3116==    by 0x111C86: ft_calloc (in /mnt/c/Users/Yuntian/Documents/minishell/minishell)
+==3116==    by 0x10CE4E: create_new_cmd (cmd_utils.c:23)
+==3116==    by 0x10D366: create_new_command (parse_tokens_utils.c:20)
+==3116==    by 0x10C4FE: parse_tokens (loop_util2.c:59)
+==3116==    by 0x10ECE2: process_tokens_and_execute (shell_loop.c:85)
+==3116==    by 0x10EE67: shell_loop (main.c:49)
+==3116==    by 0x10EDAE: main (main.c:25)
+==3116==
+==3116== LEAK SUMMARY:
+==3116==    definitely lost: 0 bytes in 0 blocks
+==3116==    indirectly lost: 0 bytes in 0 blocks
+==3116==      possibly lost: 0 bytes in 0 blocks
+==3116==    still reachable: 587 bytes in 3 blocks
+==3116==         suppressed: 208,180 bytes in 230 blocks
+==3116==
+==3116== For lists of detected and suppressed errors, rerun with: -s
+==3116== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+[DEBUG] free_cmds called: 0x4b55fb0
+[DEBUG] free the arg: ls
+[DEBUG] free the command structure: 0x4b55fb0
+[DEBUG] free the arg: hola
+[DEBUG] free the command structure: 0x4b562d0

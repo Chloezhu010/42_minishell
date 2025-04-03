@@ -44,23 +44,33 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 	int		fd;
 
 	fd = create_heredoc_file(env);
+	if (fd == -1)
+		return (-1);
 	while (1)
 	{
 		line = readline("heredoc> ");
-		if (!line || ft_strcmp(line, delimiter) == 0)
+
+		if (!line) // Handle Ctrl+D (EOF)
+			break;
+		if (ft_strcmp(line, delimiter) == 0)
+		{
+			free(line);
 			break ;
+		}
 
 		if (expand_var)
 			expanded_line = expand_var_instr(line, env);
 		else
 			expanded_line = ft_strdup(line);
 
-		write(fd, expanded_line, ft_strlen(expanded_line));
+		if (expanded_line)
+		{
+			write(fd, expanded_line, ft_strlen(expanded_line));
+			free(expanded_line);
+		}
 		write(fd, "\n", 1);
-		free(expanded_line);
 		free(line);
 	}
-	free(line); //free the last line
 	close(fd);
 
 	fd = open("/tmp/minishell_heredoc", O_RDONLY);
@@ -113,11 +123,6 @@ int	handle_file_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (-1);
 	}
 	close(fd);
-	// if (*stdin_backup != -1)
-	// {
-	// 	close(*stdin_backup);
-	// 	*stdin_backup = -1;
-	// }
 	return (0);
 }
 
@@ -139,10 +144,5 @@ int	handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (handle_heredoc_redirect(cmd, stdin_backup, env));
 	if (cmd->infile)
 		return (handle_file_input_redirect(cmd, stdin_backup, env));
-	// if (*stdin_backup != -1)
-	// {
-	// 	close(*stdin_backup);
-	// 	*stdin_backup = -1;
-	// }
 	return (0);
 }

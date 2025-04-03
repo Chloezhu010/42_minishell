@@ -46,6 +46,7 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(MAIN_DIR)/main.c \
 		$(SIG_DIR)/signal.c \
 		$(SIG_DIR)/signal_utils.c \
+		$(SIG_DIR)/signal_heredoc.c \
 		$(EXEC_DIR)/execute_path.c \
 		$(EXEC_DIR)/execute_utils.c \
 		$(EXPAND_DIR)/expander.c \

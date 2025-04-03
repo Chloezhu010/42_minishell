@@ -142,18 +142,6 @@ void    add_shlvl(t_env *env)
         free(env->env_var[shlvl_index]);
         env->env_var[shlvl_index] = new_shlvl;
     }
-    
-    // i = 0;
-    // while (env->env_var && env->env_var[i])
-    // {
-    //     if (ft_strncmp(env->env_var[i], "SHLVL=", 6) == 0)
-    //     {
-    //         free(env->env_var[i]);
-    //         env->env_var[i] = new_shlvl;
-    //         break;
-    //     }
-    //     i++;
-    // }
 }
 
 void	init_env(t_env *env, char **envp)

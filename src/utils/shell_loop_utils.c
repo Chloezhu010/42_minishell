@@ -48,21 +48,24 @@ void	process_heredocs(t_cmd *cmds, t_env *env)
 		if (cmd_temp->heredoc && cmd_temp->delimiter)
 		{
 			fd = handle_heredoc(cmd_temp->delimiter, env, cmd_temp->expand_heredoc);
-			if (fd != -1)
-				cmd_temp->fd_in = fd;
+			if (fd == -1)
+			{
+				break;
+			}
+			cmd_temp->fd_in = fd;
 		}
 		cmd_temp = cmd_temp->next;
 	}
 }
 
-void	execute_commands(t_cmd *cmds, t_env *env)
+int	execute_commands(t_cmd *cmds, t_env *env)
 {
 	t_cmd	*cmd_temp;
 
 	if (!cmds)
-		return ;
+		return (0);
 	
-	printf("[DEBUG] execute_commands: pipeline=%d\n", cmds->next != NULL);
+	// printf("[DEBUG] execute_commands: pipeline=%d\n", cmds->next != NULL);
 	if (cmds->next)
 	{
 		cmd_temp = cmds;
@@ -72,11 +75,13 @@ void	execute_commands(t_cmd *cmds, t_env *env)
 			cmd_temp = cmd_temp->next;
 		}
 		execute_pipeline(cmds, env);
+		return (1);
 	}
 	else
 	{
 		cmds->in_pipe = 0;
 		execute_shell(cmds, env);
+		return (0);
 	}
 }
 

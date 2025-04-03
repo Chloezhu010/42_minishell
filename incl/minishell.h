@@ -63,12 +63,12 @@ int		process_redirect(t_cmd *cmd, t_env *env);
 
 /* execution */
 void	execute_builtin(t_cmd *cmd, t_env *env);
-void	execute_external(t_cmd *cmd, t_env *env);
+
 
 /* shell loop */
 char	*read_line(void);
 char	**cell_split_line(char *line);
-void	execute_cmd(t_cmd *cmd, t_env *env);
+void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
 void	execute_shell(t_cmd *cmd, t_env *env);
 void	shell_loop(t_env *env);
 
@@ -77,13 +77,13 @@ void	*ft_malloc(size_t size);
 int		ft_strcmp(const char *s1, const char *s2);
 
 /* execute_shell_utils*/
-void	execute_external(t_cmd *cmd, t_env *env);
-void	execute_cmd(t_cmd *cmd, t_env *env);
+void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
+void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
 int		handle_redirect(t_cmd *cmd, int *stdin_backup,
 			int *stdout_backup, t_env *env);
 int		execute_builtin1(t_cmd *cmd, t_env *env,
 			int stdin_backup, int stdout_backup);
-void	execute_commands(t_cmd *cmds, t_env *env);
+int		execute_commands(t_cmd *cmds, t_env *env);
 char	*get_command_line(void);
 void	process_heredocs(t_cmd *cmds, t_env *env);
 
@@ -95,7 +95,6 @@ int		handle_input_redirect(t_cmd *cmd, int *stdin_backup, t_env *env);
 int		open_output_file(t_cmd *cmd, t_env *env);
 void	handle_redirect_error1(int fd, int *stdout_backup, t_env *env);
 int		handle_output_redirect(t_cmd *cmd, int *stdout_backup, t_env *env);
-void	restore_io(int stdin_backup, int stdout_backup);
 int		handle_input_redirect1(t_redir *redir);
 int		handle_output_redirect1(t_redir *redir);
 void	merge_consecutive_tokens(t_token *tokens);
@@ -105,4 +104,5 @@ t_token	*process_command_line(char *line, t_env *env);
 void	print_tokens(t_token *tokens);
 void	print_cmds(t_cmd *cmds);
 void	exit_status(t_env *env, int exit_status);
+int		is_builtin(char *cmd);
 #endif

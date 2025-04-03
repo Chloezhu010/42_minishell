@@ -12,7 +12,7 @@
 
 #include "../../incl/sig.h"
 
-static t_env	*g_env = NULL;
+t_env	*g_env = NULL;
 
 void	set_signal_env(t_env *env)
 {
@@ -56,5 +56,16 @@ void	sigquit_handler(int sig)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		exit_status(g_env, 131);
+	}
+}
+
+/* Ctrl C handler for heredoc */
+void	heredoc_sigint_handler(int sig)
+{
+	if (sig == SIGINT && g_env)
+	{
+		g_env->heredoc_interrupted = 1;
+		write(STDERR_FILENO, "\n", 1);
+		exit_status(g_env, 130);
 	}
 }

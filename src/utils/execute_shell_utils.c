@@ -30,7 +30,7 @@ void	execute_builtin(t_cmd *cmd, t_env *env)
 	}
 }
 
-void	execute_external(t_cmd *cmd, t_env *env)
+void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env)
 {
 	char	*path;
 
@@ -41,7 +41,7 @@ void	execute_external(t_cmd *cmd, t_env *env)
 		free(path);
 		if (env->exit_status != 0)
 		{
-			free_cmds(cmd);
+			free_cmds(cmd_head);
 			free_env(env);
 			exit(env->exit_status);
 		}
@@ -49,7 +49,7 @@ void	execute_external(t_cmd *cmd, t_env *env)
 	if (cmd->args && cmd->args[0])
 		ft_putstr_fd(" command not found\n", 2);
 	exit_status(env, 127);
-	free_cmds(cmd);
+	free_cmds(cmd_head);
 	free_env(env);
 	exit(env->exit_status);
 }
@@ -77,14 +77,14 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
-void	execute_cmd(t_cmd *cmd, t_env *env)
+void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env)
 {	
 	if (is_builtin(cmd->args[0]))
 	{
 		execute_builtin(cmd, env);
 		return ;
 	}
-	execute_external(cmd, env);
+	execute_external(cmd_head, cmd, env);
 }
 
 int	execute_builtin1(t_cmd *cmd, t_env *env,
