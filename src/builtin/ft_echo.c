@@ -35,16 +35,20 @@ void	ft_echo(char **args, t_env *env)
 			new_line = 0;
 		else if (ft_strlen(args[i]) > 2)
 		{
-			x = 3;
+			x = 2;
 			while ((ft_strncmp(args[i], "-n", 2) == 0) && (args[i][x]))
 			{
 				if (args[i][x] == 'n')
 					x++;
+				else
+					break ;
 			}
 			if (x == (int)ft_strlen(args[i]))
 				new_line = 0;
 		}
 		else
+			break ;
+		if (x != (int)ft_strlen(args[i]))
 			break ;
 		i++;
 	}
