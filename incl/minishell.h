@@ -68,7 +68,6 @@ void	execute_builtin(t_cmd *cmd, t_env *env);
 /* shell loop */
 char	*read_line(void);
 char	**cell_split_line(char *line);
-void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
 void	execute_shell(t_cmd *cmd, t_env *env);
 void	shell_loop(t_env *env);
 
@@ -77,8 +76,10 @@ void	*ft_malloc(size_t size);
 int		ft_strcmp(const char *s1, const char *s2);
 
 /* execute_shell_utils*/
-void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
-void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env);
+void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env,
+	int stdin_backup_child, int stdout_backup_child);
+void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env,
+	int stdin_backup_child, int stdout_backup_child);
 int		handle_redirect(t_cmd *cmd, int *stdin_backup,
 			int *stdout_backup, t_env *env);
 int		execute_builtin1(t_cmd *cmd, t_env *env,

@@ -12,17 +12,17 @@
 
 #include "../../incl/sig.h"
 
-void    setup_heredoc_signals(t_env *env)
-{
-    struct sigaction    sa;
+// void    setup_heredoc_signals(t_env *env)
+// {
+//     struct sigaction    sa;
 
-    set_signal_env(env);
-    disable_echo();
-    sigemptyset(&sa.sa_mask);
-    sa.sa_handler = heredoc_sigint_handler;
-    sa.sa_flags = 0;
-    sigaction(SIGINT, &sa, NULL);
+//     set_signal_env(env);
+//     disable_echo();
+//     sigemptyset(&sa.sa_mask);
+//     sa.sa_handler = heredoc_sigint_handler;
+//     sa.sa_flags = 0;
+//     sigaction(SIGINT, &sa, NULL);
 
-    sa.sa_handler = SIG_IGN;
-    sigaction(SIGQUIT, &sa, NULL);
-}
+//     sa.sa_handler = SIG_IGN;
+//     sigaction(SIGQUIT, &sa, NULL);
+// }

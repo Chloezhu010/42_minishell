@@ -59,13 +59,13 @@ void	sigquit_handler(int sig)
 	}
 }
 
-/* Ctrl C handler for heredoc */
-void	heredoc_sigint_handler(int sig)
-{
-	if (sig == SIGINT && g_env)
-	{
-		g_env->heredoc_interrupted = 1;
-		write(STDERR_FILENO, "\n", 1);
-		exit_status(g_env, 130);
-	}
-}
+// /* Ctrl C handler for heredoc */
+// void	heredoc_sigint_handler(int sig)
+// {
+// 	if (sig == SIGINT && g_env)
+// 	{
+// 		g_env->heredoc_interrupted = 1;
+// 		write(STDERR_FILENO, "\n", 1);
+// 		exit_status(g_env, 130);
+// 	}
+// }

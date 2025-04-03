@@ -21,7 +21,7 @@ static void	cleanup_input_output(t_cmd *cmd_head, t_cmd *current, t_env *env,
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
 		close(stdout_backup_child);
-	free_cmds(cmd_head); // Free the entire command list copy
+	free_cmds(cmd_head);
 	free_env(env);
 	exit(env->exit_status);
 }
@@ -51,8 +51,8 @@ static void	cleanup_and_exit(t_cmd *cmd_head, t_cmd *current, t_env *env,
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
 		close(stdout_backup_child);
-	free_cmds(cmd_head); // Free the entire command list copy
-	free_env(env);// add
+	free_cmds(cmd_head);
+	free_env(env);
 	exit(env->exit_status);
 }
 
@@ -65,7 +65,16 @@ void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	// signal(SIGPIPE, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
+
+	// child close the parent's stdio backups inheried via fork
+	if (ctx->stdin_backup != -1)
+		close(ctx->stdin_backup);
+	if (ctx->stdout_backup != -1)
+		close(ctx->stdout_backup);
+	if (ctx->stderr_backup != -1)
+		close(ctx->stderr_backup);
+
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
 	handle_redirect_error(current, ctx, redirect_error, env);
@@ -83,7 +92,7 @@ void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
 		cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
 	}
 
-	execute_cmd(cmd_head, current, env);
+	execute_cmd(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
 	cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
 }
 
