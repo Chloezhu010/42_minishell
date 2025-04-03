@@ -20,7 +20,7 @@
     - restore std fd
     - wait for all child process
 */
-static void	fork_and_execute_pipe(t_cmd *current,
+static void	fork_and_execute_pipe(t_cmd *cmd_head, t_cmd *current,
 	t_pipe *ctx, t_env *env, int redirect_error)
 {
 	pid_t	pid;
@@ -44,7 +44,7 @@ static void	fork_and_execute_pipe(t_cmd *current,
 	{
 		signal(SIGINT, SIG_DFL);
 		signal(SIGQUIT, SIG_DFL);
-		execute_pipe_child(current, ctx, env, redirect_error);
+		execute_pipe_child(cmd_head, current, ctx, env, redirect_error);
 	}
 	else
 		execute_parent_process(ctx, current, pid);
@@ -111,7 +111,7 @@ void	execute_pipeline(t_cmd *cmd, t_env *env)
 			break ;
 		}
 		
-		fork_and_execute_pipe(current, &ctx, env, redirect_error);
+		fork_and_execute_pipe(cmd, current, &ctx, env, redirect_error);
 		// check if exit requested during pipe execution
 		if (env->exit_requested)
 		{

@@ -44,7 +44,7 @@ int		setup_pipe_output(t_cmd *cmd, t_pipe *ctx,
 			int *stdout_backup, t_env *env);
 int		setup_pipe_output(t_cmd *cmd, t_pipe *ctx,
 			int *stdout_backup, t_env *env);
-void	execute_pipe_child(t_cmd *current,
+void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
 			t_pipe *ctx, t_env *env, int redirect_error);
 void	execute_parent_process(t_pipe *ctx, t_cmd *cmd, pid_t pid);
 void	restore_std_fd(t_pipe *ctx);

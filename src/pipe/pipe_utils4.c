@@ -13,14 +13,15 @@
 #include "../../incl/pipe.h"
 
 /* helper function for execute_pipe_child */
-static void	cleanup_input_output(t_cmd *current, t_env *env,
+static void	cleanup_input_output(t_cmd *cmd_head, t_cmd *current, t_env *env,
 	int stdin_backup_child, int stdout_backup_child)
 {
+	(void)current; // Suppress unused parameter warning if needed
 	if (stdin_backup_child != -1)
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
 		close(stdout_backup_child);
-	free_cmds(current);
+	free_cmds(cmd_head); // Free the entire command list copy
 	free_env(env);
 	exit(env->exit_status);
 }
@@ -42,24 +43,25 @@ static void	cleanup_input_output(t_cmd *current, t_env *env,
 // }
 
 /* helper function for execute_pipe_child */
-static void	cleanup_and_exit(t_cmd *current, t_env *env,
+static void	cleanup_and_exit(t_cmd *cmd_head, t_cmd *current, t_env *env,
 		int stdin_backup_child, int stdout_backup_child)
 {
 	// if (current->args[0] && is_builtin_command(current->args[0]))
 	// 	free_env(env);
 	// if (current)
 	// 	free_cmds(current);
-	(void)current;
+	(void)current; // Suppress unused parameter warning if needed
 	if (stdin_backup_child != -1)
 		close(stdin_backup_child);
 	if (stdout_backup_child != -1)
 		close(stdout_backup_child);
+	free_cmds(cmd_head); // Free the entire command list copy
 	free_env(env);// add
 	exit(env->exit_status);
 }
 
 /* execute the child process in pipe */
-void	execute_pipe_child(t_cmd *current,
+void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
 	t_pipe *ctx, t_env *env, int redirect_error)
 {
 	int	stdin_backup_child;
@@ -70,12 +72,18 @@ void	execute_pipe_child(t_cmd *current,
 	stdin_backup_child = -1;
 	stdout_backup_child = -1;
 	handle_redirect_error(current, ctx, redirect_error, env);
+	// Add debug print before setup_pipe_input if needed
+	// printf("[DEBUG CHILD %d] Before setup_pipe_input\n", getpid());
 	if (setup_pipe_input(current, ctx, &stdin_backup_child, env))
-		cleanup_input_output(current, env,
+		cleanup_input_output(cmd_head, current, env,
 			stdin_backup_child, stdout_backup_child);
+	// Add debug print after setup_pipe_input if needed
+	// printf("[DEBUG CHILD %d] After setup_pipe_input, stdin_backup_child=%d\n", getpid(), stdin_backup_child);
 	if (setup_pipe_output(current, ctx, &stdout_backup_child, env))
-		cleanup_input_output(current, env,
+		cleanup_input_output(cmd_head, current, env,
 			stdin_backup_child, stdout_backup_child);
+	// Add debug print after setup_pipe_output if needed
+	// printf("[DEBUG CHILD %d] After setup_pipe_output, stdout_backup_child=%d\n", getpid(), stdout_backup_child);
 	
 	// special handling for exit cmd in pipe
 	if (current->args && current->args[0] && ft_strcmp(current->args[0], "exit") == 0)
@@ -88,7 +96,8 @@ void	execute_pipe_child(t_cmd *current,
         //     close(stdout_backup_child);
         // free_env(env);
         // exit(env->exit_status);
-		cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
+		// printf("[DEBUG CHILD %d] cleanup_and_exit from exit builtin\n", getpid());
+		cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
 	}
 
 	execute_cmd(current, env);
@@ -100,7 +109,8 @@ void	execute_pipe_child(t_cmd *current,
 	// 	close(stdout_backup_child);
 	// free_env(env);
 	// exit(env->exit_status);
-	cleanup_and_exit(current, env, stdin_backup_child, stdout_backup_child);
+	// printf("[DEBUG CHILD %d] cleanup_and_exit after execute_cmd\n", getpid());
+	cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
 }
 
 /* handle parent process after fork
