@@ -40,6 +40,12 @@ typedef struct s_env	t_env;
 typedef struct s_token	t_token;
 typedef struct s_redir	t_redir;
 
+typedef struct s_fd
+{
+	int	stdin;
+	int	stdout;
+}	t_fd;
+
 /* pipe */
 void	execute_pipeline(t_cmd *cmds, t_env *env);
 void	ft_pipe(int pipefd[2]);
@@ -76,10 +82,8 @@ void	*ft_malloc(size_t size);
 int		ft_strcmp(const char *s1, const char *s2);
 
 /* execute_shell_utils*/
-void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env,
-	int stdin_backup_child, int stdout_backup_child);
-void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env,
-	int stdin_backup_child, int stdout_backup_child);
+void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env, t_fd *fd);
+void	execute_cmd(t_cmd *cmd_head, t_cmd *cmd, t_env *env, t_fd *fd);
 int		handle_redirect(t_cmd *cmd, int *stdin_backup,
 			int *stdout_backup, t_env *env);
 int		execute_builtin1(t_cmd *cmd, t_env *env,

@@ -4,6 +4,7 @@
         "stdio.h": "c",
         "readline.h": "c",
         "sig.h": "c",
-        "pipe_utils3.C": "cpp"
+        "pipe_utils3.C": "cpp",
+        "execution.h": "c"
     }
 }

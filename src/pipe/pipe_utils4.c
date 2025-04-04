@@ -11,89 +11,77 @@
 /* ************************************************************************** */
 
 #include "../../incl/pipe.h"
+#include "../../incl/minishell.h"
 
 /* helper function for execute_pipe_child */
-static void	cleanup_input_output(t_cmd *cmd_head, t_cmd *current, t_env *env,
-	int stdin_backup_child, int stdout_backup_child)
+static void	cleanup_input_output(t_cmd *cmd_head,
+		t_cmd *current, t_env *env, t_fd *fd)
 {
-	(void)current; // Suppress unused parameter warning if needed
-	if (stdin_backup_child != -1)
-		close(stdin_backup_child);
-	if (stdout_backup_child != -1)
-		close(stdout_backup_child);
+	(void)current;
+	if (fd->stdin != -1)
+		close(fd->stdin);
+	if (fd->stdout != -1)
+		close(fd->stdout);
 	free_cmds(cmd_head);
 	free_env(env);
 	exit(env->exit_status);
 }
 
-// /* helper function for execute_pipe_child */
-// static int	is_builtin_command(char *cmd_name)
-// {
-// 	return (cmd_name && (
-// 			ft_strcmp(cmd_name, "env") == 0
-// 			|| ft_strcmp(cmd_name, "exit") == 0
-// 			|| ft_strcmp(cmd_name, "echo") == 0
-// 			|| ft_strcmp(cmd_name, "cat") == 0
-// 			|| ft_strcmp(cmd_name, "unset") == 0
-// 			|| ft_strcmp(cmd_name, "export") == 0
-// 			|| ft_strcmp(cmd_name, "unset") == 0
-// 			|| ft_strcmp(cmd_name, "cd") == 0
-// 			|| ft_strcmp(cmd_name, "pwd") == 0
-// 			|| ft_strcmp(cmd_name, "grep") == 0));
-// }
-
 /* helper function for execute_pipe_child */
-static void	cleanup_and_exit(t_cmd *cmd_head, t_cmd *current, t_env *env,
-		int stdin_backup_child, int stdout_backup_child)
+static void	cleanup_and_exit(t_cmd *cmd_head,
+	t_cmd *current, t_env *env, t_fd *fd)
 {
-	(void)current; // Suppress unused parameter warning if needed
-	if (stdin_backup_child != -1)
-		close(stdin_backup_child);
-	if (stdout_backup_child != -1)
-		close(stdout_backup_child);
+	(void)current;
+	if (fd->stdin != -1)
+		close(fd->stdin);
+	if (fd->stdout != -1)
+		close(fd->stdout);
 	free_cmds(cmd_head);
 	free_env(env);
 	exit(env->exit_status);
 }
 
-/* execute the child process in pipe */
-void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
-	t_pipe *ctx, t_env *env, int redirect_error)
+/* helper function for execute_pipe_child
+	to cleanup fd from previous process
+*/
+void	close_unused_fd(t_pipe *ctx)
 {
-	int	stdin_backup_child;
-	int	stdout_backup_child;
-
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	signal(SIGPIPE, SIG_IGN);
-
-	// child close the parent's stdio backups inheried via fork
 	if (ctx->stdin_backup != -1)
 		close(ctx->stdin_backup);
 	if (ctx->stdout_backup != -1)
 		close(ctx->stdout_backup);
 	if (ctx->stderr_backup != -1)
 		close(ctx->stderr_backup);
+}
 
-	stdin_backup_child = -1;
-	stdout_backup_child = -1;
+/* execute the child process in pipe */
+void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
+		t_pipe *ctx, t_env *env)
+{
+	t_fd	fd_child;
+	int		redirect_error;
+
+	fd_child.stdin = -1;
+	fd_child.stdout = -1;
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGPIPE, SIG_IGN);
+	close_unused_fd(ctx);
+	redirect_error = process_redirect(current, env);
 	handle_redirect_error(current, ctx, redirect_error, env);
-	if (setup_pipe_input(current, ctx, &stdin_backup_child, env))
-		cleanup_input_output(cmd_head, current, env,
-			stdin_backup_child, stdout_backup_child);
-	if (setup_pipe_output(current, ctx, &stdout_backup_child, env))
-		cleanup_input_output(cmd_head, current, env,
-			stdin_backup_child, stdout_backup_child);
-	
-	// special handling for exit cmd in pipe
-	if (current->args && current->args[0] && ft_strcmp(current->args[0], "exit") == 0)
+	if (setup_pipe_input(current, ctx, &fd_child.stdin, env))
+		cleanup_input_output(cmd_head, current, env, &fd_child);
+	if (setup_pipe_output(current, ctx, &fd_child.stdout, env))
+		cleanup_input_output(cmd_head, current, env, &fd_child);
+
+	if (current->args && current->args[0]
+		&& ft_strcmp(current->args[0], "exit") == 0)
 	{
 		ft_exit(current->args, env);
-		cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
+		cleanup_and_exit(cmd_head, current, env, &fd_child);
 	}
-
-	execute_cmd(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
-	cleanup_and_exit(cmd_head, current, env, stdin_backup_child, stdout_backup_child);
+	execute_cmd(cmd_head, current, env, &fd_child);
+	cleanup_and_exit(cmd_head, current, env, &fd_child);
 }
 
 /* handle parent process after fork

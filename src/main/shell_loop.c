@@ -33,31 +33,28 @@ char	**cell_split_line(char *line)
 
 void	execute_shell(t_cmd *cmd, t_env *env)
 {
-	int		stdin_backup;
-	int		stdout_backup;
 	int		status;
 	pid_t	pid;
+	t_fd	fd;
 
-	stdin_backup = -1;
-	stdout_backup = -1;
+	fd.stdin = -1;
+	fd.stdout = -1;
 	if (!cmd->args[0] || !env)
 		return ;
-	if (handle_redirect(cmd, &stdin_backup, &stdout_backup, env))
+	if (handle_redirect(cmd, &fd.stdin, &fd.stdout, env))
 		return ;
-	if (execute_builtin1(cmd, env, stdin_backup, stdout_backup))
+	if (execute_builtin1(cmd, env, fd.stdin, fd.stdout))
 		return ;
 	pid = ft_fork();
 	if (pid == CHILD_PROCESS)
-	{
-		execute_cmd(cmd, cmd, env, stdin_backup, stdout_backup);
-	}
+		execute_cmd(cmd, cmd, env, &fd);
 	else
 	{
 		ft_wait(&status);
 		if ((status & 0x7F) == 0)
 			exit_status(env, (status >> 8) & 0xFF);
 	}
-	restore_io(stdin_backup, stdout_backup);
+	restore_io(fd.stdin, fd.stdout);
 }
 
 t_token	*process_command_line(char *line, t_env *env)
@@ -70,7 +67,6 @@ t_token	*process_command_line(char *line, t_env *env)
 	tokens = tokenize(line);
 	if (!tokens)
 		return (NULL);
-	// print_tokens(tokens);
 	expand_tokens(tokens, env);
 	merge_consecutive_tokens(tokens);
 	check_format_command(tokens);

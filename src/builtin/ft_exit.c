@@ -109,15 +109,6 @@ void	ft_exit(char **args, t_env *env)
 		close(fd);
 		fd++;
 	}
-
 	exit_status(env, exit_status1);
 	env->exit_requested = 1;
-	// printf("[db] ft_exit: exit_requested value %d\n", env->exit_requested);
 }
-/*
-// === testing exit ===
-int main(int ac, char **av)
-{
-	(void)ac;
-	ft_exit(av);
-}*/
