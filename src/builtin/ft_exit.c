@@ -48,11 +48,37 @@ void	ft_exit(char **args, t_env *env)
 	ft_putstr_fd("exit\n", 1);
 	exit_status1 = 0;
 	result = 0;
-
+	i = 0;
 	if (args[1] != NULL && args[2] != NULL)
 	{
 		ft_putstr_fd(" too many arguments\n", 2);
-		exit_status(env, 1);
+		if (args[1][0] == '-')
+		{
+			i = 1;
+			while (args[1][i])
+			{
+				if (!ft_isdigit(args[1][i]))
+				{
+					exit_status(env, 2);
+					break ;
+				}
+				i++;
+			}
+			exit_status(env, 1);
+		}
+		else
+		{
+			while (args[1][i])
+			{
+				if (!ft_isdigit(args[1][i]))
+				{
+					exit_status(env, 2);
+					break ;
+				}
+				i++;
+			}
+			exit_status(env, 1);
+		}
 		return ;
 	}
 	if (args[1] != NULL)
