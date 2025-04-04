@@ -49,8 +49,7 @@ void	execute_shell(t_cmd *cmd, t_env *env)
 	pid = ft_fork();
 	if (pid == CHILD_PROCESS)
 	{
-		execute_cmd(cmd, cmd, env);
-		// printf("[DEBUG] After execute_cmds: cmd = %p\n", (void*)cmd);
+		execute_cmd(cmd, cmd, env, stdin_backup, stdout_backup);
 	}
 	else
 	{
@@ -71,7 +70,7 @@ t_token	*process_command_line(char *line, t_env *env)
 	tokens = tokenize(line);
 	if (!tokens)
 		return (NULL);
-	print_tokens(tokens);
+	// print_tokens(tokens);
 	expand_tokens(tokens, env);
 	merge_consecutive_tokens(tokens);
 	check_format_command(tokens);
@@ -81,6 +80,7 @@ t_token	*process_command_line(char *line, t_env *env)
 void	process_tokens_and_execute(t_token *tokens, t_env *env)
 {
 	t_cmd	*cmds;
+	int		pipeline_executed;
 
 	cmds = parse_tokens(tokens);
 	if (!cmds)
@@ -88,8 +88,6 @@ void	process_tokens_and_execute(t_token *tokens, t_env *env)
 	free_tokens(tokens);
 	if (cmds)
 	{
-		int pipeline_executed;
-
 		process_heredocs(cmds, env);
 		pipeline_executed = execute_commands(cmds, env);
 		if (!pipeline_executed)

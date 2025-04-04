@@ -1,0 +1,83 @@
+minishell $>echo | echo
+
+--- Tokens ---
+[0] Type: WORD            Value: "echo"
+[1] Type: PIPE            Value: "|"
+[2] Type: WORD            Value: "echo"
+-------------
+
+
+--- Tokens ---
+[0] Type: COMMAND         Value: "echo"
+[1] Type: PIPE            Value: "|"
+[2] Type: COMMAND         Value: "echo"
+-------------
+
+==911596== 
+==911596== HEAP SUMMARY:
+==911596==     in use at exit: 208,862 bytes in 232 blocks
+==911596==   total heap usage: 538 allocs, 306 frees, 233,171 bytes allocated
+==911596== 
+==911596== 5 bytes in 1 blocks are still reachable in loss record 1 of 70
+==911596==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==911596==    by 0x408E45: ft_strdup (in /home/czhu/42_minishell/minishell)
+==911596==    by 0x4041C9: process_token_word (parse_tokens_utils.c:40)
+==911596==    by 0x403226: process_word_token (loop_util2.c:23)
+==911596==    by 0x40315F: parse_tokens (loop_util2.c:60)
+==911596==    by 0x405BB8: process_tokens_and_execute (shell_loop.c:82)
+==911596==    by 0x405D10: shell_loop (main.c:49)
+==911596==    by 0x405C66: main (main.c:25)
+==911596== 
+==911596== 72 bytes in 1 blocks are still reachable in loss record 21 of 70
+==911596==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==911596==    by 0x408DD5: ft_calloc (in /home/czhu/42_minishell/minishell)
+==911596==    by 0x403C96: create_new_cmd (cmd_utils.c:20)
+==911596==    by 0x4040A0: create_new_command (parse_tokens_utils.c:20)
+==911596==    by 0x40314E: parse_tokens (loop_util2.c:59)
+==911596==    by 0x405BB8: process_tokens_and_execute (shell_loop.c:82)
+==911596==    by 0x405D10: shell_loop (main.c:49)
+==911596==    by 0x405C66: main (main.c:25)
+==911596== 
+==911596== 512 bytes in 1 blocks are still reachable in loss record 29 of 70
+==911596==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==911596==    by 0x408DD5: ft_calloc (in /home/czhu/42_minishell/minishell)
+==911596==    by 0x403CC1: create_new_cmd (cmd_utils.c:23)
+==911596==    by 0x4040A0: create_new_command (parse_tokens_utils.c:20)
+==911596==    by 0x40314E: parse_tokens (loop_util2.c:59)
+==911596==    by 0x405BB8: process_tokens_and_execute (shell_loop.c:82)
+==911596==    by 0x405D10: shell_loop (main.c:49)
+==911596==    by 0x405C66: main (main.c:25)
+==911596== 
+==911595== 
+==911595== FILE DESCRIPTORS: 6 open (3 std) at exit.
+==911595== Open file descriptor 5: /dev/pts/2
+==911596== LEAK SUMMARY:
+==911596==    definitely lost: 0 bytes in 0 blocks
+==911596==    indirectly lost: 0 bytes in 0 blocks
+==911596==      possibly lost: 0 bytes in 0 blocks
+==911596==    still reachable: 589 bytes in 3 blocks
+==911596==         suppressed: 208,273 bytes in 229 blocks
+==911596== 
+==911596== For lists of detected and suppressed errors, rerun with: -s
+==911596== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==911595==    at 0x49EBFEB: dup (syscall-template.S:120)
+==911595==    by 0x407408: init_pipe (pipe_utils1.c:23)
+==911595==    by 0x40702E: execute_pipeline (pipe.c:89)
+==911595==    by 0x402CCA: execute_commands (shell_loop_utils.c:72)
+==911595==    by 0x405C03: process_tokens_and_execute (shell_loop.c:89)
+==911595==    by 0x405D10: shell_loop (main.c:49)
+==911595==    by 0x405C66: main (main.c:25)
+==911595== 
+==911595== HEAP SUMMARY:
+==911595==     in use at exit: 208,273 bytes in 229 blocks
+==911595==   total heap usage: 538 allocs, 309 frees, 233,171 bytes allocated
+==911595== 
+==911595== LEAK SUMMARY:
+==911595==    definitely lost: 0 bytes in 0 blocks
+==911595==    indirectly lost: 0 bytes in 0 blocks
+==911595==      possibly lost: 0 bytes in 0 blocks
+==911595==    still reachable: 0 bytes in 0 blocks
+==911595==         suppressed: 208,273 bytes in 229 blocks
+==911595== 
+==911595== For lists of detected and suppressed errors, rerun with: -s
+==911595== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

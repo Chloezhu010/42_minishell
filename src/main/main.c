@@ -44,13 +44,12 @@ void	shell_loop(t_env *env)
 		if (line == NULL)
 			break ;
 		tokens = process_command_line(line, env);
-		print_tokens(tokens);
+		// print_tokens(tokens);
 		if (tokens)
 			process_tokens_and_execute(tokens, env);
 		free(line);
 		if (env->exit_requested)
 			break ;
-		// printf("[db] main: exit_requested %d\n", env->exit_requested);
 		if (!env->exit)
 			env->exit_status = 0;
 	}
