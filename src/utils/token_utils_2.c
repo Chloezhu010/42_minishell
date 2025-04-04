@@ -16,7 +16,7 @@ int	check_format_of_pipe(t_token *tokens)
 {
 	if (!tokens->next || tokens->next->type == TOKEN_PIPE)
 	{
-		printf("bash: syntax error near unexpected token '|'\n");
+		ft_putstr_fd("bash: syntax error near unexpected token '|'\n", 2);
 		return (0);
 	}
 	return (1);
@@ -25,10 +25,10 @@ int	check_format_of_pipe(t_token *tokens)
 int	check_format_of_redirect(t_token *tokens)
 {
 	if (!tokens->next)
-		return (printf("error nearunexpected token 'newline'\n"), 1);
+		return (ft_putstr_fd("error nearunexpected token 'newline'\n", 2), 1);
 	else if (tokens->type == TOKEN_REDIRECT_IN
 		&& tokens->next->type == TOKEN_REDIRECT_OUT)
-		return (printf("error near unexpected token 'newline'\n"), 1);
+		return (ft_putstr_fd("error near unexpected token 'newline'\n", 2), 1);
 	else if (tokens->next->type == TOKEN_REDIRECT_IN
 		|| tokens->next->type == TOKEN_REDIRECT_OUT
 		|| tokens->next->type == TOKEN_REDIRECT_APPEND
@@ -44,7 +44,7 @@ int	check_format_of_redirect(t_token *tokens)
 		&& tokens->next->type != TOKEN_DOUBLE_QUOTE
 	)
 	{
-		printf("bash: syntax error near unexpected token 'newline'\n");
+		ft_putstr_fd("bash: syntax error near unexpected token 'newline'\n", 2);
 		return (1);
 	}
 	return (0);
@@ -67,8 +67,7 @@ static int	validate_tokens_util(t_token *tokens)
 		if (!tokens->next || tokens->next->type == TOKEN_AND
 			|| tokens->next->type == TOKEN_PIPE)
 		{
-			printf("bash: syntax error near unexpected token `%s'\n",
-				tokens->value);
+			ft_putstr_fd("bash: syntax error near unexpected token `&&'\n", 2);
 			return (0);
 		}
 	}
@@ -81,14 +80,14 @@ int	validate_tokens(t_token *tokens)
 		return (0);
 	if (tokens->type == TOKEN_PIPE)
 	{
-		printf("bash: syntax error near unexpected token '|'\n");
+		ft_putstr_fd("bash: syntax error near unexpected token '|'\n", 2);
 		return (0);
 	}
 	while (tokens)
 	{
 		if (tokens->type == TOKEN_OR)
 		{
-			printf("bash: syntax error near unexpected token '||'\n");
+			ft_putstr_fd("bash: syntax error near unexpected token '||'\n", 2);
 			return (0);
 		}
 		if (validate_tokens_util(tokens) == 0)
