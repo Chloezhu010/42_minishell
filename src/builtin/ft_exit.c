@@ -73,7 +73,7 @@ void	ft_exit(char **args, t_env *env)
 				result += (int)args[1][i++];
 			}
 		}
-		printf("%lld\n",ft_atoi(args[1]));
+		// printf("%lld\n",ft_atoi(args[1]));
 		if (is_digit(args[1]) == 0)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
