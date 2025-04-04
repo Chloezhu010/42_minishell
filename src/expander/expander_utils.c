@@ -147,7 +147,15 @@ void	expand_tokens(t_token *tokens, t_env *env)
 			current = next; // 使用保存的下一个节点
 			continue;
 		}
-		if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1)
+		else if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1
+			&& current->next != NULL)
+		{
+			free_single_token(&tokens, current);
+			current = next; // 使用保存的下一个节点
+			continue;
+		}
+		else if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1
+			&& current->next == NULL && current->type == TOKEN_WORD)
 		{
 			free_single_token(&tokens, current);
 			current = next; // 使用保存的下一个节点
@@ -170,3 +178,4 @@ void	expand_tokens(t_token *tokens, t_env *env)
 		current = next;
 	}
 }
+

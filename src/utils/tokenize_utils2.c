@@ -35,11 +35,12 @@ static int	is_consecutive_quote(char *input, int *i)
 		is_consecutive = 1;
 		if (is_quote(input[*i])
 			&& is_quote(input[*i + 1]) && !isspace(input[*i + 2]))
-			is_consecutive = 0;
+			is_consecutive = 1;
 	}
+	if (input[*i] && !isspace(input[*i]))
+		is_consecutive= 1;
 	return (is_consecutive);
 }
-
 int	tokenize_util3(t_token **tokens, int *i, char *input)
 {
 	char	quote;

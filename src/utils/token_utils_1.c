@@ -37,6 +37,12 @@ char	*extract_quoted(char *input, int *i, char quote)
 		(*i) += 2;
 		return (quoted);
 	}
+	else if (input[*i] == input[*i - 1])
+	{
+		quoted = ft_strdup("");
+		(*i) += 1;
+		return (quoted);
+	}
 	quoted = extract_single_quoted(input, i, quote);
 	if (!quoted)
 		return (NULL);
