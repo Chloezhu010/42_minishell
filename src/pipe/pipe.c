@@ -118,6 +118,12 @@ static void	cleanup_pipeline(t_pipe *ctx, t_cmd *cmd,
 	env->at_prompt = 1;
 }
 
+/* helper function for process_pipeline
+	- handle exit_requested case
+*/
+// static void	is_exit_request(t_env *env)
+
+
 /* helper function for execute_pipeline
 	- process pipeline
 */

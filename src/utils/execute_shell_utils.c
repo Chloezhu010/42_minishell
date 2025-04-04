@@ -52,11 +52,11 @@ void	execute_external(t_cmd *cmd_head, t_cmd *cmd, t_env *env, t_fd *fd)
 		free(path);
 		if (env->exit_status != 0)
 			cleanup_external(cmd_head, env, fd);
-		if (cmd->args && cmd->args[0])
-			ft_putstr_fd(" command not found\n", 2);
-		exit_status(env, 127);
-		cleanup_external(cmd_head, env, fd);
 	}
+	if (cmd->args && cmd->args[0])
+		ft_putstr_fd(" command not found\n", 2);
+	exit_status(env, 127);
+	cleanup_external(cmd_head, env, fd);
 }
 
 int	is_builtin(char *cmd)
