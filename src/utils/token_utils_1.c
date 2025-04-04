@@ -31,8 +31,12 @@ char	*extract_quoted(char *input, int *i, char quote)
 {
 	char	*quoted;
 
-	if (input[*i] == input[*i - 1])
-		return (NULL);
+	if (input[*i] == input[*i - 1] && ft_isspace(input[*i + 1]))
+	{
+		quoted = ft_strdup(" ");
+		(*i) += 2;
+		return (quoted);
+	}
 	quoted = extract_single_quoted(input, i, quote);
 	if (!quoted)
 		return (NULL);

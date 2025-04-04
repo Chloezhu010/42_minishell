@@ -147,6 +147,12 @@ void	expand_tokens(t_token *tokens, t_env *env)
 			current = next; // 使用保存的下一个节点
 			continue;
 		}
+		if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1)
+		{
+			free_single_token(&tokens, current);
+			current = next; // 使用保存的下一个节点
+			continue;
+		}
 		if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
 		{
 			expanded = expand_var_instr(current->value, env);
