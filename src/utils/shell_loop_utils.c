@@ -47,10 +47,18 @@ void	process_heredocs(t_cmd *cmds, t_env *env)
 	{
 		if (cmd_temp->heredoc && cmd_temp->delimiter)
 		{
-			fd = handle_heredoc(cmd_temp->delimiter, env, cmd_temp->expand_heredoc);
+			env->heredoc_interrupted = 0;
+			fd = handle_heredoc(cmd_temp->delimiter,
+					env, cmd_temp->expand_heredoc);
 			if (fd == -1)
 			{
-				break;
+				if (env->heredoc_interrupted)
+				{
+					reset_input_state();
+					setup_signal(env);
+					return ;
+				}
+				break ;
 			}
 			cmd_temp->fd_in = fd;
 		}
@@ -64,8 +72,6 @@ int	execute_commands(t_cmd *cmds, t_env *env)
 
 	if (!cmds)
 		return (0);
-	
-	// printf("[DEBUG] execute_commands: pipeline=%d\n", cmds->next != NULL);
 	if (cmds->next)
 	{
 		cmd_temp = cmds;

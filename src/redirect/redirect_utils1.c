@@ -46,23 +46,31 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 	fd = create_heredoc_file(env);
 	if (fd == -1)
 		return (-1);
-	while (1)
+	setup_heredoc_signals(env); //setup heredoc signal
+	env->heredoc_interrupted = 0;
+	while (!env->heredoc_interrupted)
 	{
 		line = readline("heredoc> ");
-
-		if (!line) // Handle Ctrl+D (EOF)
-			break;
+		if (!line)
+		{
+			if (!env->heredoc_interrupted)
+				ft_putstr_fd("minishell: warning: heredoc delimited by eof\n", STDERR_FILENO);
+			break ;
+		}
+		if (env->heredoc_interrupted)
+		{
+			free(line);
+			break ;
+		}
 		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
 			break ;
 		}
-
 		if (expand_var)
 			expanded_line = expand_var_instr(line, env);
 		else
 			expanded_line = ft_strdup(line);
-
 		if (expanded_line)
 		{
 			write(fd, expanded_line, ft_strlen(expanded_line));
@@ -72,6 +80,12 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 		free(line);
 	}
 	close(fd);
+	// cleanup if interrupted
+	if (env->heredoc_interrupted)
+	{
+		unlink("/tmp/minishell_heredoc");
+		return (-1);
+	}
 
 	fd = open("/tmp/minishell_heredoc", O_RDONLY);
 	if (fd == -1)
@@ -80,6 +94,7 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 		exit_status(env, 1);
 		return (-1);
 	}
+	setup_signal(env); //restore signal
 	return (fd);
 }
 
@@ -93,12 +108,6 @@ int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
 		return (-1);
 	}
 	close(cmd->fd_in);
-	/* don't need to close here, otherwise heredoc broken */
-	// if (*stdin_backup != -1)
-	// {
-	// 	close(*stdin_backup);
-	// 	*stdin_backup = -1;
-	// }
 	return (0);
 }
 

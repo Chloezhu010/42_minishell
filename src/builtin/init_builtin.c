@@ -169,6 +169,7 @@ void	init_env(t_env *env, char **envp)
 	env->exported = NULL;
 	env->exit_status = 0;
 	env->at_prompt = 0;
+    env->heredoc_interrupted = 0; //init as 0
 }
 
 /* printout the env variables */

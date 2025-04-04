@@ -88,9 +88,15 @@ void	process_tokens_and_execute(t_token *tokens, t_env *env)
 	free_tokens(tokens);
 	if (cmds)
 	{
+		env->heredoc_interrupted = 0;
 		process_heredocs(cmds, env);
-		pipeline_executed = execute_commands(cmds, env);
-		if (!pipeline_executed)
+		if (!env->heredoc_interrupted)
+		{
+			pipeline_executed = execute_commands(cmds, env);
+			if (!pipeline_executed)
+				free_cmds(cmds);
+		}
+		else
 			free_cmds(cmds);
 	}
 }
