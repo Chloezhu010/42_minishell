@@ -56,6 +56,8 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(PIPE_DIR)/pipe_utils2.c \
 		$(PIPE_DIR)/pipe_utils3.c \
 		$(PIPE_DIR)/pipe_utils4.c \
+		$(PIPE_DIR)/pipe_utils5.c \
+		$(PIPE_DIR)/pipe_utils6.c \
 		$(REDIRECT_DIR)/redirect.c \
 		$(REDIRECT_DIR)/redirect_utils1.c \
 		$(REDIRECT_DIR)/redirect_utils2.c 

@@ -73,7 +73,6 @@ void	execute_pipe_child(t_cmd *cmd_head, t_cmd *current,
 		cleanup_input_output(cmd_head, current, env, &fd_child);
 	if (setup_pipe_output(current, ctx, &fd_child.stdout, env))
 		cleanup_input_output(cmd_head, current, env, &fd_child);
-
 	if (current->args && current->args[0]
 		&& ft_strcmp(current->args[0], "exit") == 0)
 	{
