@@ -42,9 +42,28 @@ void	ft_exit(char **args, t_env *env)
 {
 	int	exit_status1;
 	int	fd;
+	int i;
+	int	result;
 
 	ft_putstr_fd("exit\n", 1);
 	exit_status1 = 0;
+	result = 0;
+	if (args[1][0] == '-')
+	{
+		i = 1;
+		while (args[1][i])
+		{
+			result += (int)args[1][i++];
+		}
+	}
+	else
+	{
+		i = 0;
+		while (args[1][i])
+		{
+			result += (int)args[1][i++];
+		}
+	}
 	if (args[1] != NULL && args[2] != NULL)
 	{
 		ft_putstr_fd(" too many arguments\n", 2);
@@ -53,6 +72,7 @@ void	ft_exit(char **args, t_env *env)
 	}
 	if (args[1] != NULL)
 	{
+		printf("%lld\n",ft_atoi(args[1]));
 		if (is_digit(args[1]) == 0)
 		{
 			ft_putstr_fd(" numeric argument required\n", 2);
@@ -60,9 +80,25 @@ void	ft_exit(char **args, t_env *env)
 			env->exit_requested = 1; // set as 1 even on error
 			return ;
 		}
+		else if (args[1][0] == '-')
+		{
+			if (result > 1001)
+			{
+				ft_putstr_fd("bash: exit: : numeric argument required", 2);
+				exit_status1 = 2;
+			}
+			else
+				exit_status1 = (int)ft_atoi(args[1]);
+		}
 		else
 		{
-			exit_status1 = ft_atoi(args[1]);
+			if (result > 1000)
+			{
+				ft_putstr_fd("bash: exit: : numeric argument required", 2);
+				exit_status1 = 2;
+			}
+			else
+				exit_status1 = (int)ft_atoi(args[1]);
 		}
 	}
 	// clean up open fd

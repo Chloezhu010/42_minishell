@@ -18,7 +18,7 @@ typedef struct s_env
 {
 	char		**env_var;
 	int			*exported;
-	int			exit_status;
+	long		exit_status;
 	int			at_prompt;
 	int			heredoc_interrupted; //add
 	int			exit_requested;
