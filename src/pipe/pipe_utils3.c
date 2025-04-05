@@ -22,6 +22,23 @@ static int	handle_dup2_error(t_pipe *ctx, int *stdout_backup)
 	return (1);
 }
 
+/* helper function for setup_pipe_output */
+static int	handle_output_redirect_error(int *stdout_backup,
+	t_cmd *cmd, t_pipe *ctx)
+{
+	if (*stdout_backup != -1)
+	{
+		close(*stdout_backup);
+		*stdout_backup = -1;
+	}	
+	if (cmd->next && ctx->pipefd[1] != -1)
+	{
+		close(ctx->pipefd[1]);
+		ctx->pipefd[1] = -1;
+	}
+	return (1);
+}
+
 /* setup pipe output
     - handle output for pipeline
         - if there is a next cmd
@@ -48,19 +65,7 @@ int	setup_pipe_output(t_cmd *cmd, t_pipe *ctx, int *stdout_backup, t_env *env)
 	if (cmd->outfile)
 	{
 		if (handle_output_redirect(cmd, stdout_backup, env) == -1)
-		{
-			if (*stdout_backup != -1)
-			{
-				close(*stdout_backup);
-				*stdout_backup = -1;
-			}	
-			if (cmd->next && ctx->pipefd[1] != -1)
-			{
-				close(ctx->pipefd[1]);
-				ctx->pipefd[1] = -1;
-			}
-			return (1);
-		}
+			handle_output_redirect_error(stdout_backup, cmd, ctx);
 	}
 	return (0);
 }
@@ -85,32 +90,6 @@ void	restore_std_fd(t_pipe *ctx)
 		dup2(ctx->stderr_backup, STDERR_FILENO);
 		close(ctx->stderr_backup);
 		ctx->stderr_backup = -1;
-	}
-}
-
-/* wait for all child process and set exit status */
-void	wait_for_child(t_pipe *ctx, t_env *env)
-{
-	int	i;
-	int	status;
-	int	exit_code;
-
-	i = 0;
-	while (i < ctx->pid_count)
-	{
-		waitpid(ctx->pids[i], &status, 0);
-		if (ctx->pids[i] == ctx->last_pid)
-		{
-			if ((status & 0x7F) == 0)
-			{
-				exit_code = (status >> 8) & 0xFF;
-				if (exit_code == 2)
-					exit_status(env, 1);
-				else
-					exit_status(env, exit_code);
-			}
-		}
-		i++;
 	}
 }
 

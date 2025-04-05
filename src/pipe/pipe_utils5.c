@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 19:20:56 by czhu              #+#    #+#             */
-/*   Updated: 2025/04/04 19:29:11 by czhu             ###   ########.fr       */
+/*   Updated: 2025/04/05 14:33:19 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	set_parent_signals_for_pipeline(void)
 
 	sigemptyset(&sa.sa_mask);
 	sa.sa_handler = SIG_IGN;
-    sa.sa_flags = 0;
+	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGQUIT, &sa, NULL);
 }

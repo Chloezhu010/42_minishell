@@ -102,3 +102,29 @@ int	setup_pipe_input(t_cmd *cmd, t_pipe *ctx, int *stdin_backup, t_env *env)
 	}
 	return (0);
 }
+
+/* wait for all child process and set exit status */
+void	wait_for_child(t_pipe *ctx, t_env *env)
+{
+	int	i;
+	int	status;
+	int	exit_code;
+
+	i = 0;
+	while (i < ctx->pid_count)
+	{
+		waitpid(ctx->pids[i], &status, 0);
+		if (ctx->pids[i] == ctx->last_pid)
+		{
+			if ((status & 0x7F) == 0)
+			{
+				exit_code = (status >> 8) & 0xFF;
+				if (exit_code == 2)
+					exit_status(env, 1);
+				else
+					exit_status(env, exit_code);
+			}
+		}
+		i++;
+	}
+}
