@@ -54,7 +54,6 @@ void	tokenize_util1(t_token **tokens, int *i, char *input)
 	op[1] = 0;
 	op[2] = 0;
 	new_token = NULL;
-
 	if ((input[*i] == '<' || input[*i] == '>') && input[*i + 1] == input[*i])
 		handle_double_operator(tokens, i, input, op);
 	else if (input[*i] == '<' || input[*i] == '>')
@@ -67,25 +66,4 @@ void	tokenize_util1(t_token **tokens, int *i, char *input)
 		add_token(tokens, new_token);
 		(*i)++;
 	}
-	// if ((input[*i] == '<' || input[*i] == '>') && input[*i + 1] == input[*i])
-	// {
-	// 	op[1] = input[++(*i)];
-	// 	add_token_and_extract(tokens, input, i, op);
-	// }
-	// else if (input[*i] == '<' || input[*i] == '>')
-	// 	add_token_and_extract(tokens, input, i, op);
-	// else if (input[(*i)] == '&' && input[*i + 1] == '&')
-	// {
-	// 	op[1] = '&';
-	// 	(*i)++;
-	// 	new_token = create_token(op, get_token_type(op));
-	// 	add_token(tokens, new_token);
-	// 	(*i)++;
-	// }
-	// else
-	// {
-	// 	new_token = create_token(op, get_token_type(op));
-	// 	add_token(tokens, new_token);
-	// 	(*i)++;
-	// }
 }
