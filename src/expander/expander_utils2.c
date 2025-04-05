@@ -6,7 +6,7 @@
 /*   By: czhu <czhu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/05 16:00:53 by czhu              #+#    #+#             */
-/*   Updated: 2025/04/05 17:20:31 by czhu             ###   ########.fr       */
+/*   Updated: 2025/04/05 17:25:47 by czhu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,15 +34,6 @@ static void	free_single_token(t_token **head,
 	t_token	*current;
 
 	handle_free_single_token_error(head, token_to_free);
-    // if (!head || !*head || !token_to_free)
-    //     return;
-    // if (*head == token_to_free)
-    // {
-    //     *head = token_to_free->next;
-    //     free(token_to_free->value);
-    //     free(token_to_free);
-    //     return;
-    // }
 	prev = *head;
 	current = prev->next;
 	while (current && current != token_to_free)
@@ -74,11 +65,26 @@ static int	should_remove_dollar_token(t_token *current)
 	return (0);
 }
 
+/* helper function for expand_tokens */
+static void	expand_token_in_quote(t_token *current, t_env *env)
+{
+	char	*expanded;
+
+	if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
+	{
+		expanded = expand_var_instr(current->value, env);
+		if (expanded)
+		{
+			free(current->value);
+			current->value = expanded;
+		}
+	}
+}
+
 void	expand_tokens(t_token *tokens, t_env *env)
 {
 	t_token	*current;
-	char	*expanded;
-	t_token *next;
+	t_token	*next;
 
 	current = tokens;
 	while (current)
@@ -90,37 +96,7 @@ void	expand_tokens(t_token *tokens, t_env *env)
 			current = next;
 			continue ;
 		}
-        // if (current->next && (current->next->type == TOKEN_DOUBLE_QUOTE
-		// 	|| current->next->type == TOKEN_SINGLE_QUOTE)
-		// 	&& ft_strcmp(current->value, "$") == 0)
-		// {
-		// 	free_single_token(&tokens, current);
-		// 	current = next;
-		// 	continue ;
-		// }
-		// else if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1
-		// 	&& current->next != NULL)
-		// {
-		// 	free_single_token(&tokens, current);
-		// 	current = next;
-		// 	continue ;
-		// }
-		// else if (ft_strcmp(current->value, "$") == 0 && current->consecutive_quote == 1
-		// 	&& current->next == NULL && current->type == TOKEN_WORD)
-		// {
-		// 	free_single_token(&tokens, current);
-		// 	current = next;
-		// 	continue ;
-		// }
-		if (current->type == TOKEN_DOUBLE_QUOTE || current->type == TOKEN_WORD)
-		{
-			expanded = expand_var_instr(current->value, env);
-			if (expanded)
-			{
-				free(current->value);
-				current->value = expanded;
-			}
-		}
+		expand_token_in_quote(current, env);
 		current = current->next;
 	}
 	current = tokens;
