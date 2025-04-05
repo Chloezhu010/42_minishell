@@ -18,9 +18,8 @@ static char	*find_var_end(char *var_start)
 	char	*var_end;
 
 	var_end = var_start + 1;
-
 	if (*var_end == '"' && var_end == var_start + 1)
-    	return var_start;
+		return (var_start);
 	if (*var_end && (*var_end == '?' || (*var_end >= '0' && *var_end <= '9')
 			|| *var_end == '\'' || *var_end == '"'))
 		return (var_end + 1);

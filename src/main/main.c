@@ -20,7 +20,6 @@ int	main(int ac, char **av, char **envp)
 	(void)av;
 	env.exit_requested = 0;
 	env.exit = 0;
-	// env.heredoc_interrupted = 0; //add
 	init_env(&env, envp);
 	add_shlvl(&env);
 	shell_loop(&env);
@@ -45,7 +44,6 @@ void	shell_loop(t_env *env)
 		if (line == NULL)
 			break ;
 		tokens = process_command_line(line, env);
-		// print_tokens(tokens);
 		if (tokens)
 			process_tokens_and_execute(tokens, env);
 		free(line);

@@ -29,45 +29,41 @@ int	is_quote(char c)
 	return (c == '"' || c == '\'');
 }
 
-static void	add_token_and_extract(t_token **tokens,
-	char *input, int *i, char *op)
+int	check_consecutive_quote(char *input, int pos)
 {
-	t_token	*new_token;
+	int	is_consecutive;
 
-	new_token = create_token(op, get_token_type(op));
-	add_token(tokens, new_token);
-	(*i)++;
-	extract_redirect_filename(input, i, tokens);
+	is_consecutive = 0;
+	if (input[pos] && (is_quote(input[pos])
+			|| (!ft_isspace(input[pos]) && !is_special_char(input[pos]))))
+	{
+		is_consecutive = 1;
+		if (is_quote(input[pos])
+			&& is_quote(input[pos + 1]) && isspace(input[pos + 2]))
+			is_consecutive = 0;
+	}
+	return (is_consecutive);
 }
 
-void	tokenize_util1(t_token **tokens, int *i, char *input)
+void	tokenize_util4(t_token **tokens, int *i, char *input)
 {
-	char	op[3];
+	int		start;
+	char	*word;
+	int		is_consecutive;
 	t_token	*new_token;
 
-	op[0] = input[*i];
-	op[1] = 0;
-	op[2] = 0;
-	new_token = NULL;
-	if ((input[*i] == '<' || input[*i] == '>') && input[*i + 1] == input[*i])
-	{
-		op[1] = input[++(*i)];
-		add_token_and_extract(tokens, input, i, op);
-	}
-	else if (input[*i] == '<' || input[*i] == '>')
-		add_token_and_extract(tokens, input, i, op);
-	else if (input[(*i)] == '&' && input[*i + 1] == '&')
-	{
-		op[1] = '&';
+	start = *i;
+	is_consecutive = 0;
+	while (input[*i] && !ft_isspace(input[*i]) && !is_special_char(input[*i])
+		&& !is_quote(input[*i]))
 		(*i)++;
-		new_token = create_token(op, get_token_type(op));
+	if (*i > start)
+	{
+		word = strndup(&input[start], *i - start);
+		is_consecutive = check_consecutive_quote(input, *i);
+		new_token = create_token(word, TOKEN_WORD);
+		new_token->consecutive_quote = is_consecutive;
 		add_token(tokens, new_token);
-		(*i)++;
-	}
-	else
-	{
-		new_token = create_token(op, get_token_type(op));
-		add_token(tokens, new_token);
-		(*i)++;
+		free(word);
 	}
 }

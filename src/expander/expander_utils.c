@@ -103,8 +103,8 @@ char	*handle_var_expansion(char *res, char **ptr, t_env *env)
 
 static void free_single_token(t_token **head, t_token *token_to_free)
 {
-    t_token *prev;
-    t_token *current;
+    t_token	*prev;
+    t_token	*current;
     
     if (!head || !*head || !token_to_free)
         return;

@@ -40,11 +40,50 @@ t_cmd	*create_new_cmd(void)
 	return (cmd);
 }
 
+void	free_cmds_utils(t_cmd *tmp)
+{
+	if (tmp->infile)
+	{
+		free(tmp->infile);
+		tmp->infile = NULL;
+	}
+	if (tmp->outfile)
+	{
+		free(tmp->outfile);
+		tmp->outfile = NULL;
+	}
+	if (tmp->delimiter)
+	{
+		free(tmp->delimiter);
+		tmp->delimiter = NULL;
+	}
+	free_redir(tmp->redirects);
+	tmp->redirects = NULL;
+}
+
+void	free_args(t_cmd *tmp)
+{
+	int	i;
+
+	i = 0;
+	if (tmp->args)
+	{
+		while (tmp->args[i])
+		{
+			free(tmp->args[i]);
+			tmp->args[i] = NULL;
+			i++;
+		}
+		free(tmp->args);
+		tmp->args = NULL;
+	}
+}
+
 void	free_cmds(t_cmd *cmds)
 {
 	t_cmd	*tmp;
 	t_cmd	*next;
-	int		i;
+	// int		i;
 	
 	if (!cmds)
 		return ;
@@ -52,37 +91,39 @@ void	free_cmds(t_cmd *cmds)
 	while (tmp)
 	{
 		next = tmp->next;
-		i = 0;
-		if (tmp->args)
-		{
-			while (tmp->args[i])
-			{
-				free(tmp->args[i]);
-				tmp->args[i] = NULL;
-				i++;
-			}
-			free(tmp->args);
-			tmp->args = NULL;
-		}
-		if (tmp->infile)
-        {
-            free(tmp->infile);
-            tmp->infile = NULL;
-        }
+		// i = 0;
+		// if (tmp->args)
+		// {
+		// 	while (tmp->args[i])
+		// 	{
+		// 		free(tmp->args[i]);
+		// 		tmp->args[i] = NULL;
+		// 		i++;
+		// 	}
+		// 	free(tmp->args);
+		// 	tmp->args = NULL;
+		// }
+		free_args(tmp);
+		free_cmds_utils(tmp);
+		// if (tmp->infile)
+        // {
+        //     free(tmp->infile);
+        //     tmp->infile = NULL;
+        // }
         
-        if (tmp->outfile)
-        {
-            free(tmp->outfile);
-            tmp->outfile = NULL;
-        }
+        // if (tmp->outfile)
+        // {
+        //     free(tmp->outfile);
+        //     tmp->outfile = NULL;
+        // }
         
-        if (tmp->delimiter)
-        {
-            free(tmp->delimiter);
-            tmp->delimiter = NULL;
-        }
-        free_redir(tmp->redirects);
-        tmp->redirects = NULL;
+        // if (tmp->delimiter)
+        // {
+        //     free(tmp->delimiter);
+        //     tmp->delimiter = NULL;
+        // }
+        // free_redir(tmp->redirects);
+        // tmp->redirects = NULL;
 		tmp->next = NULL;
 		free(tmp);
 		tmp = next;

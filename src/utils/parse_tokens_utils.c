@@ -62,8 +62,7 @@ void	process_heredoc(t_cmd *current_cmd, t_token **tokens)
 	{
 		current_cmd->heredoc = 1;
 		current_cmd->delimiter = ft_strdup((*tokens)->value);
-		current_cmd->expand_heredoc = 1; //set as default to expand var
-		// if contain quotes, then don't expand var
+		current_cmd->expand_heredoc = 1;
 		if ((*tokens)->type == TOKEN_DOUBLE_QUOTE
 			|| (*tokens)->type == TOKEN_SINGLE_QUOTE)
 			current_cmd->expand_heredoc = 0;

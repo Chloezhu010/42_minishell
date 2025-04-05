@@ -30,7 +30,6 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(UTILS_DIR)/shell_loop_utils.c \
 		$(UTILS_DIR)/loop_util1.c \
 		$(UTILS_DIR)/loop_util2.c \
-		$(UTILS_DIR)/test_utils.c \
 		$(UTILS_DIR)/exit_status_utils.c \
 		$(UTILS_DIR)/redir_utils.c \
 		$(UTILS_DIR)/cmd_utils.c \
@@ -60,7 +59,8 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(PIPE_DIR)/pipe_utils6.c \
 		$(REDIRECT_DIR)/redirect.c \
 		$(REDIRECT_DIR)/redirect_utils1.c \
-		$(REDIRECT_DIR)/redirect_utils2.c 
+		$(REDIRECT_DIR)/redirect_utils2.c \
+		$(REDIRECT_DIR)/redirect_utils3.c
 
 OBJ = $(SRC:.c=.o)
 
