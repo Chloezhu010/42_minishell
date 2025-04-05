@@ -27,58 +27,28 @@ static int	create_heredoc_file(t_env *env)
 	return (fd);
 }
 
-/*
-    - create a temp file to store input line
-        - write only
-        - if not exits, create one
-        - if the file exists, content will be erased
-    - read user input until the delimiter
-        - input lines are read & written to the temp file
-        - close and reopen with read-only mode
-    - reopen the file and return fd
-*/
-int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
+/* helper function for handle_heredoc */
+static void	write_line_to_heredoc(char *line, int fd,
+	t_env *env, int expand_var)
 {
-	char	*line;
 	char	*expanded_line;
-	int		fd;
 
-	fd = create_heredoc_file(env);
-	if (fd == -1)
-		return (-1);
-	setup_heredoc_signals(env);
-	env->heredoc_interrupted = 0;
-	while (!env->heredoc_interrupted)
+	if (expand_var)
+		expanded_line = expand_var_instr(line, env);
+	else
+		expanded_line = ft_strdup(line);
+	if (expanded_line)
 	{
-		line = readline("heredoc> ");
-		if (!line)
-		{
-			if (!env->heredoc_interrupted)
-				ft_putstr_fd("heredoc delimited by eof\n", STDERR_FILENO);
-			break ;
-		}
-		if (env->heredoc_interrupted)
-		{
-			free(line);
-			break ;
-		}
-		if (ft_strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			break ;
-		}
-		if (expand_var)
-			expanded_line = expand_var_instr(line, env);
-		else
-			expanded_line = ft_strdup(line);
-		if (expanded_line)
-		{
-			write(fd, expanded_line, ft_strlen(expanded_line));
-			free(expanded_line);
-		}
-		write(fd, "\n", 1);
-		free(line);
+		write(fd, expanded_line, ft_strlen(expanded_line));
+		free(expanded_line);
 	}
+	write(fd, "\n", 1);
+	free(line);
+}
+
+/* helper function for handle_heredoc */
+static int	cleanup_heredoc(int fd, t_env *env)
+{
 	close(fd);
 	if (env->heredoc_interrupted)
 	{
@@ -94,6 +64,101 @@ int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
 	}
 	setup_signal(env);
 	return (fd);
+}
+
+/* helper function for handle_heredoc */
+static int	process_heredoc_line(char *line, char *delimiter, t_env *env)
+{
+	if (!line)
+	{
+		if (!env->heredoc_interrupted)
+			ft_putstr_fd("heredoc delimited by eof\n", STDERR_FILENO);
+		return (1);
+	}
+	if (env->heredoc_interrupted)
+	{
+		free(line);
+		return (1);
+	}
+	if (ft_strcmp(line, delimiter) == 0)
+	{
+		free(line);
+		return (1);
+	}
+	return (0);
+}
+
+/*
+    - create a temp file to store input line
+        - write only
+        - if not exits, create one
+        - if the file exists, content will be erased
+    - read user input until the delimiter
+        - input lines are read & written to the temp file
+        - close and reopen with read-only mode
+    - reopen the file and return fd
+*/
+int	handle_heredoc(char *delimiter, t_env *env, int expand_var)
+{
+	char	*line;
+	// char	*expanded_line;
+	int		fd;
+
+	fd = create_heredoc_file(env);
+	if (fd == -1)
+		return (-1);
+	setup_heredoc_signals(env);
+	env->heredoc_interrupted = 0;
+	while (!env->heredoc_interrupted)
+	{
+		line = readline("heredoc> ");
+		if (process_heredoc_line(line, delimiter, env))
+			break ;
+		// if (!line)
+		// {
+		// 	if (!env->heredoc_interrupted)
+		// 		ft_putstr_fd("heredoc delimited by eof\n", STDERR_FILENO);
+		// 	break ;
+		// }
+		// if (env->heredoc_interrupted)
+		// {
+		// 	free(line);
+		// 	break ;
+		// }
+		// if (ft_strcmp(line, delimiter) == 0)
+		// {
+		// 	free(line);
+		// 	break ;
+		// }
+		write_line_to_heredoc(line, fd, env, expand_var);
+		// if (expand_var)
+		// 	expanded_line = expand_var_instr(line, env);
+		// else
+		// 	expanded_line = ft_strdup(line);
+		// if (expanded_line)
+		// {
+		// 	write(fd, expanded_line, ft_strlen(expanded_line));
+		// 	free(expanded_line);
+		// }
+		// write(fd, "\n", 1);
+		// free(line);
+	}
+	return (cleanup_heredoc(fd, env));
+	// close(fd);
+	// if (env->heredoc_interrupted)
+	// {
+	// 	unlink("/tmp/minishell_heredoc");
+	// 	return (-1);
+	// }
+	// fd = open("/tmp/minishell_heredoc", O_RDONLY);
+	// if (fd == -1)
+	// {
+	// 	perror("open");
+	// 	exit_status(env, 1);
+	// 	return (-1);
+	// }
+	// setup_signal(env);
+	// return (fd);
 }
 
 int	handle_heredoc_redirect(t_cmd *cmd, int *stdin_backup, t_env *env)
