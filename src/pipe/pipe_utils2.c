@@ -119,10 +119,7 @@ void	wait_for_child(t_pipe *ctx, t_env *env)
 			if ((status & 0x7F) == 0)
 			{
 				exit_code = (status >> 8) & 0xFF;
-				if (exit_code == 2)
-					exit_status(env, 1);
-				else
-					exit_status(env, exit_code);
+				exit_status(env, exit_code);
 			}
 		}
 		i++;

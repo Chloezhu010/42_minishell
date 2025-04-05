@@ -111,7 +111,7 @@ void	ft_exit(char **args, t_env *env)
 		{
 			if (result > 1001)
 			{
-				ft_putstr_fd("bash: exit: : numeric argument required", 2);
+				ft_putstr_fd("bash: exit: : numeric argument required\n", 2);
 				exit_status1 = 2;
 			}
 			else
@@ -121,7 +121,7 @@ void	ft_exit(char **args, t_env *env)
 		{
 			if (result > 1000)
 			{
-				ft_putstr_fd("bash: exit: : numeric argument required", 2);
+				ft_putstr_fd("bash: exit: : numeric argument required\n", 2);
 				exit_status1 = 2;
 			}
 			else
