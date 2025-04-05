@@ -18,6 +18,7 @@
     - loop through the string
         - must only contain alphanumeric or '_'
         - if invalid, return 0
+		- if key start with '-', return 2
     - else, return 1 as valid
 */
 int	check_valid_name(char *key)
@@ -26,6 +27,8 @@ int	check_valid_name(char *key)
 
 	if (!key || !*key)
 		return (0);
+	if (key[0] == '-')
+		return (2);
 	if (!((key[0] >= 'a' && key[0] <= 'z')
 			|| (key[0] >= 'A' && key[0] <= 'Z')
 			|| (key[0] == '_')))
@@ -77,6 +80,24 @@ void	split_key_value(char *arg, char **key, char **value)
 	}
 }
 
+/* helper function for process_single_export_arg */
+static int	validate_export_key(char *key, t_env *env)
+{
+	if (!key || check_valid_name(key) == 0)
+	{
+		ft_putstr_fd(" not a valid identifier\n", 2);
+		exit_status(env, 1);
+		return (0);
+	}
+	if (!key || check_valid_name(key) == 2)
+	{
+		ft_putstr_fd(" not a valid identifier\n", 2);
+		exit_status(env, 2);
+		return (0);
+	}
+	return (1);
+}
+
 /* helper function for ft_export */
 static void	process_single_export_arg(char *arg, t_env *env)
 {
@@ -86,10 +107,8 @@ static void	process_single_export_arg(char *arg, t_env *env)
 	key = NULL;
 	value = NULL;
 	split_key_value(arg, &key, &value);
-	if (!key || check_valid_name(key) == 0)
+	if (!validate_export_key(key, env))
 	{
-		ft_putstr_fd(" not a valid identifier\n", 2);
-		exit_status(env, 1);
 		free(key);
 		free(value);
 		return ;
