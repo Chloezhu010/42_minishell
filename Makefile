@@ -50,6 +50,7 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(EXEC_DIR)/execute_utils.c \
 		$(EXPAND_DIR)/expander.c \
 		$(EXPAND_DIR)/expander_utils.c \
+		$(EXPAND_DIR)/expander_utils2.c \
 		$(PIPE_DIR)/pipe.c \
 		$(PIPE_DIR)/pipe_utils1.c \
 		$(PIPE_DIR)/pipe_utils2.c \
