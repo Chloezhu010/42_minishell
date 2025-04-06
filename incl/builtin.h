@@ -20,7 +20,7 @@ typedef struct s_env
 	int			*exported;
 	long		exit_status;
 	int			at_prompt;
-	int			heredoc_interrupted; //add
+	int			heredoc_interrupted;
 	int			exit_requested;
 	int			exit;
 }	t_env;
