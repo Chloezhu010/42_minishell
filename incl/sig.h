@@ -23,6 +23,6 @@ void	setup_signal(t_env *env);
 void	reset_input_state(void);
 
 void	heredoc_sigint_handler(int sig);
-void    setup_heredoc_signals(t_env *env);
+void	setup_heredoc_signals(t_env *env);
 
 #endif

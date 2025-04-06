@@ -51,99 +51,6 @@ int	count_envp(char **envp)
     - null terminated
 */
 
-void    add_shlvl(t_env *env)
-{
-    int     i;
-    int     level;
-    int     shlvl_index = -1;
-    char    *shlvl_str;
-    char    *new_value;
-    char    *new_shlvl;
-
-    // 查找SHLVL环境变量
-    shlvl_str = NULL;
-    i = 0;
-    while (env->env_var && env->env_var[i])
-    {
-        if (ft_strncmp(env->env_var[i], "SHLVL=", 6) == 0)
-        {
-            shlvl_str = env->env_var[i] + 6;
-            shlvl_index = i; // store the index to find shlvl
-            // printf("[db]: shlvl found at index %d\n", shlvl_index);
-            break;
-        }
-        i++;
-    }
-
-    // SHLVL不存在，添加SHLVL=1
-    if (!shlvl_str)
-    {
-        i = 0;
-        while (env->env_var && env->env_var[i])
-            i++;
-        new_value = ft_strdup("SHLVL=1");
-        // 扩展环境变量数组
-        char **new_env = (char **)ft_malloc((i + 2) * sizeof(char *));
-        i = 0;
-        while (env->env_var && env->env_var[i])
-        {
-            new_env[i] = env->env_var[i];
-            i++;
-        }
-        new_env[i] = new_value;
-        new_env[i + 1] = NULL;
-        
-        if (env->env_var)
-            free(env->env_var);
-        env->env_var = new_env;
-        return;
-    }
-
-    // 检查是否包含非数字字符
-    i = 0;
-    if (shlvl_str[0] == '-' || shlvl_str[0] == '+')
-        i++;
-    while (shlvl_str[i])
-    {
-        if (!ft_isdigit(shlvl_str[i]))
-        {
-            // 非数字，设置为1
-            new_shlvl = ft_strdup("SHLVL=1");
-            if (shlvl_index >= 0)
-            {
-                free(env->env_var[shlvl_index]);
-                env->env_var[shlvl_index] = new_shlvl;
-            }
-            // free(env->env_var[i]);
-            // env->env_var[i] = new_shlvl;
-            return;
-        }
-        i++;
-    }
-
-    // 转换为数字并处理边界情况
-    level = ft_atoi(shlvl_str);
-
-    if (level < 0)
-        level = 0;
-    else if (level >= 2147483647)
-        level = 1;
-    else
-        level++;
-
-    // 创建新的SHLVL字符串
-    new_value = ft_itoa(level);
-    new_shlvl = ft_strjoin("SHLVL=", new_value);
-    free(new_value);
-    
-    // 更新环境变量
-    if (shlvl_index >= 0)
-    {
-        free(env->env_var[shlvl_index]);
-        env->env_var[shlvl_index] = new_shlvl;
-    }
-}
-
 void	init_env(t_env *env, char **envp)
 {
 	int	i;
@@ -169,7 +76,7 @@ void	init_env(t_env *env, char **envp)
 	env->exported = NULL;
 	env->exit_status = 0;
 	env->at_prompt = 0;
-    env->heredoc_interrupted = 0; //init as 0
+	env->heredoc_interrupted = 0;
 }
 
 /* printout the env variables */

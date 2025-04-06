@@ -41,3 +41,22 @@ int	execute_builtin1(t_cmd *cmd, t_env *env,
 	}
 	return (0);
 }
+
+/* check if a string is a valid numeric arg */
+int	is_digit(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}

@@ -70,7 +70,6 @@ int		process_redirect(t_cmd *cmd, t_env *env);
 /* execution */
 void	execute_builtin(t_cmd *cmd, t_env *env);
 
-
 /* shell loop */
 char	*read_line(void);
 char	**cell_split_line(char *line);
@@ -110,4 +109,6 @@ void	print_tokens(t_token *tokens);
 void	print_cmds(t_cmd *cmds);
 void	exit_status(t_env *env, int exit_status);
 int		is_builtin(char *cmd);
+
+int		is_digit(char *str);
 #endif

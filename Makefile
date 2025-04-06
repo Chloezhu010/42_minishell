@@ -26,6 +26,7 @@ SRC = $(BUILTIN_DIR)/builtin_utils.c \
 		$(BUILTIN_DIR)/ft_env.c \
 		$(BUILTIN_DIR)/ft_exit.c \
 		$(BUILTIN_DIR)/ft_export.c \
+		$(BUILTIN_DIR)/add_shlvl.c \
 		$(BUILTIN_DIR)/ft_unset.c \
 		$(UTILS_DIR)/shell_loop_utils.c \
 		$(UTILS_DIR)/loop_util1.c \

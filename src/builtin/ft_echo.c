@@ -20,44 +20,40 @@
 	- normal case: print out the args
     - print out the newline in the end
 */
+static int	handle_n_option(char *arg)
+{
+	int	x;
+
+	x = 2;
+	if (ft_strncmp(arg, "-n", 2) == 0 && ft_strlen(arg) == 2)
+		return (0);
+	else if (ft_strlen(arg) > 2)
+	{
+		if (ft_strncmp(arg, "-n", 2) == 0)
+		{
+			while (arg[x] == 'n')
+				x++;
+			if (x == (int)ft_strlen(arg))
+				return (0);
+		}
+	}
+	return (1);
+}
+
 void	ft_echo(char **args, t_env *env)
 {
 	int	i;
 	int	new_line;
-	int	x;
 
 	(void)env;
 	i = 1;
 	new_line = 1;
 	while (args[i] && args[i][0] == '-')
 	{
-		x = 2;
-		if ((ft_strncmp(args[i], "-n", 2) == 0) && (ft_strlen(args[i]) == 2))
-		{
+		if (handle_n_option(args[i]) == 0)
 			new_line = 0;
-		}
-		else if (ft_strlen(args[i]) > 2)
-		{
-			x = 2;
-			while ((ft_strncmp(args[i], "-n", 2) == 0) && (args[i][x]))
-			{
-				while (args[i][x] == 'n')
-				{
-					x++;
-				}
-				if (x == (int)ft_strlen(args[i]))
-				{
-					new_line = 0;
-					break ;
-				}
-				else
-					break ;
-			}
-		}
-		if (x != (int)ft_strlen(args[i]))
-		{
-			break;
-		}
+		else
+			break ;
 		i++;
 	}
 	while (args[i])

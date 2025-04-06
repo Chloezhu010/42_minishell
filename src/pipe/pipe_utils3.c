@@ -30,7 +30,7 @@ static int	handle_output_redirect_error(int *stdout_backup,
 	{
 		close(*stdout_backup);
 		*stdout_backup = -1;
-	}	
+	}
 	if (cmd->next && ctx->pipefd[1] != -1)
 	{
 		close(ctx->pipefd[1]);
